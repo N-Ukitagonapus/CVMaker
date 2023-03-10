@@ -4,24 +4,24 @@
 class CareerHistoryData:
 	#コンストラクタ(のようなもの)
 	def __init__(self):
-		self.__flg_over = False
-		self.__term_start = ""
-		self.__term_end = ""
-		self.__description_industry = ""
-		self.__description_project_overview = ""
-		self.__description_system_overview = ""
-		self.__description_work = []
-		self.__development_srv = []  
-		self.__development_os = []
-		self.__development_db = []
-		self.__development_lang = []
-		self.__development_fw = []
-		self.__development_mw = []
-		self.__development_tools = []
-		self.__development_pkg = []
-		self.__tasks = []
-		self.__scale = ""
-		self.__position = ""
-		self.__flg_internal_leader = False
-		self.__members = 0
-		self.__members_internal = 0
+		self.flg_over = False										#終了フラグ
+		self.term_start = ""										#期間：から
+		self.term_end = ""											#期間：まで
+		self.description_gyokai = ""						#業界
+		self.description_project_overview = ""	#プロジェクト概要
+		self.description_system_overview = ""		#システム概要
+		self.description_work = []							#作業概要
+		self.development_srv = []  							#開発環境-サーバ
+		self.development_os = []  							#開発環境-サーバ		
+		self.development_db = []  							#開発環境-サーバ
+		self.development_lang = []  						#開発環境-サーバ
+		self.development_fw = []  							#開発環境-サーバ
+		self.development_mw = []  							#開発環境-サーバ
+		self.development_tools = []  						#開発環境-サーバ
+		self.development_pkg = []  							#開発環境-パッケージ
+		self.tasks = []													#作業内容
+		self.scale = ""													#開発規模
+		self.position = ""											#職位
+		self.flg_internal_leader = False				#自社リーダーフラグ
+		self.members = 0												#メンバー人数
+		self.members_internal = 0								#自社メンバー人数
