@@ -4,6 +4,9 @@ from tkinter import ttk
 from tkinter import messagebox as msg
 import constants.const
 from data_structure.SkillSheetDataStructure import SkillSheetDataStructure
+from frames.PersonalDataFrame import PersonalDataFrame
+from frames.SkillDataFrame import SkillDataFrame
+
 class Application(tk.Frame):
 
 	def __init__(self, master = None):
@@ -21,7 +24,13 @@ class Application(tk.Frame):
 		self.label_title.pack(side=tk.TOP, padx=10, pady=10)
 		self.frame_title.pack(side=tk.TOP, pady=10, fill=tk.X, padx=20)
 
+		self.frame_personal = PersonalDataFrame(self.master)
+		self.frame_personal.pack()
+		self.frame_personal.btn_load["command"] = lambda: msg.showinfo("Message", "Load Button Has been pushed.")
+		self.frame_personal.btn_save["command"] = lambda: msg.showinfo("Message", "Save Button Has been pushed.")
 
+		self.frame_skill = SkillDataFrame(self.master)
+		self.frame_skill.pack()
 
 if __name__ == "__main__":
 	root = tk.Tk()
