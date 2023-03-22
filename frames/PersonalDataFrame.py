@@ -5,9 +5,13 @@ from tkcalendar import DateEntry
 import tkinter as tk
 from tkinter import StringVar, ttk
 
+from data_structure.PersonalData import PersonalData
+
 class PersonalDataFrame(tk.Frame):
 	def __init__(self, target):
 		self.ret=tk.LabelFrame(target,relief=tk.RAISED,text = "個人基本情報")
+
+		self.data=PersonalData
 
 		##1行目
 		self.first_line=tk.Frame(self.ret)
