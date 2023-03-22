@@ -33,7 +33,7 @@ class PersonalDataFrame(tk.Frame):
 		self.frame_shain_num.pack(side=tk.LEFT)
 		self.btn_save.pack(side=tk.RIGHT,padx=10)
 		self.btn_load.pack(side=tk.RIGHT,padx=10)
-		self.first_line.pack(side=tk.TOP,fill=tk.X,pady=5)
+		self.first_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 		##1行目ここまで
 
 		##2行目
@@ -71,7 +71,7 @@ class PersonalDataFrame(tk.Frame):
 		self.gender_female.pack(side=tk.LEFT,padx=5)
 		self.label_birthday.pack(side=tk.LEFT,padx=5)
 		self.birthday_entry.pack(side=tk.LEFT,padx=5)
-		self.second_line.pack(side=tk.TOP,fill=tk.X,pady=5)
+		self.second_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 		##2行目ここまで
 
 		##3行目
@@ -89,7 +89,7 @@ class PersonalDataFrame(tk.Frame):
 		self.text_address.pack(side=tk.LEFT,padx=5)
 		self.label_station.pack(side=tk.LEFT,padx=5)
 		self.text_station.pack(side=tk.LEFT,padx=5)
-		self.third_line.pack(side=tk.TOP,fill=tk.X,pady=5)
+		self.third_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 		##3行目ここまで
 
 		##4行目
@@ -101,7 +101,7 @@ class PersonalDataFrame(tk.Frame):
 		#組み立て
 		self.label_academic.pack(side=tk.LEFT)
 		self.text_academic.pack(side=tk.LEFT,padx=5)
-		self.fourth_line.pack(side=tk.TOP,fill=tk.X,pady=5)
+		self.fourth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 
 	def pack(self):
-		self.ret.pack(side=tk.TOP,fill=tk.X,padx=20,pady=10)
+		self.ret.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)

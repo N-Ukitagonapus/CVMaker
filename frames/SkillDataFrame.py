@@ -5,6 +5,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
 
+from constants.const import ENV_GENRE
+
 class SkillDataFrame(tk.Frame):
 	def __init__(self, target):
 		self.ret=tk.LabelFrame(target,relief=tk.RAISED,text = "技術情報")
@@ -34,7 +36,7 @@ class SkillDataFrame(tk.Frame):
 		self.label_expr_mth.pack(side=tk.LEFT,padx=5)
 		self.btn_save.pack(side=tk.RIGHT,padx=10)
 		self.btn_load.pack(side=tk.RIGHT,padx=10)
-		self.first_line.pack(side=tk.TOP,fill=tk.X)
+		self.first_line.pack(side=tk.TOP,fill=tk.X,pady=5)
 		##1行目ここまで
 
 		##2行目
@@ -47,7 +49,7 @@ class SkillDataFrame(tk.Frame):
 		#組立
 		self.label_specialty.pack(side=tk.LEFT,padx=5)
 		self.text_specialty.pack(side=tk.LEFT,padx=5)
-		self.second_line.pack(side=tk.TOP,fill=tk.X)
+		self.second_line.pack(side=tk.TOP,fill=tk.X,pady=5)
 
 		#3行目
 		self.third_line=tk.Frame(self.ret)
@@ -56,14 +58,49 @@ class SkillDataFrame(tk.Frame):
 		self.label_qualifications = tk.Label(self.third_line,text="取得資格")
 		self.label_kaigyokugiri = tk.Label(self.third_line,text="※複数ある場合は改行で区切ってください。")
 		#取得資格
-		self.text_qualifications  = scrolledtext.ScrolledText(self.third_line,  wrap = tk.WORD, width = 80,height = 5)  
+		self.text_qualifications  = scrolledtext.ScrolledText(self.third_line,wrap=tk.WORD,width=80,height=3)  
 
 		#組立
 		self.label_qualifications.grid(row=0,column=0,padx=5,pady=5)
 		self.label_kaigyokugiri.grid(row=0,column=1,padx=5,pady=5)
 		self.text_qualifications.grid(row=1,column=1,padx=5,sticky=tk.EW)
 		self.third_line.grid_columnconfigure(1, weight=1)
-		self.third_line.pack(side=tk.TOP,fill=tk.X)
-  
+		self.third_line.pack(side=tk.TOP,fill=tk.X,pady=5)
+		
+    #4行目
+		self.fourth_line=tk.Frame(self.ret)
+
+		#フレーム・ラベル定義
+		self.label_environments = tk.Label(self.fourth_line,text="使用経験")
+		self.label_env_genre = []
+
+		#使用経験
+		self.env_expr = []
+		for env in ENV_GENRE:
+			self.label_env_genre.append(tk.Label(self.fourth_line,text=env))
+			self.env_expr.append(scrolledtext.ScrolledText(self.fourth_line,wrap=tk.WORD,width=30,height=3))
+
+		#組立
+		self.label_environments.grid(row=0,column=0,padx=5,pady=2)
+		for i in range(len(ENV_GENRE)):
+			self.label_env_genre[i].grid(row=0,column=i+1,padx=2)
+			self.env_expr[i].grid(row=1,column=i+1,padx=2)
+			self.fourth_line.grid_columnconfigure(i+1, weight=1)
+		self.fourth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
+
+		#5行目
+		self.fifth_line=tk.Frame(self.ret)
+
+		#フレーム・ラベル定義
+		self.label_pr = tk.Label(self.fifth_line,text="自己PR")
+		#取得資格
+		self.text_pr  = scrolledtext.ScrolledText(self.fifth_line,wrap=tk.WORD,width=80,height=5)  
+
+		#組立
+		self.label_pr.grid(row=0,column=0,padx=5,pady=5)
+		self.text_pr.grid(row=1,column=1,padx=5,sticky=tk.EW)
+		self.fifth_line.grid_columnconfigure(1, weight=1)
+		self.fifth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
+
 	def pack(self):
-		self.ret.pack(side=tk.TOP,fill=tk.X,padx=20,pady=10)
+		self.ret.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)

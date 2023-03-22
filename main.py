@@ -16,7 +16,7 @@ class Application(tk.Frame):
   
 		#ウィンドウ設定
 		self.master.title("スキルシート生成ソフト")
-		self.master.geometry("1000x800")
+		self.master.geometry("1200x900")
 
 		#タイトル設定
 		self.frame_title = tk.Frame(self.master,width=600,borderwidth=5,relief="groove")
