@@ -27,9 +27,9 @@ class SkillDataFrame(tk.Frame):
 		#休職期間-月
 		self.select_absense_month = ttk.Combobox(self.first_line,width=3,state="readonly",justify="center",value=[i for i in range(1,13)])
   	#読込ボタン
-		self.btn_load = tk.Button(self.first_line,width=5,text="読込")
+		self.btn_load = ttk.Button(self.first_line,width=5,text="読込")
 		#保存ボタン
-		self.btn_save = tk.Button(self.first_line,width=5,text="保存")
+		self.btn_save = ttk.Button(self.first_line,width=5,text="保存")
 
 		#組立
 		self.label_expr.pack(side=tk.LEFT,padx=5)
@@ -79,7 +79,7 @@ class SkillDataFrame(tk.Frame):
 		self.label_environments = tk.Label(self.fourth_line,text="使用経験\n(業務外)")
 
 		#使用経験
-		self.btn_env_edit = tk.Button(self.fourth_line,width=5,text="編集")
+		self.btn_env_edit = ttk.Button(self.fourth_line,width=5,text="編集")
 
 		#組立
 		self.label_environments.pack(side=tk.LEFT,padx=5)
@@ -91,14 +91,14 @@ class SkillDataFrame(tk.Frame):
 
 		#フレーム・ラベル定義
 		self.label_pr = tk.Label(self.fifth_line,text="自己PR")
-		#取得資格
+		#自己PR
 		self.text_pr  = scrolledtext.ScrolledText(self.fifth_line,wrap=tk.WORD,width=80,height=5)  
 
 		#組立
 		self.label_pr.grid(row=0,column=0,padx=5,pady=5)
 		self.text_pr.grid(row=1,column=1,padx=5,sticky=tk.EW)
 		self.fifth_line.grid_columnconfigure(1, weight=1)
-		self.fifth_line.pack(side=tk.TOP,fill=tk.X,pady=5)
+		self.fifth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 
 	def pack(self):
 		self.ret.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)

@@ -24,9 +24,9 @@ class PersonalDataFrame(tk.Frame):
 		#社員番号
 		self.text_shain_num = ttk.Entry(self.frame_shain_num, width=5)
 		#読込ボタン
-		self.btn_load = tk.Button(self.first_line,width=5,text="読込")
+		self.btn_load = ttk.Button(self.first_line,width=5,text="読込")
 		#保存ボタン
-		self.btn_save = tk.Button(self.first_line,width=5,text="保存")
+		self.btn_save = ttk.Button(self.first_line,width=5,text="保存")
 
 		#組み立て
 		self.label_shain_num.pack(side=tk.LEFT)
