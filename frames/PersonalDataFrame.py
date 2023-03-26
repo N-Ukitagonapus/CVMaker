@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import StringVar, ttk
 
 from data_structure.PersonalData import PersonalData
+from tkinter import messagebox as msg
 
 class PersonalDataFrame(tk.Frame):
 	def __init__(self, target):
@@ -102,6 +103,10 @@ class PersonalDataFrame(tk.Frame):
 		self.label_academic.pack(side=tk.LEFT)
 		self.text_academic.pack(side=tk.LEFT,padx=5)
 		self.fourth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
+
+		self.btn_load["command"] = lambda: msg.showinfo("Message", "Load Button Has been pushed.")
+		self.btn_save["command"] = lambda: msg.showinfo("Message", "Save Button Has been pushed.")
+
 
 	def pack(self):
 		self.ret.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)

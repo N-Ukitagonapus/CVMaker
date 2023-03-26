@@ -6,6 +6,7 @@ import constants.const
 from data_structure.SkillSheetDataStructure import SkillSheetDataStructure
 from frames.PersonalDataFrame import PersonalDataFrame
 from frames.SkillDataFrame import SkillDataFrame
+from frames.CareerHistoryFrame import CareerHistoryFrame
 
 class Application(tk.Frame):
 
@@ -19,18 +20,25 @@ class Application(tk.Frame):
 		self.master.geometry("1200x900")
 
 		#タイトル設定
-		self.frame_title = tk.Frame(self.master,width=600,borderwidth=5,relief="groove")
-		self.label_title = tk.Label(self.frame_title, text="スキルシート生成ソフト", font=("ＭＳ　ゴシック",20,"bold","italic"))
-		self.label_title.pack(side=tk.TOP, padx=10, pady=10)
-		self.frame_title.pack(side=tk.TOP, pady=10, fill=tk.X, padx=20)
+		self.frame_title = tk.Frame(self.master,borderwidth=5,relief="groove")
+		self.label_title = tk.Label(self.frame_title, text="スキルシート生成ソフト", font=("Meiryo UI",20,"bold","italic"))
+		self.label_title.pack(side=tk.TOP,padx=10,pady=10)
+		self.frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=10)
+
+		#Exportボタン
+		self.frame_bottombutton = tk.Frame(self.master,borderwidth=5,relief="groove")
+		self.button_export = ttk.Button(self.frame_bottombutton,width=15,text="Excel書出")
+		self.button_export.pack(side=tk.RIGHT,padx=10,pady=5)
+		self.frame_bottombutton.pack(side=tk.BOTTOM,fill=tk.X,padx=20,pady=10)
 
 		self.frame_personal = PersonalDataFrame(self.master)
 		self.frame_personal.pack()
-		self.frame_personal.btn_load["command"] = lambda: msg.showinfo("Message", "Load Button Has been pushed.")
-		self.frame_personal.btn_save["command"] = lambda: msg.showinfo("Message", "Save Button Has been pushed.")
 
 		self.frame_skill = SkillDataFrame(self.master)
 		self.frame_skill.pack()
+
+		self.frame_history = CareerHistoryFrame(self.master)
+		self.frame_history.pack()
 
 if __name__ == "__main__":
 	root = tk.Tk()

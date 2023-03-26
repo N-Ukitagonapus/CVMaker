@@ -11,14 +11,14 @@ class CareerHistoryData:
 		self.description_project_overview = ""	#プロジェクト概要
 		self.description_system_overview = ""		#システム概要
 		self.description_work = []							#作業概要
-		self.development_srv = []  							#開発環境-サーバ
-		self.development_os = []  							#開発環境-サーバ		
-		self.development_db = []  							#開発環境-サーバ
-		self.development_lang = []  						#開発環境-サーバ
-		self.development_fw = []  							#開発環境-サーバ
-		self.development_mw = []  							#開発環境-サーバ
-		self.development_tools = []  						#開発環境-サーバ
-		self.development_pkg = []  							#開発環境-パッケージ
+		self.development_srv ={"srv":[] #開発環境・サーバ
+		,"os" : [] #開発環境・OS
+		,"db" : [] #開発環境・DB
+		,"lang" : [] #開発環境・言語
+		,"fw" : [] #開発環境・フレームワーク
+		,"mw" : [] #開発環境・ミドルウェア
+		,"tools" : [] #開発環境・ツール
+		,"pkg":[]} #開発環境・パッケージ
 		self.tasks = []													#作業内容
 		self.scale = ""													#開発規模
 		self.position = ""											#職位

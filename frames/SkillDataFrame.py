@@ -4,7 +4,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
-
+from tkcalendar import DateEntry
 from constants.const import ENV_GENRE
 
 class SkillDataFrame(tk.Frame):
@@ -15,14 +15,17 @@ class SkillDataFrame(tk.Frame):
 		self.first_line=tk.Frame(self.ret)
   
 		#フレーム・ラベル定義
-		self.label_expr = tk.Label(self.first_line,text="業界経験")
-		self.label_expr_yr = tk.Label(self.first_line,text="年")
-		self.label_expr_mth = tk.Label(self.first_line,text="月")
+		self.label_expr = tk.Label(self.first_line,text="業界経験開始年月")
+		self.label_absense = tk.Label(self.first_line,text="休職期間")
+		self.label_absense_yr = tk.Label(self.first_line,text="年")
+		self.label_absense_mth = tk.Label(self.first_line,text="月")
   
-		#業界経験-年
-		self.text_expr_year = ttk.Entry(self.first_line, width=5)
-		#業界経験-月
-		self.select_expr_month = ttk.Combobox(self.first_line,width=3,state="readonly",justify="center",value=[i for i in range(1,13)])
+		#業界経験開始年月
+		self.expr_start = DateEntry(self.first_line)
+		#休職期間-年
+		self.text_absense_year = ttk.Entry(self.first_line, width=5)
+		#休職期間-月
+		self.select_absense_month = ttk.Combobox(self.first_line,width=3,state="readonly",justify="center",value=[i for i in range(1,13)])
   	#読込ボタン
 		self.btn_load = tk.Button(self.first_line,width=5,text="読込")
 		#保存ボタン
@@ -30,10 +33,12 @@ class SkillDataFrame(tk.Frame):
 
 		#組立
 		self.label_expr.pack(side=tk.LEFT,padx=5)
-		self.text_expr_year.pack(side=tk.LEFT,padx=5)
-		self.label_expr_yr.pack(side=tk.LEFT,padx=5)
-		self.select_expr_month.pack(side=tk.LEFT,padx=5)
-		self.label_expr_mth.pack(side=tk.LEFT,padx=5)
+		self.expr_start.pack(side=tk.LEFT,padx=5)
+		self.label_absense.pack(side=tk.LEFT,padx=5)
+		self.text_absense_year.pack(side=tk.LEFT,padx=5)
+		self.label_absense_yr.pack(side=tk.LEFT,padx=5)
+		self.select_absense_month.pack(side=tk.LEFT,padx=5)
+		self.label_absense_mth.pack(side=tk.LEFT,padx=5)
 		self.btn_save.pack(side=tk.RIGHT,padx=10)
 		self.btn_load.pack(side=tk.RIGHT,padx=10)
 		self.first_line.pack(side=tk.TOP,fill=tk.X,pady=5)
@@ -71,21 +76,14 @@ class SkillDataFrame(tk.Frame):
 		self.fourth_line=tk.Frame(self.ret)
 
 		#フレーム・ラベル定義
-		self.label_environments = tk.Label(self.fourth_line,text="使用経験")
-		self.label_env_genre = []
+		self.label_environments = tk.Label(self.fourth_line,text="使用経験\n(業務外)")
 
 		#使用経験
-		self.env_expr = []
-		for env in ENV_GENRE:
-			self.label_env_genre.append(tk.Label(self.fourth_line,text=env))
-			self.env_expr.append(scrolledtext.ScrolledText(self.fourth_line,wrap=tk.WORD,width=30,height=3))
+		self.btn_env_edit = tk.Button(self.fourth_line,width=5,text="編集")
 
 		#組立
-		self.label_environments.grid(row=0,column=0,padx=5,pady=2)
-		for i in range(len(ENV_GENRE)):
-			self.label_env_genre[i].grid(row=0,column=i+1,padx=2)
-			self.env_expr[i].grid(row=1,column=i+1,padx=2)
-			self.fourth_line.grid_columnconfigure(i+1, weight=1)
+		self.label_environments.pack(side=tk.LEFT,padx=5)
+		self.btn_env_edit.pack(side=tk.LEFT,padx=5)
 		self.fourth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 
 		#5行目
@@ -100,7 +98,7 @@ class SkillDataFrame(tk.Frame):
 		self.label_pr.grid(row=0,column=0,padx=5,pady=5)
 		self.text_pr.grid(row=1,column=1,padx=5,sticky=tk.EW)
 		self.fifth_line.grid_columnconfigure(1, weight=1)
-		self.fifth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
+		self.fifth_line.pack(side=tk.TOP,fill=tk.X,pady=5)
 
 	def pack(self):
 		self.ret.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
