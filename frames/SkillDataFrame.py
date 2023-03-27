@@ -5,7 +5,6 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
 from tkcalendar import DateEntry
-from constants.const import ENV_GENRE
 
 class SkillDataFrame(tk.Frame):
 	def __init__(self, target):
@@ -21,11 +20,11 @@ class SkillDataFrame(tk.Frame):
 		self.label_absense_mth = tk.Label(self.first_line,text="月")
   
 		#業界経験開始年月
-		self.expr_start = DateEntry(self.first_line)
+		self.expr_start = DateEntry(self.first_line,day=1)
 		#休職期間-年
 		self.text_absense_year = ttk.Entry(self.first_line, width=5)
 		#休職期間-月
-		self.select_absense_month = ttk.Combobox(self.first_line,width=3,state="readonly",justify="center",value=[i for i in range(1,13)])
+		self.select_absense_month = ttk.Combobox(self.first_line,width=3,state="readonly",justify="center",value=[i for i in range(0,12)])
   	#読込ボタン
 		self.btn_load = ttk.Button(self.first_line,width=5,text="読込")
 		#保存ボタン
@@ -61,44 +60,34 @@ class SkillDataFrame(tk.Frame):
 
 		#フレーム・ラベル定義
 		self.label_qualifications = tk.Label(self.third_line,text="取得資格")
-		self.label_kaigyokugiri = tk.Label(self.third_line,text="※複数ある場合は改行で区切ってください。")
+		self.label_environments = tk.Label(self.third_line,text="使用経験\n(業務外)")
+  
 		#取得資格
-		self.text_qualifications  = scrolledtext.ScrolledText(self.third_line,wrap=tk.WORD,width=80,height=3)  
+		self.btn_qual_edit = ttk.Button(self.third_line,width=5,text="編集")  
 
+		#使用経験
+		self.btn_env_edit = ttk.Button(self.third_line,width=5,text="編集")
+  
 		#組立
-		self.label_qualifications.grid(row=0,column=0,padx=5,pady=5)
-		self.label_kaigyokugiri.grid(row=0,column=1,padx=5,pady=5)
-		self.text_qualifications.grid(row=1,column=1,padx=5,sticky=tk.EW)
-		self.third_line.grid_columnconfigure(1, weight=1)
-		self.third_line.pack(side=tk.TOP,fill=tk.X,pady=5)
-		
-    #4行目
+		self.label_qualifications.pack(side=tk.LEFT,padx=5)
+		self.btn_qual_edit.pack(side=tk.LEFT,padx=5)
+		self.label_environments.pack(side=tk.LEFT,padx=5)
+		self.btn_env_edit.pack(side=tk.LEFT,padx=5)
+		self.third_line.pack(side=tk.TOP,fill=tk.X,pady=2)
+
+		#4行目
 		self.fourth_line=tk.Frame(self.ret)
 
 		#フレーム・ラベル定義
-		self.label_environments = tk.Label(self.fourth_line,text="使用経験\n(業務外)")
-
-		#使用経験
-		self.btn_env_edit = ttk.Button(self.fourth_line,width=5,text="編集")
-
-		#組立
-		self.label_environments.pack(side=tk.LEFT,padx=5)
-		self.btn_env_edit.pack(side=tk.LEFT,padx=5)
-		self.fourth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
-
-		#5行目
-		self.fifth_line=tk.Frame(self.ret)
-
-		#フレーム・ラベル定義
-		self.label_pr = tk.Label(self.fifth_line,text="自己PR")
+		self.label_pr = tk.Label(self.fourth_line,text="自己PR")
 		#自己PR
-		self.text_pr  = scrolledtext.ScrolledText(self.fifth_line,wrap=tk.WORD,width=80,height=5)  
+		self.text_pr  = scrolledtext.ScrolledText(self.fourth_line,wrap=tk.WORD,width=80,height=5)  
 
 		#組立
 		self.label_pr.grid(row=0,column=0,padx=5,pady=5)
 		self.text_pr.grid(row=1,column=1,padx=5,sticky=tk.EW)
-		self.fifth_line.grid_columnconfigure(1, weight=1)
-		self.fifth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
+		self.fourth_line.grid_columnconfigure(1, weight=1)
+		self.fourth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 
 	def pack(self):
 		self.ret.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
