@@ -2,7 +2,8 @@ import datetime
 import tkinter as tk
 from tkinter import ttk
 from tkcalendar import DateEntry
-from constants.const import POSITIONS
+from tkinter import scrolledtext
+from constants.const import POSITIONS, TASKS
 from utils.DatetimeUtils import DatetimeUtils as dateutil
 class CareerHistoryFrame(tk.Frame):
 	def __init__(self, target):
@@ -109,8 +110,8 @@ class CareerHistoryFrame(tk.Frame):
 		self.label_sys_ov = tk.Label(self.third_line,text="システム概要") 
 		self.label_disc_work = tk.Label(self.third_line,text="作業概要\n(カンマ区切り)") 
 
-		self.text_proj_ov = tk.Text(self.third_line,wrap=tk.WORD,height=2) 
-		self.text_sys_ov = tk.Text(self.third_line,wrap=tk.WORD,height=2)
+		self.text_proj_ov = scrolledtext.ScrolledText(self.third_line,wrap=tk.WORD,width=80,height=3)  
+		self.text_sys_ov = scrolledtext.ScrolledText(self.third_line,wrap=tk.WORD,width=80,height=3)  
 		self.text_disc_work = tk.Text(self.third_line,wrap=tk.WORD,height=2)
   
 		#組立
@@ -121,7 +122,7 @@ class CareerHistoryFrame(tk.Frame):
 		self.label_disc_work.grid(row=2,column=0,padx=5)
 		self.text_disc_work.grid(row=2,column=1,padx=5,sticky=tk.NSEW)
 		self.third_line.grid_columnconfigure(1, weight=1)
-		self.third_line.pack(side=tk.TOP,fill=tk.X)
+		self.third_line.pack(side=tk.TOP,expand=True,fill=tk.X)
 
 		#4行目
 		self.fourth_line = tk.Frame(self.frame_main)
@@ -155,6 +156,33 @@ class CareerHistoryFrame(tk.Frame):
 		self.label_members_total.pack(side=tk.LEFT,padx=5)
 		self.chk_internal_leader.pack(side=tk.LEFT,padx=5)
 		self.fourth_line.pack(side=tk.TOP,fill=tk.X)
-                               
+
+		#5行目
+		self.fifth_line = tk.Frame(self.frame_main)
+  	#フレーム・ラベル定義
+		self.label_task = tk.Label(self.fifth_line,text="作業内容")
+		self.label_task.grid(row=0,column=0,rowspan=2,padx=5)
+
+		#作業内容
+		self.flg_tasks={}
+		self.chk_tasks={}
+		task_list=list(TASKS.items())
+		for i in range(len(task_list)):
+			self.flg_tasks[task_list[i][0]] = tk.BooleanVar(value = False)
+			self.chk_tasks[task_list[i][0]] = tk.Checkbutton(self.fifth_line,text=task_list[i][1],variable=self.flg_tasks[task_list[i][0]])
+			self.chk_tasks[task_list[i][0]].grid(row=i//7,column=(i%7)+1,padx=5,sticky=tk.W)
+
+		#作業内容その他
+		self.text_tasks_etc = ttk.Entry(self.fifth_line,width=16,state="disabled") 
+		self.text_tasks_etc.grid(row=1,column=8,padx=5,sticky=tk.W)
+
+		self.fifth_line.pack(side=tk.TOP,fill=tk.X)
+
+		self.control_button()
+
+	#ボタンコントロール
+	def control_button():
+		pass
+
 	def pack(self):
 		self.ret.pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=20,pady=5)
