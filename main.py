@@ -12,8 +12,6 @@ class Application(tk.Frame):
 
 	def __init__(self, master = None):
 		super().__init__(master)
-
-		self.data = SkillSheetDataStructure()
   
 		#ウィンドウ設定
 		self.master.title("スキルシート生成ソフト")

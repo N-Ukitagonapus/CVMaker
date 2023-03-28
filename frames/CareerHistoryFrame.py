@@ -4,7 +4,8 @@ from tkinter import ttk
 from tkcalendar import DateEntry
 from tkinter import scrolledtext
 from constants.const import POSITIONS, TASKS
-from utils.DatetimeUtils import DatetimeUtils as dateutil
+from utils.Utilities import Utilities as util
+from tkinter import messagebox as msg
 class CareerHistoryFrame(tk.Frame):
 	def __init__(self, target):
 		self.ret=tk.LabelFrame(target,relief=tk.RAISED,text = "職務経歴")
@@ -75,7 +76,7 @@ class CareerHistoryFrame(tk.Frame):
     
 		#業務期間
 		self.expr_start = DateEntry(self.first_line,day=1)
-		self.expr_end = DateEntry(self.first_line,day=dateutil.get_last_date(datetime.date.today()).day)
+		self.expr_end = DateEntry(self.first_line,day=util.get_last_date(datetime.date.today()).day)
 
 		#終了フラグ
 		self.flg_bus_end = tk.BooleanVar(value = False)
@@ -178,11 +179,12 @@ class CareerHistoryFrame(tk.Frame):
 
 		self.fifth_line.pack(side=tk.TOP,fill=tk.X)
 
-		self.control_button()
+		self.input_control()
 
 	#ボタンコントロール
-	def control_button():
-		pass
+	def input_control(self):
+		self.btn_load["command"] = lambda: msg.showinfo("Message", "Load Button Has been pushed.")
+		self.btn_save["command"] = lambda: msg.showinfo("Message", "Save Button Has been pushed.")
 
 	def pack(self):
 		self.ret.pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=20,pady=5)

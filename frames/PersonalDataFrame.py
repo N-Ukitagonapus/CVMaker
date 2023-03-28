@@ -104,9 +104,12 @@ class PersonalDataFrame(tk.Frame):
 		self.text_academic.pack(side=tk.LEFT,padx=5)
 		self.fourth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 
+		self.input_control()
+
+	#ボタンコントロール
+	def input_control(self):
 		self.btn_load["command"] = lambda: msg.showinfo("Message", "Load Button Has been pushed.")
 		self.btn_save["command"] = lambda: msg.showinfo("Message", "Save Button Has been pushed.")
-
-
+  
 	def pack(self):
 		self.ret.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
