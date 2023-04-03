@@ -25,7 +25,8 @@ class PersonalDataFrame(tk.Frame):
 		#バリデーション定義
 		is_numeric = target.register(validation.is_numeric)
 		validate_romaji = target.register(validation.validate_romaji)
-
+		length_limit = target.register(validation.length_limit)
+  
 		self.ret=tk.LabelFrame(target,relief=tk.RAISED,text = "個人基本情報")
 		#1行目
 		self.first_line=tk.Frame(self.ret)
@@ -49,19 +50,23 @@ class PersonalDataFrame(tk.Frame):
 		self.label_shimei_romaji = tk.Label(self.second_line,text="氏名(ローマ字)")
 		self.label_birthday = tk.Label(self.second_line,text="生年月日")
 		##名前(漢字)
-		self.text_shi_kanji = ttk.Entry(self.second_line, width=20)
-		self.text_mei_kanji = ttk.Entry(self.second_line, width=20)
+		self.text_shi_kanji = ttk.Entry(self.second_line, width=20,
+				  validatecommand =(length_limit, '%P', 10),
+					validate="key")
+		self.text_mei_kanji = ttk.Entry(self.second_line, width=20,
+				  validatecommand =(length_limit, '%P', 10),
+					validate="key")
 		##名前(ローマ字)
 		self.text_shi_romaji = ttk.Entry(self.second_line, width=20,
 				  validatecommand =(validate_romaji, '%P', 15),
-					validate="focusout")
+					validate="key")
 		self.text_mei_romaji = ttk.Entry(self.second_line, width=20,
 				  validatecommand =(validate_romaji, '%P', 15),
-					validate="focusout")
+					validate="key")
  		##名前(性別)
 		self.gender_val=StringVar()
-		self.gender_male = ttk.Radiobutton(self.second_line,text="男",value=1,variable=self.gender_val)
-		self.gender_female = ttk.Radiobutton(self.second_line,text="女",value=2,variable=self.gender_val)
+		self.gender_male = ttk.Radiobutton(self.second_line,text="男",value="男",variable=self.gender_val)
+		self.gender_female = ttk.Radiobutton(self.second_line,text="女",value="女",variable=self.gender_val)
 		##生年月日
 		self.birthday_entry = DateEntry(self.second_line)
 		#2行目ここまで
