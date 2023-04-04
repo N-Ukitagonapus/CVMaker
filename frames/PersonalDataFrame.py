@@ -106,6 +106,7 @@ class PersonalDataFrame(tk.Frame):
 	def assembly(self):
 			#1行目
 		self.label_shain_num.pack(side=tk.LEFT)
+		util.mark_required(self.frame_shain_num,self.label_shain_num)
 		self.text_shain_num.pack(side=tk.LEFT,padx=10)
 		self.frame_shain_num.pack(side=tk.LEFT)
 		self.btn_save.pack(side=tk.RIGHT,padx=10)
@@ -114,26 +115,32 @@ class PersonalDataFrame(tk.Frame):
 
 		#2行目
 		self.label_shimei_kanji.pack(side=tk.LEFT)
+		util.mark_required(self.second_line,self.label_shimei_kanji)
 		self.text_shi_kanji.pack(side=tk.LEFT,padx=5)
 		self.text_mei_kanji.pack(side=tk.LEFT,padx=5)
 		self.label_shimei_romaji.pack(side=tk.LEFT)
+		util.mark_required(self.second_line,self.label_shimei_romaji)
 		self.text_shi_romaji.pack(side=tk.LEFT,padx=5)
 		self.text_mei_romaji.pack(side=tk.LEFT,padx=5)
 		self.gender_male.pack(side=tk.LEFT,padx=5)
 		self.gender_female.pack(side=tk.LEFT,padx=5)
 		self.label_birthday.pack(side=tk.LEFT,padx=5)
+		util.mark_required(self.second_line,self.label_birthday)
 		self.birthday_entry.pack(side=tk.LEFT,padx=5)
 		self.second_line.pack(side=tk.TOP,fill=tk.X,pady=2)
   
 		#3行目
 		self.label_address.pack(side=tk.LEFT)
+		util.mark_required(self.third_line,self.label_address)
 		self.text_address.pack(side=tk.LEFT,padx=5)
 		self.label_station.pack(side=tk.LEFT,padx=5)
+		util.mark_required(self.third_line,self.label_station)
 		self.text_station.pack(side=tk.LEFT,padx=5)
 		self.third_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 
 		#4行目
 		self.label_academic.pack(side=tk.LEFT)
+		util.mark_required(self.fourth_line,self.label_academic)
 		self.text_academic.pack(side=tk.LEFT,padx=5)
 		self.fourth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 
