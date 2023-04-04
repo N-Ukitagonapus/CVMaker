@@ -5,6 +5,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
 from tkcalendar import DateEntry
+from constants.const import ENV_GENRE
 from utils.Utilities import Utilities as util
 from tkinter import messagebox as msg
 
@@ -104,50 +105,18 @@ class SkillDataFrame(tk.Frame):
 		self.btn_qual_edit["command"] = lambda:self.edit_qualifications(self.ret)
 		self.btn_env_edit["command"] = lambda:self.edit_environments(self.ret)
 
+	#取得資格編集サブウィンドウ
 	def edit_qualifications(self,target):
 		subwindow = tk.Toplevel(target)
 		subwindow.title("資格情報編集")
 		subwindow.geometry("320x320")
+		subwindow.resizable(False,False)
 		subwindow.grab_set()
-		qual_frame_title = tk.Frame(subwindow,borderwidth=5,relief="groove")
-		qual_label_title = tk.Label(qual_frame_title, text="取得資格編集", font=("Meiryo UI",14,"bold"))
-		qual_label_title.pack(side=tk.TOP,padx=10,pady=5)
-		qual_frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
+		frame_title = tk.Frame(subwindow,borderwidth=5,relief="groove")
+		label_title = tk.Label(frame_title, text="取得資格編集", font=("Meiryo UI",14,"bold"))
+		label_title.pack(side=tk.TOP,padx=10,pady=5)
+		frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
 
-		qual_btn_frame = tk.Frame(subwindow,borderwidth=2,relief="groove")
-		qual_btn_ok = ttk.Button(qual_btn_frame,text="OK")
-		qual_btn_cancel = ttk.Button(qual_btn_frame,text="キャンセル")
-		qual_btn_ok.pack(side=tk.LEFT,padx=10,pady=5)
-		qual_btn_cancel.pack(side=tk.RIGHT,padx=10,pady=5)
-		qual_btn_frame.pack(side=tk.BOTTOM,padx=20,pady=5)
-
-		qual_label_desc= tk.Label(subwindow, text="複数ある場合は改行区切りで入力してください。")
-		qual_label_desc.pack(side=tk.TOP,pady=5)
-		qual_text= scrolledtext.ScrolledText(subwindow,wrap=tk.WORD)
-		qual_text.insert('1.0',"\n".join(self.data.qualifications))
-		qual_text.pack(side=tk.TOP,fill=tk.X,expand=True,padx=20,pady=5)
-
-		qual_btn_ok["command"] = lambda: update_qual()
-		qual_btn_cancel["command"] = lambda: cancel_qual()
-
-		def update_qual():
-			self.data.qualifications = util.tidy_list((qual_text.get('1.0',qual_text.index(tk.END))).split("\n"))
-			subwindow.destroy()
-
-		def cancel_qual():
-			subwindow.destroy()
-
-	def edit_environments(self,target):
-		subwindow = tk.Toplevel(target)
-		subwindow.title("使用経験編集")
-		subwindow.geometry("640x320")
-		subwindow.grab_set()
-  
-		qual_frame_title = tk.Frame(subwindow,borderwidth=5,relief="groove")
-		qual_label_title = tk.Label(qual_frame_title, text="使用経験編集", font=("Meiryo UI",14,"bold"))
-		qual_label_title.pack(side=tk.TOP,padx=10,pady=5)
-		qual_frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
-  
 		btn_frame = tk.Frame(subwindow,borderwidth=2,relief="groove")
 		btn_ok = ttk.Button(btn_frame,text="OK")
 		btn_cancel = ttk.Button(btn_frame,text="キャンセル")
@@ -157,6 +126,66 @@ class SkillDataFrame(tk.Frame):
 
 		label_desc= tk.Label(subwindow, text="複数ある場合は改行区切りで入力してください。")
 		label_desc.pack(side=tk.TOP,pady=5)
+		text= scrolledtext.ScrolledText(subwindow,wrap=tk.WORD)
+		text.insert('1.0',"\n".join(self.data.qualifications))
+		text.pack(side=tk.TOP,fill=tk.X,expand=True,padx=20,pady=5)
+
+		btn_ok["command"] = lambda: update()
+		btn_cancel["command"] = lambda: cancel()
+
+		def update():
+			self.data.qualifications = util.tidy_list((text.get('1.0',text.index(tk.END))).split("\n"))
+			subwindow.destroy()
+
+		def cancel():
+			subwindow.destroy()
+
+	#使用経験環境編集
+	def edit_environments(self,target):
+		subwindow = tk.Toplevel(target)
+		subwindow.title("使用経験編集")
+		subwindow.geometry("1000x320")
+		subwindow.resizable(False,False)
+		subwindow.grab_set()
   
+		frame_title = tk.Frame(subwindow,borderwidth=5,relief="groove")
+		label_title = tk.Label(frame_title, text="使用経験編集", font=("Meiryo UI",14,"bold"))
+		label_title.pack(side=tk.TOP,padx=10,pady=5)
+		frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
+  
+		btn_frame = tk.Frame(subwindow,borderwidth=2,relief="groove")
+		btn_ok = ttk.Button(btn_frame,text="OK")
+		btn_cancel = ttk.Button(btn_frame,text="キャンセル")
+		btn_ok.pack(side=tk.LEFT,padx=10,pady=5)
+		btn_cancel.pack(side=tk.RIGHT,padx=10,pady=5)
+		btn_frame.pack(side=tk.BOTTOM,padx=20,pady=5)
+
+		label_desc = tk.Label(subwindow, text="複数ある場合は改行区切りで入力してください。")
+		label_desc.pack(side=tk.TOP,pady=5)
+
+		frame_edit = tk.Frame(subwindow)
+		envs = list(ENV_GENRE.items())
+		label_envs={}
+		text_envs={}
+		for i in range(len(envs)):
+			label_envs[envs[i][0]]=tk.Label(frame_edit, text=envs[i][1])
+			text_envs[envs[i][0]]=scrolledtext.ScrolledText(frame_edit,wrap=tk.WORD)
+			text_envs[envs[i][0]].insert('1.0',"\n".join(self.data.expr_env[envs[i][0]]))
+			label_envs[envs[i][0]].grid(row=0,column=i,padx=2,pady=5)
+			text_envs[envs[i][0]].grid(row=1,column=i,padx=2,pady=5)
+			frame_edit.grid_columnconfigure(i, weight=1)
+		frame_edit.grid_rowconfigure(1, weight=1)
+		frame_edit.pack(side=tk.TOP,expand=True,padx=10,pady=5)
+		btn_ok["command"] = lambda: update()
+		btn_cancel["command"] = lambda: cancel()
+
+		def update():
+			for key in text_envs.keys():
+				self.data.expr_env[key] = util.tidy_list((text_envs[key].get('1.0',text_envs[key].index(tk.END))).split("\n"))
+			subwindow.destroy()
+
+		def cancel():
+			subwindow.destroy()
+
 	def pack(self):
 		self.ret.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)

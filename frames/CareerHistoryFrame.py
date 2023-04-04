@@ -1,16 +1,21 @@
 import datetime
 import tkinter as tk
-from tkinter import ttk
+from tkinter import IntVar, StringVar, ttk
 from tkcalendar import DateEntry
 from tkinter import scrolledtext
-from constants.const import POSITIONS, TASKS
+from constants.const import ENV_GENRE, POSITIONS, TASKS
+from data_structure.CareerHistoryData import CareerHistoryData
 from utils.Utilities import Utilities as util
 from tkinter import messagebox as msg
 class CareerHistoryFrame(tk.Frame):
 	def __init__(self, target):
+
+		self.datas=[]
+		self.datas.append(CareerHistoryData())
+
 		self.ret=tk.LabelFrame(target,relief=tk.RAISED,text = "職務経歴")
-		self.datalength=3
-		self.currentnum=1
+		self.data_total=1
+		self.data_curr=1
   
 		#トップフレーム
 		self.top_frame=tk.Frame(self.ret)
@@ -37,14 +42,14 @@ class CareerHistoryFrame(tk.Frame):
 	#ヒストリナンバーフレーム
 		self.frame_control = tk.Frame(self.frame_main)
 		#進む・戻るボタン
-		self.button_upper = ttk.Button(self.frame_control,text="▲前")
-		self.button_lower = ttk.Button(self.frame_control,text="▼次")
+		self.button_prev = ttk.Button(self.frame_control,text="▲前")
+		self.button_next = ttk.Button(self.frame_control,text="▼次")
 
 		#ページ送りフレーム
 		self.subframe_page = tk.Frame(self.frame_control)
-		self.curr_page = ttk.Combobox(self.subframe_page,width=3,state="readonly",justify="center",value=[i for i in range(self.currentnum,self.datalength + 1)])
+		self.curr_page = ttk.Combobox(self.subframe_page,width=3,state="readonly",justify="center",value=[i for i in range(1,self.data_total+1)])
 		self.curr_page.set(1)
-		self.total_page = tk.Label(self.subframe_page,text=self.datalength)
+		self.total_page = tk.Label(self.subframe_page,text=self.data_total)
 		self.label_slash_page = tk.Label(self.subframe_page,text="／")
 
 		#追加・削除ボタンのサブフレーム
@@ -61,9 +66,9 @@ class CareerHistoryFrame(tk.Frame):
 		self.label_slash_page.pack(side=tk.TOP)
 		self.total_page.pack(side=tk.TOP)
 
-		self.button_upper.pack(side=tk.TOP,expand=True,fill=tk.Y)
+		self.button_prev.pack(side=tk.TOP,expand=True,fill=tk.Y)
 		self.subframe_page.pack(side=tk.TOP)
-		self.button_lower.pack(side=tk.TOP,expand=True,fill=tk.Y)
+		self.button_next.pack(side=tk.TOP,expand=True,fill=tk.Y)
 
 		self.frame_control.pack(side=tk.RIGHT,padx=2,fill=tk.Y)
 		self.frame_main.pack(side=tk.TOP,expand=True,fill=tk.BOTH,padx=2,pady=2)   
@@ -183,8 +188,86 @@ class CareerHistoryFrame(tk.Frame):
 
 	#ボタンコントロール
 	def input_control(self):
+		def prev():
+			self.data_curr -= 1 if self.data_curr > 1 else 0
+			self.curr_page.set(self.data_curr)
+		def next():
+			self.data_curr += 1 if self.data_curr < self.data_total else 0
+			self.curr_page.set(self.data_curr)
+		def add_data():
+			self.data_total += 1
+			update_datanum()
+		def del_data():
+			if self.data_total > 1 :
+				self.data_total -= 1
+				update_datanum()
+				if self.data_curr > self.data_total:
+					self.data_curr -= 1
+					self.curr_page.set(self.data_curr)
+			else:
+				msg.showinfo("もう消せないよ！", "これ以上データを消せません。")
+		def update_datanum():
+			self.total_page["text"] = self.data_total
+			self.curr_page["value"]=[i for i in range(1,self.data_total+1)]
+		def setNumber(event):
+			self.data_curr = int(event.widget.get())
+
 		self.btn_load["command"] = lambda: msg.showinfo("Message", "Load Button Has been pushed.")
 		self.btn_save["command"] = lambda: msg.showinfo("Message", "Save Button Has been pushed.")
+		self.button_prev["command"] = lambda: prev()
+		self.button_next["command"] = lambda: next()
+		self.button_add["command"] = lambda: add_data()
+		self.button_del["command"] = lambda: del_data()
+		self.btn_env_edit["command"] = lambda:self.edit_environments(self.ret)
+		self.curr_page.bind('<<ComboboxSelected>>', setNumber)
+
+
+	#開発環境編集
+	def edit_environments(self,target):
+		subwindow = tk.Toplevel(target)
+		subwindow.title("開発環境編集")
+		subwindow.geometry("1000x320")
+		subwindow.resizable(False,False)
+		subwindow.grab_set()
+  
+		frame_title = tk.Frame(subwindow,borderwidth=5,relief="groove")
+		label_title = tk.Label(frame_title, text="開発環境編集", font=("Meiryo UI",14,"bold"))
+		label_title.pack(side=tk.TOP,padx=10,pady=5)
+		frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
+  
+		btn_frame = tk.Frame(subwindow,borderwidth=2,relief="groove")
+		btn_ok = ttk.Button(btn_frame,text="OK")
+		btn_cancel = ttk.Button(btn_frame,text="キャンセル")
+		btn_ok.pack(side=tk.LEFT,padx=10,pady=5)
+		btn_cancel.pack(side=tk.RIGHT,padx=10,pady=5)
+		btn_frame.pack(side=tk.BOTTOM,padx=20,pady=5)
+
+		label_desc = tk.Label(subwindow, text="複数ある場合は改行区切りで入力してください。")
+		label_desc.pack(side=tk.TOP,pady=5)
+
+		frame_edit = tk.Frame(subwindow)
+		envs = list(ENV_GENRE.items())
+		label_envs={}
+		text_envs={}
+		for i in range(len(envs)):
+			label_envs[envs[i][0]]=tk.Label(frame_edit, text=envs[i][1])
+			text_envs[envs[i][0]]=scrolledtext.ScrolledText(frame_edit,wrap=tk.WORD)
+			text_envs[envs[i][0]].insert('1.0',"\n".join(self.datas[0].dev_env[envs[i][0]]))
+			label_envs[envs[i][0]].grid(row=0,column=i,padx=2,pady=5)
+			text_envs[envs[i][0]].grid(row=1,column=i,padx=2,pady=5)
+			frame_edit.grid_columnconfigure(i, weight=1)
+		frame_edit.grid_rowconfigure(1, weight=1)
+		frame_edit.pack(side=tk.TOP,expand=True,padx=10,pady=5)
+		btn_ok["command"] = lambda: update()
+		btn_cancel["command"] = lambda: cancel()
+
+		def update():
+			for key in text_envs.keys():
+				self.datas[0].dev_env[key] = util.tidy_list((text_envs[key].get('1.0',text_envs[key].index(tk.END))).split("\n"))
+			subwindow.destroy()
+
+		def cancel():
+			subwindow.destroy()
 
 	def pack(self):
 		self.ret.pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=20,pady=5)

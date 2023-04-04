@@ -1,9 +1,5 @@
-from functools import partial
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox as msg
-import constants.const
-from data_structure.SkillSheetDataStructure import SkillSheetDataStructure
 from frames.PersonalDataFrame import PersonalDataFrame
 from frames.SkillDataFrame import SkillDataFrame
 from frames.CareerHistoryFrame import CareerHistoryFrame
