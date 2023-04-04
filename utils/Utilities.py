@@ -1,6 +1,8 @@
 import calendar
 import datetime
 from monthdelta import monthmod 
+import tkinter as tk
+
 
 class Utilities:
 
@@ -20,3 +22,7 @@ class Utilities:
 	#リスト整頓(空白除去、重複削除)
 	def tidy_list(list):
 		return [s for s in list if s != '']
+
+	#必須マーク付き
+	def mark_required(tgt,lbl):
+		tk.Label(tgt,text="(必須)",font=("Meiryo UI",6,"bold"),foreground='red').pack(side=tk.LEFT,after=lbl)

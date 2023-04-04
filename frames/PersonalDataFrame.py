@@ -25,7 +25,8 @@ class PersonalDataFrame(tk.Frame):
 		#バリデーション定義
 		is_numeric = target.register(validation.is_numeric)
 		validate_romaji = target.register(validation.validate_romaji)
-
+		length_limit = target.register(validation.length_limit)
+  
 		self.ret=tk.LabelFrame(target,relief=tk.RAISED,text = "個人基本情報")
 		#1行目
 		self.first_line=tk.Frame(self.ret)
@@ -49,19 +50,23 @@ class PersonalDataFrame(tk.Frame):
 		self.label_shimei_romaji = tk.Label(self.second_line,text="氏名(ローマ字)")
 		self.label_birthday = tk.Label(self.second_line,text="生年月日")
 		##名前(漢字)
-		self.text_shi_kanji = ttk.Entry(self.second_line, width=20)
-		self.text_mei_kanji = ttk.Entry(self.second_line, width=20)
+		self.text_shi_kanji = ttk.Entry(self.second_line, width=20,
+				  validatecommand =(length_limit, '%P', 10),
+					validate="key")
+		self.text_mei_kanji = ttk.Entry(self.second_line, width=20,
+				  validatecommand =(length_limit, '%P', 10),
+					validate="key")
 		##名前(ローマ字)
 		self.text_shi_romaji = ttk.Entry(self.second_line, width=20,
 				  validatecommand =(validate_romaji, '%P', 15),
-					validate="focusout")
+					validate="key")
 		self.text_mei_romaji = ttk.Entry(self.second_line, width=20,
 				  validatecommand =(validate_romaji, '%P', 15),
-					validate="focusout")
+					validate="key")
  		##名前(性別)
 		self.gender_val=StringVar()
-		self.gender_male = ttk.Radiobutton(self.second_line,text="男",value=1,variable=self.gender_val)
-		self.gender_female = ttk.Radiobutton(self.second_line,text="女",value=2,variable=self.gender_val)
+		self.gender_male = ttk.Radiobutton(self.second_line,text="男",value="男",variable=self.gender_val)
+		self.gender_female = ttk.Radiobutton(self.second_line,text="女",value="女",variable=self.gender_val)
 		##生年月日
 		self.birthday_entry = DateEntry(self.second_line)
 		#2行目ここまで
@@ -101,6 +106,7 @@ class PersonalDataFrame(tk.Frame):
 	def assembly(self):
 			#1行目
 		self.label_shain_num.pack(side=tk.LEFT)
+		util.mark_required(self.frame_shain_num,self.label_shain_num)
 		self.text_shain_num.pack(side=tk.LEFT,padx=10)
 		self.frame_shain_num.pack(side=tk.LEFT)
 		self.btn_save.pack(side=tk.RIGHT,padx=10)
@@ -109,26 +115,32 @@ class PersonalDataFrame(tk.Frame):
 
 		#2行目
 		self.label_shimei_kanji.pack(side=tk.LEFT)
+		util.mark_required(self.second_line,self.label_shimei_kanji)
 		self.text_shi_kanji.pack(side=tk.LEFT,padx=5)
 		self.text_mei_kanji.pack(side=tk.LEFT,padx=5)
 		self.label_shimei_romaji.pack(side=tk.LEFT)
+		util.mark_required(self.second_line,self.label_shimei_romaji)
 		self.text_shi_romaji.pack(side=tk.LEFT,padx=5)
 		self.text_mei_romaji.pack(side=tk.LEFT,padx=5)
 		self.gender_male.pack(side=tk.LEFT,padx=5)
 		self.gender_female.pack(side=tk.LEFT,padx=5)
 		self.label_birthday.pack(side=tk.LEFT,padx=5)
+		util.mark_required(self.second_line,self.label_birthday)
 		self.birthday_entry.pack(side=tk.LEFT,padx=5)
 		self.second_line.pack(side=tk.TOP,fill=tk.X,pady=2)
   
 		#3行目
 		self.label_address.pack(side=tk.LEFT)
+		util.mark_required(self.third_line,self.label_address)
 		self.text_address.pack(side=tk.LEFT,padx=5)
 		self.label_station.pack(side=tk.LEFT,padx=5)
+		util.mark_required(self.third_line,self.label_station)
 		self.text_station.pack(side=tk.LEFT,padx=5)
 		self.third_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 
 		#4行目
 		self.label_academic.pack(side=tk.LEFT)
+		util.mark_required(self.fourth_line,self.label_academic)
 		self.text_academic.pack(side=tk.LEFT,padx=5)
 		self.fourth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 
