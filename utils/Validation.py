@@ -1,7 +1,8 @@
+from datetime import date
 import re
-
-class Validation:
-
+from constants.message import Message as msg
+class DynamicValidation:
+	
   #入力がn文字以内かどうか
 	def length_limit(input, ketasu):
 		return len(input) <= int(ketasu)
@@ -13,3 +14,30 @@ class Validation:
   #入力が英字n桁以内かどうか
 	def validate_romaji(input, ketasu):
 		return re.fullmatch("[a-zA-Z]*", input) and len(input) <= int(ketasu)
+	
+
+class StaticValidation:
+	def is_not_empty(dict, *input):
+		dict["result"] = True
+		dict["msg"] = msg.MSG_OK
+		for read in input:
+			if read == "" or re.fullmatch("\s*", read):
+				dict["result"] = False
+				dict["msg"] = msg.MSG_EMPTY
+				break
+
+	def regex_match(dict, input, regex, msg_param):
+		if re.fullmatch(regex, input):
+			dict["result"] = True
+			dict["msg"] = msg.MSG_OK
+		else:
+			dict["result"] = False
+			dict["msg"] = msg.MSG_INVALID.format(msg_param)
+
+	def date_check(dict, input):
+		if input > date.today():
+			dict["result"] = False
+			dict["msg"] = msg.MSG_DAY_AFTER
+		else:
+			dict["result"] = True
+			dict["msg"] = msg.MSG_OK
