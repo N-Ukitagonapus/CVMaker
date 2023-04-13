@@ -4,15 +4,17 @@
 import datetime
 from tkcalendar import DateEntry
 import tkinter as tk
-from tkinter import StringVar, ttk
+from tkinter import  ttk
 
 from data_structure.PersonalData import PersonalData
-from tkinter import messagebox as msg
+
+from fileio.PersonalDataIO import PersonalDataOutput
 
 from utils.Utilities import Utilities as util
 from utils.Validation import DynamicValidation as dval
 from utils.Validation import StaticValidation as sval
 
+from constants.message import DialogMessage as diag
 class PersonalDataFrame(tk.Frame):
 	def __init__(self, target):
 		self.data=PersonalData()
@@ -139,12 +141,11 @@ class PersonalDataFrame(tk.Frame):
 
 	#入力コントロール
 	def input_control(self,target):
-		self.btn_load["command"] = lambda: msg.showinfo("Message", "Load Button Has been pushed.")
+		self.btn_load["command"] = lambda: util.msgbox_showmsg(diag.DIALOG_TEST)
 		self.btn_save["command"] = lambda: self.data_confirm(target)
 
 	#データ出力
 	def data_confirm(self,target):
-
 
 		def final_validation(input_data: PersonalData):
 			input_data.birthday=self.birthday_entry.get_date()
@@ -206,7 +207,22 @@ class PersonalDataFrame(tk.Frame):
 			frame_result[i].grid(row=i,column=1,sticky=tk.EW)
 			tk.Label(frame_name[i],text=results[i][1]["label"]).pack(side=tk.LEFT,padx=3,pady=3)
 			tk.Label(frame_result[i],text=results[i][1]["msg"],fg="#000000" if results[i][1]["result"] == True else "#ff0000").pack(side=tk.LEFT,padx=3,pady=3)
-		frame_main_inner.columnconfigure(index=1, weight=1)	
+		frame_main_inner.columnconfigure(index=1, weight=1)
+
+		button_output["command"] = lambda: output()
+		button_cancel["command"] = lambda: cancel()
+
+		def output():
+			try:
+				PersonalDataOutput(self.data).output()
+			except Exception as e:
+				print(e)
+				util.msgbox_showmsg(diag.DIALOG_OUTPUT_ERROR)
+			finally:
+				subwindow.destroy()
+
+		def cancel():
+			subwindow.destroy()
 
 	# フレーム描写
 	def pack(self):

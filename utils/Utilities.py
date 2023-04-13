@@ -2,7 +2,9 @@ import calendar
 import datetime
 from monthdelta import monthmod 
 import tkinter as tk
+from tkinter import messagebox as msgbox
 
+from constants.message import DialogMessage
 
 class Utilities:
 
@@ -26,3 +28,14 @@ class Utilities:
 	#必須マーク付き
 	def mark_required(tgt,lbl):
 		tk.Label(tgt,text="(必須)",font=("Meiryo UI",6,"bold"),foreground='red').pack(side=tk.LEFT,after=lbl)
+
+	#汎用メッセージ表示
+	def msgbox_showmsg(param: DialogMessage):
+		if param[0] == "info" :
+			msgbox.showinfo(title=param[1],message=param[2])
+		elif param[0] == "warn" :
+			msgbox.showwarning(title=param[1],message=param[2])
+		elif param[0] == "error" :
+			msgbox.showerror(title=param[1],message=param[2])
+		else:
+			msgbox.showerror(title="BIG BONER DOWN THE LANE",message="This is an error message supposed not to be shown.")
