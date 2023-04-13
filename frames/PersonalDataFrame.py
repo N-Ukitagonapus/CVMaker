@@ -213,13 +213,20 @@ class PersonalDataFrame(tk.Frame):
 		button_cancel["command"] = lambda: cancel()
 
 		def output():
+			if total_val == False:
+				if util.msgbox_ask(diag.DIALOG_ASK_FORCE_OUTPUT):
+					do_output()
+			else:
+				do_output()
+
+		def do_output():
 			try:
 				PersonalDataOutput(self.data).output()
 			except Exception as e:
 				print(e)
 				util.msgbox_showmsg(diag.DIALOG_OUTPUT_ERROR)
-			finally:
-				subwindow.destroy()
+	
+			subwindow.destroy()
 
 		def cancel():
 			subwindow.destroy()

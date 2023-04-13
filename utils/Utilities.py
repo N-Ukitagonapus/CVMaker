@@ -39,3 +39,7 @@ class Utilities:
 			msgbox.showerror(title=param[1],message=param[2])
 		else:
 			msgbox.showerror(title="BIG BONER DOWN THE LANE",message="This is an error message supposed not to be shown.")
+
+	#汎用クエスチョンダイアログ
+	def msgbox_ask(param: DialogMessage):
+		return msgbox.askyesno(title=param[1],message=param[2])

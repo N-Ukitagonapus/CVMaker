@@ -27,7 +27,7 @@ class SkillDataFrame(tk.Frame):
 		self.label_absense_mth = tk.Label(self.first_line,text="月")
   
 		#業界経験開始年月
-		self.expr_start = DateEntry(self.first_line,day=1)
+		self.expr_start = DateEntry(self.first_line,day=1,locale='ja_JP',date_pattern='yyyy/mm/dd')
 		#休職期間-年
 		self.text_absense_year = ttk.Entry(self.first_line, width=5)
 		#休職期間-月

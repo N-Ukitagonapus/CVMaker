@@ -80,8 +80,8 @@ class CareerHistoryFrame(tk.Frame):
 		self.label_kara = tk.Label(self.first_line,text="～")
     
 		#業務期間
-		self.expr_start = DateEntry(self.first_line,day=1)
-		self.expr_end = DateEntry(self.first_line,day=util.get_last_date(datetime.date.today()).day)
+		self.expr_start = DateEntry(self.first_line,day=1,locale='ja_JP',date_pattern='yyyy/mm/dd')
+		self.expr_end = DateEntry(self.first_line,day=util.get_last_date(datetime.date.today()).day,locale='ja_JP',date_pattern='yyyy/mm/dd')
 
 		#終了フラグ
 		self.flg_bus_end = tk.BooleanVar(value = False)
