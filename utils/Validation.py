@@ -1,5 +1,6 @@
 from datetime import date
 import re
+from constants.const import VALID_ERR, VALID_OK
 from constants.message import Message as msg
 class DynamicValidation:
 	
@@ -18,26 +19,26 @@ class DynamicValidation:
 
 class StaticValidation:
 	def is_not_empty(dict, *input):
-		dict["result"] = True
+		dict["result"] = VALID_OK
 		dict["msg"] = msg.MSG_OK
 		for read in input:
 			if read == "" or re.fullmatch("\s*", read):
-				dict["result"] = False
+				dict["result"] = VALID_ERR
 				dict["msg"] = msg.MSG_EMPTY
 				break
 
 	def regex_match(dict, input, regex, msg_param):
 		if re.fullmatch(regex, input):
-			dict["result"] = True
+			dict["result"] = VALID_OK
 			dict["msg"] = msg.MSG_OK
 		else:
-			dict["result"] = False
+			dict["result"] = VALID_ERR
 			dict["msg"] = msg.MSG_INVALID.format(msg_param)
 
 	def date_check(dict, input):
 		if input > date.today():
-			dict["result"] = False
+			dict["result"] = VALID_ERR
 			dict["msg"] = msg.MSG_DAY_AFTER
 		else:
-			dict["result"] = True
+			dict["result"] = VALID_OK
 			dict["msg"] = msg.MSG_OK

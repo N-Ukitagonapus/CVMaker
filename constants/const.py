@@ -35,3 +35,7 @@ TASKS = {
 	"OP/MA":"運用・保守",
 	"ETC":"その他"
 }
+
+VALID_OK = "OK"
+VALID_WARN = "WARN"
+VALID_ERR = "ERROR"

@@ -5,6 +5,7 @@ import datetime
 from tkcalendar import DateEntry
 import tkinter as tk
 from tkinter import  ttk
+from constants.const import VALID_ERR, VALID_OK
 
 from data_structure.PersonalData import PersonalData
 
@@ -206,7 +207,7 @@ class PersonalDataFrame(tk.Frame):
 			frame_name[i].grid(row=i,column=0,sticky=tk.EW)
 			frame_result[i].grid(row=i,column=1,sticky=tk.EW)
 			tk.Label(frame_name[i],text=results[i][1]["label"]).pack(side=tk.LEFT,padx=3,pady=3)
-			tk.Label(frame_result[i],text=results[i][1]["msg"],fg="#000000" if results[i][1]["result"] == True else "#ff0000").pack(side=tk.LEFT,padx=3,pady=3)
+			tk.Label(frame_result[i],text=results[i][1]["msg"],fg="#000000" if results[i][1]["result"] == VALID_OK else "#ff0000").pack(side=tk.LEFT,padx=3,pady=3)
 		frame_main_inner.columnconfigure(index=1, weight=1)
 
 		button_output["command"] = lambda: output()
@@ -222,10 +223,10 @@ class PersonalDataFrame(tk.Frame):
 		def do_output():
 			try:
 				PersonalDataOutput(self.data).output()
+				self.rock_items(vals)
 			except Exception as e:
 				print(e)
 				util.msgbox_showmsg(diag.DIALOG_OUTPUT_ERROR)
-	
 			subwindow.destroy()
 
 		def cancel():
@@ -234,3 +235,16 @@ class PersonalDataFrame(tk.Frame):
 	# フレーム描写
 	def pack(self):
 		self.ret.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
+
+	def rock_items(self,res):
+		self.text_shain_num["state"] = tk.DISABLED if res["shain_num"]["result"] != VALID_ERR else tk.NORMAL
+		self.text_shi_kanji["state"] = tk.DISABLED if res["name_kanji"]["result"] != VALID_ERR else tk.NORMAL
+		self.text_mei_kanji["state"] = tk.DISABLED if res["name_kanji"]["result"] != VALID_ERR else tk.NORMAL
+		self.text_shi_romaji["state"] = tk.DISABLED if res["name_romaji"]["result"] != VALID_ERR else tk.NORMAL
+		self.text_mei_romaji["state"] = tk.DISABLED if res["name_romaji"]["result"] != VALID_ERR else tk.NORMAL
+		self.gender_male["state"] = tk.DISABLED if res["gender"]["result"] != VALID_ERR else tk.NORMAL
+		self.gender_female["state"] = tk.DISABLED if res["gender"]["result"] != VALID_ERR else tk.NORMAL
+		self.birthday_entry["state"] = tk.DISABLED if res["birthday"]["result"] != VALID_ERR else tk.NORMAL
+		self.text_address["state"] = tk.DISABLED if res["address"]["result"] != VALID_ERR else tk.NORMAL
+		self.text_station["state"] = tk.DISABLED if res["station"]["result"] != VALID_ERR else tk.NORMAL
+		self.text_academic["state"] = tk.DISABLED if res["gakureki"]["result"] != VALID_ERR else tk.NORMAL
