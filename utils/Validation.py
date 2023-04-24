@@ -1,6 +1,6 @@
-from datetime import date
+from datetime import date, datetime
 import re
-from constants.const import VALID_ERR, VALID_OK
+from constants.const import VALID_ERR, VALID_OK, VALID_WARN
 from constants.message import Message as msg
 class DynamicValidation:
 	
@@ -18,7 +18,7 @@ class DynamicValidation:
 	
 
 class StaticValidation:
-	def is_not_empty(dict, *input):
+	def out_is_not_empty(dict, *input):
 		dict["result"] = VALID_OK
 		dict["msg"] = msg.MSG_OK
 		for read in input:
@@ -27,7 +27,7 @@ class StaticValidation:
 				dict["msg"] = msg.MSG_EMPTY
 				break
 
-	def regex_match(dict, input, regex, msg_param):
+	def out_regex_match(dict, input, regex, msg_param):
 		if re.fullmatch(regex, input):
 			dict["result"] = VALID_OK
 			dict["msg"] = msg.MSG_OK
@@ -35,8 +35,46 @@ class StaticValidation:
 			dict["result"] = VALID_ERR
 			dict["msg"] = msg.MSG_INVALID.format(msg_param)
 
-	def date_check(dict, input):
+	def out_date_check(dict, input):
 		if input > date.today():
+			dict["result"] = VALID_ERR
+			dict["msg"] = msg.MSG_DAY_AFTER
+		else:
+			dict["result"] = VALID_OK
+			dict["msg"] = msg.MSG_OK
+
+	def in_is_not_empty(dict):
+		if dict["value"] is None:
+			dict["result"] = VALID_ERR
+			dict["msg"] = msg.MSG_EMPTY
+		else:
+			dict["result"] = VALID_OK
+			dict["msg"] = msg.MSG_OK
+   
+	def in_regex_match(dict, regex, msg_param):
+		if dict["value"] is None:
+			dict["result"] = VALID_ERR
+			dict["msg"] = msg.MSG_EMPTY
+		elif re.fullmatch(regex, dict["value"]):
+			dict["result"] = VALID_OK
+			dict["msg"] = msg.MSG_OK
+		else:
+			dict["result"] = VALID_ERR
+			dict["msg"] = msg.MSG_INVALID.format(msg_param)
+
+	def in_maxlength_check(dict, maxlength):
+		if dict["value"] is None:
+			dict["result"] = VALID_ERR
+			dict["msg"] = msg.MSG_EMPTY
+		elif len(dict["value"]) > maxlength:
+			dict["result"] = VALID_WARN
+			dict["msg"] = msg.MSG_WARN_LENGTH
+
+	def in_date_check(dict):
+		if dict["value"] is None:
+			dict["result"] = VALID_ERR
+			dict["msg"] = msg.MSG_EMPTY   
+		elif datetime.strptime(dict["value"],"%Y%m%d").date() > date.today():
 			dict["result"] = VALID_ERR
 			dict["msg"] = msg.MSG_DAY_AFTER
 		else:

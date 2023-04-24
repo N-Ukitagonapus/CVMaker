@@ -5,11 +5,11 @@ import datetime
 from tkcalendar import DateEntry
 import tkinter as tk
 from tkinter import  ttk
-from constants.const import VALID_ERR, VALID_OK
+from constants.const import COLOR, VALID_ERR, VALID_OK
 
 from data_structure.PersonalData import PersonalData
 
-from fileio.PersonalDataIO import PersonalDataOutput
+from fileio.PersonalDataIO import PersonalDataInput, PersonalDataOutput
 
 from utils.Utilities import Utilities as util
 from utils.Validation import DynamicValidation as dval
@@ -142,22 +142,21 @@ class PersonalDataFrame(tk.Frame):
 
 	#入力コントロール
 	def input_control(self,target):
-		self.btn_load["command"] = lambda: util.msgbox_showmsg(diag.DIALOG_TEST)
+		self.btn_load["command"] = lambda: self.data_read(target)
 		self.btn_save["command"] = lambda: self.data_confirm(target)
 
 	#データ出力
 	def data_confirm(self,target):
-
 		def final_validation(input_data: PersonalData):
 			input_data.birthday=self.birthday_entry.get_date()
-			sval.regex_match(vals["shain_num"],input_data.shain_num.get(),"[0-9]{3}","数字3桁")
-			sval.is_not_empty(vals["name_kanji"],input_data.name_last_kanji.get(),input_data.name_first_kanji.get())
-			sval.is_not_empty(vals["name_romaji"],input_data.name_last_romaji.get(),input_data.name_first_romaji.get())
-			sval.is_not_empty(vals["gender"],input_data.gender.get())
-			sval.date_check(vals["birthday"],input_data.birthday)
-			sval.is_not_empty(vals["address"],input_data.current_address.get())			
-			sval.is_not_empty(vals["station"],input_data.nearest_station.get())
-			sval.is_not_empty(vals["gakureki"],input_data.gakureki.get())
+			sval.out_regex_match(vals["shain_num"],input_data.shain_num.get(),"[0-9]{3}","数字3桁")
+			sval.out_is_not_empty(vals["name_kanji"],input_data.name_last_kanji.get(),input_data.name_first_kanji.get())
+			sval.out_is_not_empty(vals["name_romaji"],input_data.name_last_romaji.get(),input_data.name_first_romaji.get())
+			sval.out_is_not_empty(vals["gender"],input_data.gender.get())
+			sval.out_date_check(vals["birthday"],input_data.birthday)
+			sval.out_is_not_empty(vals["address"],input_data.current_address.get())			
+			sval.out_is_not_empty(vals["station"],input_data.nearest_station.get())
+			sval.out_is_not_empty(vals["gakureki"],input_data.gakureki.get())
 
 		vals = {
 			"shain_num":{"label":"社員番号"},
@@ -207,14 +206,14 @@ class PersonalDataFrame(tk.Frame):
 			frame_name[i].grid(row=i,column=0,sticky=tk.EW)
 			frame_result[i].grid(row=i,column=1,sticky=tk.EW)
 			tk.Label(frame_name[i],text=results[i][1]["label"]).pack(side=tk.LEFT,padx=3,pady=3)
-			tk.Label(frame_result[i],text=results[i][1]["msg"],fg="#000000" if results[i][1]["result"] == VALID_OK else "#ff0000").pack(side=tk.LEFT,padx=3,pady=3)
+			tk.Label(frame_result[i],text=results[i][1]["msg"],fg=COLOR[results[i][1]["result"]]).pack(side=tk.LEFT,padx=3,pady=3)
 		frame_main_inner.columnconfigure(index=1, weight=1)
 
 		button_output["command"] = lambda: output()
 		button_cancel["command"] = lambda: cancel()
 
 		def output():
-			if total_val == False:
+			if total_val == VALID_ERR:
 				if util.msgbox_ask(diag.DIALOG_ASK_FORCE_OUTPUT):
 					do_output()
 			else:
@@ -232,19 +231,73 @@ class PersonalDataFrame(tk.Frame):
 		def cancel():
 			subwindow.destroy()
 
+	def data_read(self,target):
+		def inputcheck(input:dict):
+			sval.in_regex_match(input["shain_num"],"[0-9]{3}","数字3桁")
+			sval.in_maxlength_check(input["last_name_kanji"],20)
+			sval.in_maxlength_check(input["first_name_kanji"],20)
+			sval.in_maxlength_check(input["last_name_romaji"],20)
+			sval.in_maxlength_check(input["first_name_romaji"],20)
+			sval.in_is_not_empty(input["gender"])
+			sval.in_date_check(input["birthday"])
+			sval.in_is_not_empty(input["current_address"])			
+			sval.in_is_not_empty(input["nearest_station"])
+			sval.in_is_not_empty(input["gakureki"])
+   
+		def show_result(input,target):
+			subwindow = tk.Toplevel(target)
+			subwindow.title("データ確認")
+			subwindow.geometry("400x390")
+			subwindow.resizable(False,False)
+			subwindow.grab_set()
+
+			frame_button = tk.Frame(subwindow,borderwidth=1,relief=tk.RAISED)
+			frame_button_inner = tk.Frame(frame_button)
+			button_ok = ttk.Button(frame_button_inner,width=10)
+			button_ok["text"] = "OK"
+			button_cancel = ttk.Button(frame_button_inner,width=10,text="キャンセル")
+			frame_button.pack(side=tk.BOTTOM,fill=tk.X,padx=10,pady=8)
+			frame_button_inner.pack(pady=5)
+			button_cancel.grid(row=0,column=0,padx=15)
+
+			frame_main = tk.LabelFrame(subwindow,relief=tk.RAISED,text = "個人基本情報 データ出力")
+			frame_main.pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=10,pady=8)
+			frame_main_inner=tk.Frame(frame_main)
+			frame_main_inner.pack(fill=tk.BOTH,padx=5,pady=5)
+
+			frame_name = []
+			frame_result = []
+			results = list(input.items())
+			for i in range(len(results)):
+				frame_name.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID))
+				frame_result.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID))
+				frame_name[i].grid(row=i,column=0,sticky=tk.EW)
+				frame_result[i].grid(row=i,column=1,sticky=tk.EW)
+				tk.Label(frame_name[i],text=results[i][1]["label"]).pack(side=tk.LEFT,padx=3,pady=3)
+				tk.Label(frame_result[i],text=results[i][1]["msg"],fg=COLOR[results[i][1]["result"]]).pack(side=tk.LEFT,padx=3,pady=3)
+			frame_main_inner.columnconfigure(index=1, weight=1)
+			button_ok["command"] = lambda: subwindow.destroy()
+		try:
+			input = PersonalDataInput().read()
+			inputcheck(input)
+			show_result(input,target)
+		except Exception as e:
+			print(e)
+			util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)
+   
 	# フレーム描写
 	def pack(self):
 		self.ret.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
 
 	def rock_items(self,res):
-		self.text_shain_num["state"] = tk.DISABLED if res["shain_num"]["result"] != VALID_ERR else tk.NORMAL
-		self.text_shi_kanji["state"] = tk.DISABLED if res["name_kanji"]["result"] != VALID_ERR else tk.NORMAL
-		self.text_mei_kanji["state"] = tk.DISABLED if res["name_kanji"]["result"] != VALID_ERR else tk.NORMAL
-		self.text_shi_romaji["state"] = tk.DISABLED if res["name_romaji"]["result"] != VALID_ERR else tk.NORMAL
-		self.text_mei_romaji["state"] = tk.DISABLED if res["name_romaji"]["result"] != VALID_ERR else tk.NORMAL
-		self.gender_male["state"] = tk.DISABLED if res["gender"]["result"] != VALID_ERR else tk.NORMAL
-		self.gender_female["state"] = tk.DISABLED if res["gender"]["result"] != VALID_ERR else tk.NORMAL
-		self.birthday_entry["state"] = tk.DISABLED if res["birthday"]["result"] != VALID_ERR else tk.NORMAL
-		self.text_address["state"] = tk.DISABLED if res["address"]["result"] != VALID_ERR else tk.NORMAL
-		self.text_station["state"] = tk.DISABLED if res["station"]["result"] != VALID_ERR else tk.NORMAL
-		self.text_academic["state"] = tk.DISABLED if res["gakureki"]["result"] != VALID_ERR else tk.NORMAL
+		self.text_shain_num["state"] = tk.DISABLED if res["shain_num"]["result"] == VALID_OK else tk.NORMAL
+		self.text_shi_kanji["state"] = tk.DISABLED if res["name_kanji"]["result"] == VALID_OK else tk.NORMAL
+		self.text_mei_kanji["state"] = tk.DISABLED if res["name_kanji"]["result"] == VALID_OK else tk.NORMAL
+		self.text_shi_romaji["state"] = tk.DISABLED if res["name_romaji"]["result"] == VALID_OK else tk.NORMAL
+		self.text_mei_romaji["state"] = tk.DISABLED if res["name_romaji"]["result"] == VALID_OK else tk.NORMAL
+		self.gender_male["state"] = tk.DISABLED if res["gender"]["result"] == VALID_OK else tk.NORMAL
+		self.gender_female["state"] = tk.DISABLED if res["gender"]["result"] == VALID_OK else tk.NORMAL
+		self.birthday_entry["state"] = tk.DISABLED if res["birthday"]["result"] == VALID_OK else tk.NORMAL
+		self.text_address["state"] = tk.DISABLED if res["address"]["result"] == VALID_OK else tk.NORMAL
+		self.text_station["state"] = tk.DISABLED if res["station"]["result"] == VALID_OK else tk.NORMAL
+		self.text_academic["state"] = tk.DISABLED if res["gakureki"]["result"] == VALID_OK else tk.NORMAL
