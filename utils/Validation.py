@@ -62,21 +62,41 @@ class StaticValidation:
 			dict["result"] = VALID_ERR
 			dict["msg"] = msg.MSG_INVALID.format(msg_param)
 
+	def in_regex_and_length(dict, maxlength, regex, msg_param):
+		if dict["value"] is None:
+			dict["result"] = VALID_ERR
+			dict["msg"] = msg.MSG_EMPTY
+		elif re.fullmatch(regex, dict["value"]) == False:
+			dict["result"] = VALID_ERR
+			dict["msg"] = msg.MSG_INVALID.format(msg_param)
+		elif len(dict["value"]) > maxlength:
+			dict["result"] = VALID_WARN
+			dict["msg"] = msg.MSG_WARN_LENGTH.format(maxlength)
+		else:
+			dict["result"] = VALID_OK
+			dict["msg"] = msg.MSG_OK
+
 	def in_maxlength_check(dict, maxlength):
 		if dict["value"] is None:
 			dict["result"] = VALID_ERR
 			dict["msg"] = msg.MSG_EMPTY
 		elif len(dict["value"]) > maxlength:
 			dict["result"] = VALID_WARN
-			dict["msg"] = msg.MSG_WARN_LENGTH
-
+			dict["msg"] = msg.MSG_WARN_LENGTH.format(maxlength)
+		else:
+			dict["result"] = VALID_OK
+			dict["msg"] = msg.MSG_OK
+  
 	def in_date_check(dict):
 		if dict["value"] is None:
 			dict["result"] = VALID_ERR
 			dict["msg"] = msg.MSG_EMPTY   
-		elif datetime.strptime(dict["value"],"%Y%m%d").date() > date.today():
-			dict["result"] = VALID_ERR
-			dict["msg"] = msg.MSG_DAY_AFTER
 		else:
-			dict["result"] = VALID_OK
-			dict["msg"] = msg.MSG_OK
+			try:
+				entered = datetime.strptime(dict["value"],"%Y%m%d").date() 
+				dict["result"] = VALID_ERR if entered > date.today() else VALID_OK
+				dict["msg"] = msg.MSG_DAY_AFTER if entered > date.today() else msg.MSG_OK
+			except Exception as e:
+				print(e)
+				dict["result"] = VALID_ERR
+				dict["msg"] = msg.MSG_DATEFORMAT_FAILURE

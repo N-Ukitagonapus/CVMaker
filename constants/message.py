@@ -4,6 +4,7 @@ class Message:
 	MSG_EMPTY = "NG：未入力です。"
 	MSG_INVALID = "NG：{0}で入力してください。"
 	MSG_DAY_AFTER = "NG：本日より未来の日付は入力できません。"
+	MSG_DATEFORMAT_FAILURE= "NG：日付変換に失敗しました。"
 	MSG_WARN_LENGTH= "WARN：最大文字数({0}文字)を超えている部位は切り取られます。"
 
 class DialogMessage:
