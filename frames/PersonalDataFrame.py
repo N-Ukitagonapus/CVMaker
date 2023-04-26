@@ -4,7 +4,7 @@
 import datetime
 from tkcalendar import DateEntry
 import tkinter as tk
-from tkinter import  ttk
+from tkinter import  BooleanVar, ttk
 from constants.const import COLOR, VALID_ERR, VALID_OK
 
 from data_structure.PersonalData import PersonalData
@@ -42,6 +42,8 @@ class PersonalDataFrame(tk.Frame):
 				  textvariable=self.data.shain_num,
 				  validatecommand =(is_numeric, '%P', 3),
 					validate='key')
+		##編集ボタン
+		self.btn_edit = ttk.Button(self.first_line,width=5,text="編集",state=tk.DISABLED)
 		##読込ボタン
 		self.btn_load = ttk.Button(self.first_line,width=5,text="読込")
 		##保存ボタン
@@ -105,6 +107,7 @@ class PersonalDataFrame(tk.Frame):
 		util.mark_required(self.frame_shain_num,self.label_shain_num)
 		self.text_shain_num.pack(side=tk.LEFT,padx=10)
 		self.frame_shain_num.pack(side=tk.LEFT)
+		self.btn_edit.pack(side=tk.RIGHT,padx=10)
 		self.btn_save.pack(side=tk.RIGHT,padx=10)
 		self.btn_load.pack(side=tk.RIGHT,padx=10)
 		self.first_line.pack(side=tk.TOP,fill=tk.X,pady=2)
@@ -144,6 +147,7 @@ class PersonalDataFrame(tk.Frame):
 	def input_control(self,target):
 		self.btn_load["command"] = lambda: self.data_read(target)
 		self.btn_save["command"] = lambda: self.data_confirm(target)
+		self.btn_edit["command"] = lambda: self.reactivate_items(target)
 
 	#データ出力
 	def data_confirm(self,target):
@@ -170,7 +174,8 @@ class PersonalDataFrame(tk.Frame):
 			self.text_address["state"] = tk.DISABLED if res["address"]["result"] == VALID_OK else tk.NORMAL
 			self.text_station["state"] = tk.DISABLED if res["station"]["result"] == VALID_OK else tk.NORMAL
 			self.text_academic["state"] = tk.DISABLED if res["gakureki"]["result"] == VALID_OK else tk.NORMAL
-
+			self.btn_edit["state"] = tk.NORMAL
+   
 		vals = {
 			"shain_num":{"label":"社員番号"},
 			"name_kanji":{"label":"氏名(漢字)"},
@@ -281,10 +286,11 @@ class PersonalDataFrame(tk.Frame):
 			self.text_address["state"] = tk.DISABLED if input["current_address"]["result"] == VALID_OK else tk.NORMAL
 			self.text_station["state"] = tk.DISABLED if input["nearest_station"]["result"] == VALID_OK else tk.NORMAL
 			self.text_academic["state"] = tk.DISABLED if input["gakureki"]["result"] == VALID_OK else tk.NORMAL
+			self.btn_edit["state"] = tk.NORMAL
 
 		def show_result(input,target):
 			subwindow = tk.Toplevel(target)
-			subwindow.title("データ確認")
+			subwindow.title("ファイル読込結果")
 			subwindow.geometry("500x390")
 			subwindow.resizable(False,False)
 			subwindow.grab_set()
@@ -296,7 +302,7 @@ class PersonalDataFrame(tk.Frame):
 			frame_button_inner.pack(pady=5)
 			button_ok.grid(row=0,column=0,padx=15)
 
-			frame_main = tk.LabelFrame(subwindow,relief=tk.RAISED,text = "個人基本情報 データ出力")
+			frame_main = tk.LabelFrame(subwindow,relief=tk.RAISED,text = "個人基本情報 ファイル読込結果")
 			frame_main.pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=10,pady=8)
 			frame_main_inner=tk.Frame(frame_main)
 			frame_main_inner.pack(fill=tk.BOTH,padx=5,pady=5)
@@ -323,7 +329,77 @@ class PersonalDataFrame(tk.Frame):
 		except Exception as e:
 			print(e)
 			util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)
+
+	#項目再活性
+	def reactivate_items(self,target):
+		modes = {
+			"name":BooleanVar(),
+			"address":BooleanVar(),
+			"all":BooleanVar()
+		}
+		check_modes={}
+
+		subwindow = tk.Toplevel(target)
+		subwindow.title("項目再活性")
+		subwindow.geometry("300x300")
+		subwindow.resizable(False,False)
+		subwindow.grab_set()
+
+		frame_button = tk.Frame(subwindow,borderwidth=1,relief=tk.RAISED)
+		frame_button_inner = tk.Frame(frame_button)
+		button_ok = ttk.Button(frame_button_inner,width=10,text="OK")
+		button_cancel = ttk.Button(frame_button_inner,width=10,text="キャンセル")
+		frame_button.pack(side=tk.BOTTOM,fill=tk.X,padx=10,pady=8)
+		frame_button_inner.pack(pady=5)
+		button_cancel.grid(row=0,column=0,padx=15)
+		button_ok.grid(row=0,column=1,padx=15)
+
+		frame_main = tk.LabelFrame(subwindow,relief=tk.RAISED,text = "個人基本情報 再編集")
+		frame_main.pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=10,pady=8)
+		frame_main_inner=tk.Frame(frame_main)
+		frame_main_inner.pack(fill=tk.BOTH,padx=5,pady=5)
+		tk.Label(frame_main_inner,text="編集モードを選んでください。").pack(side=tk.TOP,padx=5,pady=5)
+
+		check_modes["name"] =	tk.Checkbutton(frame_main_inner, variable=modes["name"], text="苗字変更\n(結婚等で苗字が変更された場合)")
+		check_modes["address"] =	tk.Checkbutton(frame_main_inner, variable=modes["address"], text="住所および最寄り駅変更\n(引っ越し等で住所を変更した場合)")
+		check_modes["all"] =	tk.Checkbutton(frame_main_inner, variable=modes["all"], text="全部変更\n(打ち間違いによる修正)\n※原則として推奨できません！")
+
+		for chk in check_modes.values():
+			chk.pack(anchor=tk.NW,padx=10,pady=5,fill=tk.X,expand="TRUE")
    
+		def switch_state():
+			check_modes["name"]["state"] = tk.DISABLED if modes["all"].get() else tk.NORMAL
+			check_modes["address"]["state"] = tk.DISABLED if modes["all"].get() else tk.NORMAL
+   
+		def reactivate():
+			if modes["all"].get():
+				if util.msgbox_ask(diag.DIALOG_ASK_EDIT_PERSONALDATA):
+					do_reactivate()
+			else:
+				do_reactivate()
+
+		def do_reactivate():
+			self.text_shain_num["state"] =	 tk.NORMAL if modes["all"].get() else tk.DISABLED
+			self.text_shi_kanji["state"] =	 tk.NORMAL if modes["all"].get() or modes["name"].get() else tk.DISABLED
+			self.text_mei_kanji["state"] =	 tk.NORMAL if modes["all"].get() else tk.DISABLED
+			self.text_shi_romaji["state"] =	 tk.NORMAL if modes["all"].get() or modes["name"].get() else tk.DISABLED
+			self.text_mei_romaji["state"] =	 tk.NORMAL if modes["all"].get() else tk.DISABLED
+			self.gender_male["state"] =		 tk.NORMAL if modes["all"].get() else tk.DISABLED
+			self.gender_female["state"] =	 tk.NORMAL if modes["all"].get() else tk.DISABLED
+			self.birthday_entry["state"] =	 tk.NORMAL if modes["all"].get() else tk.DISABLED
+			self.text_address["state"] =	 tk.NORMAL if modes["all"].get() or modes["address"].get() else tk.DISABLED
+			self.text_station["state"] =	 tk.NORMAL if modes["all"].get() or modes["address"].get() else tk.DISABLED
+			self.text_academic["state"] =	 tk.NORMAL if modes["all"].get() else tk.DISABLED
+			self.btn_edit["state"] =		 tk.DISABLED
+			subwindow.destroy()
+
+		def cancel():
+			subwindow.destroy()
+   
+		check_modes["all"]["command"] = lambda:switch_state()
+		button_ok["command"] = lambda:reactivate()
+		button_cancel["command"] = lambda: cancel()
+
 	# フレーム描写
 	def pack(self):
 		self.ret.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
