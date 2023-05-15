@@ -68,11 +68,11 @@ class PersonalDataFrame(tk.Frame):
 		##名前(ローマ字)
 		self.text_shi_romaji = ttk.Entry(self.second_line, width=20,
 				  textvariable=self.data.name_last_romaji,
-				  validatecommand =(validate_romaji, '%P', 15),
+				  validatecommand =(length_limit, '%P', 15),
 					validate='key')
 		self.text_mei_romaji = ttk.Entry(self.second_line, width=20,
 				  textvariable=self.data.name_first_romaji,
-				  validatecommand =(validate_romaji, '%P', 15),
+				  validatecommand =(length_limit, '%P', 15),
 					validate='key')
  		##名前(性別)
 		self.gender_male = ttk.Radiobutton(self.second_line,text="男",value="男",variable=self.data.gender)
@@ -153,9 +153,9 @@ class PersonalDataFrame(tk.Frame):
 	def data_confirm(self,target):
 		def final_validation(input_data: PersonalData):
 			input_data.birthday=self.birthday_entry.get_date()
-			sval.out_regex_match(vals["shain_num"],input_data.shain_num.get(),"[0-9]{3}","数字3桁")
+			sval.out_regex_match(vals["shain_num"],r"[0-9]{3}","数字3桁",input_data.shain_num.get())
 			sval.out_is_not_empty(vals["name_kanji"],input_data.name_last_kanji.get(),input_data.name_first_kanji.get())
-			sval.out_is_not_empty(vals["name_romaji"],input_data.name_last_romaji.get(),input_data.name_first_romaji.get())
+			sval.out_regex_match(vals["name_romaji"],r"^[a-zA-Z]+$","英字各15桁以内",input_data.name_last_romaji.get(),input_data.name_first_romaji.get())
 			sval.out_is_not_empty(vals["gender"],input_data.gender.get())
 			sval.out_date_check(vals["birthday"],input_data.birthday)
 			sval.out_is_not_empty(vals["address"],input_data.current_address.get())			
@@ -190,7 +190,7 @@ class PersonalDataFrame(tk.Frame):
 		final_validation(self.data)
 		total_val = True
 		for val in vals.values():
-			if val["result"] == False:
+			if val["result"] == VALID_ERR:
 				total_val = False
 				break
 
@@ -219,8 +219,8 @@ class PersonalDataFrame(tk.Frame):
 		frame_result = []
 		results = list(vals.items())
 		for i in range(len(results)):
-			frame_name.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID))
-			frame_result.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID))
+			frame_name.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID,bg="white"))
+			frame_result.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID,bg=COLOR[results[i][1]["result"]]))
 			frame_name[i].grid(row=i,column=0,sticky=tk.EW)
 			frame_result[i].grid(row=i,column=1,sticky=tk.EW)
 			tk.Label(frame_name[i],text=results[i][1]["label"],bg="white").pack(side=tk.LEFT,padx=3,pady=3)
@@ -288,6 +288,7 @@ class PersonalDataFrame(tk.Frame):
 			self.text_academic["state"] = tk.DISABLED if input["gakureki"]["result"] == VALID_OK else tk.NORMAL
 			self.btn_edit["state"] = tk.NORMAL
 
+		#ファイル読み込み結果表示
 		def show_result(input,target):
 			subwindow = tk.Toplevel(target)
 			subwindow.title("ファイル読込結果")

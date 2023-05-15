@@ -10,12 +10,12 @@ class Application(tk.Frame):
 		super().__init__(master)
   
 		#ウィンドウ設定
-		self.master.title("スキルシート生成ソフト")
+		self.master.title("K.S.A.M")
 		self.master.geometry("1200x900")
 
 		#タイトル設定
 		self.frame_title = tk.Frame(self.master,borderwidth=5,relief="groove")
-		self.label_title = tk.Label(self.frame_title, text="スキルシート生成ソフト", font=("Meiryo UI",20,"bold","italic"))
+		self.label_title = tk.Label(self.frame_title, text="Kushimsoft Skillsheet Automatic Maker", font=("Meiryo UI",20,"bold","italic"))
 		self.label_title.pack(side=tk.TOP,padx=10,pady=10)
 		self.frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=10)
 
