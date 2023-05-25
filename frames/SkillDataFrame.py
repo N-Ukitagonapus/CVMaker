@@ -14,9 +14,13 @@ class SkillDataFrame(tk.Frame):
 	def __init__(self, target):
 		self.data = SkillData()
 		self.data.qualifications = ["初級シスアド", "基本情報技術者", "英検2級", "Oracle Bronze 12c"]
-   
+		self.area_define(target)
+		self.input_control(target)
+		self.assembly()
+  
+	#エリア定義
+	def area_define(self, target):
 		self.ret = tk.LabelFrame(target,relief=tk.RAISED,text = "技術情報")
-
 		##1行目
 		self.first_line=tk.Frame(self.ret)
   
@@ -37,30 +41,12 @@ class SkillDataFrame(tk.Frame):
 		#保存ボタン
 		self.btn_save = ttk.Button(self.first_line,width=5,text="保存")
 
-		#組立
-		self.label_expr.pack(side=tk.LEFT,padx=5)
-		self.expr_start.pack(side=tk.LEFT,padx=5)
-		self.label_absense.pack(side=tk.LEFT,padx=5)
-		self.text_absense_year.pack(side=tk.LEFT,padx=5)
-		self.label_absense_yr.pack(side=tk.LEFT,padx=5)
-		self.select_absense_month.pack(side=tk.LEFT,padx=5)
-		self.label_absense_mth.pack(side=tk.LEFT,padx=5)
-		self.btn_save.pack(side=tk.RIGHT,padx=10)
-		self.btn_load.pack(side=tk.RIGHT,padx=10)
-		self.first_line.pack(side=tk.TOP,fill=tk.X,pady=5)
-		##1行目ここまで
-
 		##2行目
 		self.second_line=tk.Frame(self.ret)
 		#フレーム・ラベル定義
 		self.label_specialty = tk.Label(self.second_line,text="得意分野")
 		#得意分野
 		self.text_specialty = ttk.Entry(self.second_line,width=100)
-
-		#組立
-		self.label_specialty.pack(side=tk.LEFT,padx=5)
-		self.text_specialty.pack(side=tk.LEFT,padx=5)
-		self.second_line.pack(side=tk.TOP,fill=tk.X,pady=5)
 
 		#3行目
 		self.third_line=tk.Frame(self.ret)
@@ -74,13 +60,6 @@ class SkillDataFrame(tk.Frame):
 
 		#使用経験
 		self.btn_env_edit = ttk.Button(self.third_line,width=5,text="編集")
-  
-		#組立
-		self.label_qualifications.pack(side=tk.LEFT,padx=5)
-		self.btn_qual_edit.pack(side=tk.LEFT,padx=5)
-		self.label_environments.pack(side=tk.LEFT,padx=5)
-		self.btn_env_edit.pack(side=tk.LEFT,padx=5)
-		self.third_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 
 		#4行目
 		self.fourth_line=tk.Frame(self.ret)
@@ -90,20 +69,51 @@ class SkillDataFrame(tk.Frame):
 		#自己PR
 		self.text_pr = scrolledtext.ScrolledText(self.fourth_line,wrap=tk.WORD,width=80,height=5)  
 
-		#組立
-		self.label_pr.grid(row=0,column=0,padx=5,pady=5)
-		self.text_pr.grid(row=1,column=1,padx=5,sticky=tk.EW)
+	#組み立て
+	def assembly(self):
+		#1行目
+		self.label_expr.pack(side=tk.LEFT)
+		util.mark_required(self.first_line,self.label_expr)
+		self.expr_start.pack(side=tk.LEFT,padx=5)
+		self.label_absense.pack(side=tk.LEFT,padx=5)
+		self.text_absense_year.pack(side=tk.LEFT,padx=5)
+		self.label_absense_yr.pack(side=tk.LEFT,padx=5)
+		self.select_absense_month.pack(side=tk.LEFT,padx=5)
+		self.label_absense_mth.pack(side=tk.LEFT,padx=5)
+		self.btn_save.pack(side=tk.RIGHT,padx=10)
+		self.btn_load.pack(side=tk.RIGHT,padx=10)
+		self.first_line.pack(side=tk.TOP,fill=tk.X,pady=5)
+
+		#2行目
+		self.label_specialty.pack(side=tk.LEFT)
+		util.mark_required(self.second_line,self.label_specialty)
+		self.text_specialty.pack(side=tk.LEFT,padx=5)
+		self.second_line.pack(side=tk.TOP,fill=tk.X,pady=5)
+  
+		#3行目
+		self.label_qualifications.pack(side=tk.LEFT)
+		self.btn_qual_edit.pack(side=tk.LEFT,padx=5)
+		self.label_environments.pack(side=tk.LEFT,padx=5)
+		self.btn_env_edit.pack(side=tk.LEFT,padx=5)
+		self.third_line.pack(side=tk.TOP,fill=tk.X,pady=2)
+
+		#4行目
+		self.label_pr.grid(row=0,column=0,pady=5)
+		self.text_pr.grid(row=1,column=1,padx=5,pady=5,sticky=tk.EW)
 		self.fourth_line.grid_columnconfigure(1, weight=1)
 		self.fourth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
-
-		self.input_control()
-
-	#ボタンコントロール
-	def input_control(self):
+  
+	#入力コントロール
+	def input_control(self,target):
 		self.btn_load["command"] = lambda: msg.showinfo("Message", "Load Button Has been pushed.")
-		self.btn_save["command"] = lambda: msg.showinfo("Message", "Save Button Has been pushed.")
+		self.btn_save["command"] = lambda: self.data_confirm(target)
 		self.btn_qual_edit["command"] = lambda:self.edit_qualifications(self.ret)
 		self.btn_env_edit["command"] = lambda:self.edit_environments(self.ret)
+
+	#データ出力
+	def data_confirm(self,target):
+		def final_validation(input_data: SkillData):
+			pass
 
 	#取得資格編集サブウィンドウ
 	def edit_qualifications(self,target):
