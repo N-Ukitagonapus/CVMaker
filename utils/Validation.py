@@ -10,11 +10,11 @@ class DynamicValidation:
   
   #入力が数字n桁以内かどうか
 	def is_numeric(input, ketasu):
-		return re.fullmatch(r"[0-9]*", input) and len(input) <= int(ketasu)
+		return (re.fullmatch("[0-9]*", input) != None) and len(input) <= int(ketasu)
 	
   #入力が英字n桁以内かどうか
 	def validate_romaji(input, ketasu):
-		return re.fullmatch(r"[a-zA-Z]*", input) and len(input) <= int(ketasu)
+		return (re.fullmatch("[a-zA-Z]*", input) != None) and len(input) <= int(ketasu)
 	
 
 class StaticValidation:

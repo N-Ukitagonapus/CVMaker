@@ -10,6 +10,7 @@ from fileio.SkillDataIO import SkillDataOutput
 from utils.Utilities import Utilities as util
 from tkinter import messagebox as msg
 from data_structure.SkillData import SkillData
+from utils.Validation import DynamicValidation as dval
 from utils.Validation import StaticValidation as sval
 from constants.message import DialogMessage as diag
 class SkillDataFrame(tk.Frame):
@@ -22,6 +23,9 @@ class SkillDataFrame(tk.Frame):
   
 	#エリア定義
 	def area_define(self, target):
+		#バリデーション定義
+		is_numeric = target.register(dval.is_numeric)
+
 		self.ret = tk.LabelFrame(target,relief=tk.RAISED,text = "技術情報")
 		##1行目
 		self.first_line=tk.Frame(self.ret)
@@ -35,9 +39,13 @@ class SkillDataFrame(tk.Frame):
 		#業界経験開始年月
 		self.expr_start = DateEntry(self.first_line,day=1,locale='ja_JP',date_pattern='yyyy/mm/dd')
 		#休職期間-年
-		self.text_absense_year = ttk.Entry(self.first_line, width=5)
+		self.text_absense_year = ttk.Entry(self.first_line, width=5,
+				    textvariable=self.data.period_absense_year,
+				 		validatecommand = (is_numeric, '%P', 3),
+						validate='key')
 		#休職期間-月
-		self.select_absense_month = ttk.Combobox(self.first_line,width=3,state="readonly",justify="center",value=[i for i in range(0,12)])
+		self.select_absense_month = ttk.Combobox(self.first_line,width=3,state="readonly",justify="center",value=[i for i in range(0,12)],
+				     textvariable=self.data.period_absense_month)
   	#読込ボタン
 		self.btn_load = ttk.Button(self.first_line,width=5,text="読込")
 		#保存ボタン
@@ -48,7 +56,8 @@ class SkillDataFrame(tk.Frame):
 		#フレーム・ラベル定義
 		self.label_specialty = tk.Label(self.second_line,text="得意分野")
 		#得意分野
-		self.text_specialty = ttk.Entry(self.second_line,width=100)
+		self.text_specialty = ttk.Entry(self.second_line,width=100,
+				     textvariable=self.data.specialty)
 
 		#3行目
 		self.third_line=tk.Frame(self.ret)
@@ -107,6 +116,8 @@ class SkillDataFrame(tk.Frame):
   
 	#入力コントロール
 	def input_control(self,target):
+
+
 		self.btn_load["command"] = lambda: msg.showinfo("Message", "Load Button Has been pushed.")
 		self.btn_save["command"] = lambda: self.data_confirm(target)
 		self.btn_qual_edit["command"] = lambda:self.edit_qualifications(self.ret)
@@ -117,6 +128,7 @@ class SkillDataFrame(tk.Frame):
    
 		def final_validation(input_data: SkillData):
 			input_data.expr_start=self.expr_start.get_date()
+			input_data.pr=self.setpr(self.text_pr.get('1.0',self.text_pr.index(tk.END)))
 			sval.out_date_check(vals["expr_start"],input_data.expr_start)
 			sval.out_is_not_empty(vals["specialty"],input_data.specialty.get())	
    

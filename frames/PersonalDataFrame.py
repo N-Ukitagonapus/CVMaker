@@ -41,7 +41,7 @@ class PersonalDataFrame(tk.Frame):
 		self.text_shain_num = ttk.Entry(self.frame_shain_num, width=5,
 				  textvariable=self.data.shain_num,
 				  validatecommand =(is_numeric, '%P', 3),
-					validate='key')
+					validate='all')
 		##編集ボタン
 		self.btn_edit = ttk.Button(self.first_line,width=5,text="編集",state=tk.DISABLED)
 		##読込ボタン

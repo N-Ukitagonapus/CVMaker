@@ -19,18 +19,11 @@ class SkillDataOutput():
     )
 
 	def output(self):
-		base = et.Element("SkillData")
-		tree = et.ElementTree(element=base)
-
-		et.SubElement(base,"expr_start").text = self.data.expr_start
-		et.SubElement(base,"absense_year").text = 0 if self.data.period_absense_year.get() is None else self.data.period_absense_year.get()
-		et.SubElement(base,"absense_month").text = self.data.period_absense_month.get()
-		create_list(base,self.data.qualifications,"qualifications")
-		create_env(base,self.data.expr_env)
-		if self.data.pr.get() != "":
-			et.SubElement(base,"pr").text = self.data.pr.get()
-   
-		tree.write(self.filename, encoding="utf-8", xml_declaration=True)
+		def create_list(tgt, list:list, base_title):
+			if len(self.data.qualifications) > 0 :
+				inner = et.SubElement(tgt,base_title)
+				for val in list:
+					et.SubElement(inner,"value").text = val
 
 		def create_env(tgt, envs:EnvironmentData):
 			trunk = et.SubElement(tgt,"environments")
@@ -43,11 +36,18 @@ class SkillDataOutput():
 			create_list(trunk,envs.tools,"tools")
 			create_list(trunk,envs.pkg,"packages")
 
-		def create_list(tgt, list:list, base_title):
-			if len(self.data.qualifications) > 0 :
-				base = et.SubElement(tgt,base_title)
-				for val in list:
-					et.subElement(base,"value").text = val
+		base = et.Element("SkillData")
+		tree = et.ElementTree(element=base)
+
+		et.SubElement(base,"expr_start").text = self.data.expr_start.strftime("%Y%m")
+		et.SubElement(base,"absense_year").text = 0 if self.data.period_absense_year.get() == "" else self.data.period_absense_year.get()
+		et.SubElement(base,"absense_month").text = 0 if self.data.period_absense_month.get() == "" else self.data.period_absense_month.get()
+		create_list(base,self.data.qualifications,"qualifications")
+		create_env(base,self.data.expr_env)
+		if self.data.pr != "":
+			et.SubElement(base,"pr").text = self.data.pr
+   
+		tree.write(self.filename, encoding="utf-8", xml_declaration=True)
 
 class PersonalDataInput():
 	def __init__(self):
