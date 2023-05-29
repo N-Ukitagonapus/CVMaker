@@ -5,11 +5,13 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
 from tkcalendar import DateEntry
-from constants.const import ENV_GENRE
+from constants.const import COLOR, ENV_GENRE, ENV_SET, VALID_ERR, VALID_OK
+from fileio.SkillDataIO import SkillDataOutput
 from utils.Utilities import Utilities as util
 from tkinter import messagebox as msg
-
 from data_structure.SkillData import SkillData
+from utils.Validation import StaticValidation as sval
+from constants.message import DialogMessage as diag
 class SkillDataFrame(tk.Frame):
 	def __init__(self, target):
 		self.data = SkillData()
@@ -112,8 +114,85 @@ class SkillDataFrame(tk.Frame):
 
 	#データ出力
 	def data_confirm(self,target):
+   
 		def final_validation(input_data: SkillData):
-			pass
+			input_data.expr_start=self.expr_start.get_date()
+			sval.out_date_check(vals["expr_start"],input_data.expr_start)
+			sval.out_is_not_empty(vals["specialty"],input_data.specialty.get())	
+   
+		def rock_items(res):
+			self.expr_start["state"] = tk.DISABLED if res["expr_start"]["result"] == VALID_OK else tk.NORMAL
+
+		vals = {
+			"expr_start":{"label":"業務開始日"},
+			"specialty":{"label":"得意分野"}
+		}
+  
+		final_validation(self.data)
+		total_val = True
+		for val in vals.values():
+			if val["result"] == VALID_ERR:
+				total_val = False
+				break
+
+		subwindow = tk.Toplevel(target)
+		subwindow.title("データ確認")
+		subwindow.geometry("400x330")
+		subwindow.resizable(False,False)
+		subwindow.grab_set()
+
+		frame_button = tk.Frame(subwindow,borderwidth=1,relief=tk.RAISED)
+		frame_button_inner = tk.Frame(frame_button)
+		button_output = ttk.Button(frame_button_inner,width=10)
+		button_output["text"] = "出力" if total_val == True else "強制出力"
+		button_cancel = ttk.Button(frame_button_inner,width=10,text="キャンセル")
+		frame_button.pack(side=tk.BOTTOM,fill=tk.X,padx=10,pady=8)
+		frame_button_inner.pack(pady=5)
+		button_cancel.grid(row=0,column=0,padx=15)
+		button_output.grid(row=0,column=1,padx=15)
+
+		frame_main = tk.LabelFrame(subwindow,relief=tk.RAISED,text = "技術情報 データ出力")
+		frame_main.pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=10,pady=8)
+		frame_main_inner=tk.Frame(frame_main)
+		frame_main_inner.pack(fill=tk.BOTH,padx=5,pady=5)
+
+		frame_name = []
+		frame_result = []
+		results = list(vals.items())
+		for i in range(len(results)):
+			frame_name.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID,bg="white"))
+			frame_result.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID,bg=COLOR[results[i][1]["result"]]))
+			frame_name[i].grid(row=i,column=0,sticky=tk.EW)
+			frame_result[i].grid(row=i,column=1,sticky=tk.EW)
+			tk.Label(frame_name[i],text=results[i][1]["label"],bg="white").pack(side=tk.LEFT,padx=3,pady=3)
+			tk.Label(frame_result[i],text=results[i][1]["msg"],bg=COLOR[results[i][1]["result"]]).pack(side=tk.LEFT,padx=3,pady=3)
+		frame_main_inner.columnconfigure(index=1, weight=1)
+
+		button_output["command"] = lambda: output()
+		button_cancel["command"] = lambda: cancel()
+
+		def output():
+			if total_val == VALID_ERR:
+				if util.msgbox_ask(diag.DIALOG_ASK_FORCE_OUTPUT):
+					do_output()
+			else:
+				do_output()
+
+		def do_output():
+			try:
+				SkillDataOutput(self.data).output()
+				rock_items(vals)
+			except Exception as e:
+				print(e)
+				util.msgbox_showmsg(diag.DIALOG_OUTPUT_ERROR)
+			subwindow.destroy()
+
+		def cancel():
+			subwindow.destroy()
+
+	#データ入力
+	def data_read(self,target):
+		pass
 
 	#取得資格編集サブウィンドウ
 	def edit_qualifications(self,target):
@@ -177,10 +256,11 @@ class SkillDataFrame(tk.Frame):
 		envs = list(ENV_GENRE.items())
 		label_envs={}
 		text_envs={}
+		entry_envs=self.data.expr_env.get_values()
 		for i in range(len(envs)):
 			label_envs[envs[i][0]]=tk.Label(frame_edit, text=envs[i][1])
 			text_envs[envs[i][0]]=scrolledtext.ScrolledText(frame_edit,wrap=tk.WORD)
-			text_envs[envs[i][0]].insert('1.0',"\n".join(self.data.expr_env[envs[i][0]]))
+			text_envs[envs[i][0]].insert('1.0',"\n".join(entry_envs[envs[i][0]]))
 			label_envs[envs[i][0]].grid(row=0,column=i,padx=2,pady=5)
 			text_envs[envs[i][0]].grid(row=1,column=i,padx=2,pady=5)
 			frame_edit.grid_columnconfigure(i, weight=1)
@@ -190,8 +270,10 @@ class SkillDataFrame(tk.Frame):
 		btn_cancel["command"] = lambda: cancel()
 
 		def update():
+			env_set = ENV_SET
 			for key in text_envs.keys():
-				self.data.expr_env[key] = util.tidy_list((text_envs[key].get('1.0',text_envs[key].index(tk.END))).split("\n"))
+				env_set[key] = util.tidy_list((text_envs[key].get('1.0',text_envs[key].index(tk.END))).split("\n"))
+			self.data.expr_env.set_values(env_set)
 			subwindow.destroy()
 
 		def cancel():
