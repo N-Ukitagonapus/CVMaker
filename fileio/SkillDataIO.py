@@ -1,3 +1,4 @@
+from constants.const import ENV_SET
 from data_structure.EnvironmentData import EnvironmentData
 from data_structure.SkillData import SkillData
 from tkinter import filedialog as fd
@@ -49,7 +50,8 @@ class SkillDataOutput():
    
 		tree.write(self.filename, encoding="utf-8", xml_declaration=True)
 
-class PersonalDataInput():
+class SkillDataInput():
+
 	def __init__(self):
 		filename = fd.askopenfilename(
 		title = "個人基本情報読込",
@@ -62,18 +64,34 @@ class PersonalDataInput():
 		# XMLを取得
 		self.root = tree.getroot()
   
+	#XML読込
 	def read(self):
+
+		def read_env(tree):
+			keys=[
+				("servers","srv"),
+				("os","os"),
+				("databases","db"),
+				("languages","lang"),
+				("frameworks","fw"),
+				("middlewares","mw"),
+				("tools","tools"),
+				("packages","pkg")
+			]
+			ret = ENV_SET
+			for key in keys:
+				subtree = tree.find(key[0])
+				for value in subtree.iter("value"):
+					ret[key[1]].append(value.text)
+			return ret
+
+		#単体項目を取得
 		vals = {
-			"shain_num":{"label":"社員番号"},
-			"last_name_kanji":{"label":"氏(漢字)"},
-			"first_name_kanji":{"label":"名(漢字)"},
-			"last_name_romaji":{"label":"氏(ローマ字)"},
-			"first_name_romaji":{"label":"名(ローマ字)"},
-			"gender":{"label":"性別"},
-			"birthday":{"label":"誕生日"},
-			"current_address":{"label":"現住所"},
-			"nearest_station":{"label":"最寄り駅"},
-			"gakureki":{"label":"最終学歴"}
+			"specialty":{"label":"得意分野"},
+			"expr_start":{"label":"業界開始年月"},
+			"period_absense_year":{"label":"休職期間(年)"},
+			"period_absense_month":{"label":"休職期間(月)"},
+			"pr":{"label":"自己PR"}
 			}
 		keys = list(vals.keys())
 		for key in keys:
@@ -82,5 +100,18 @@ class PersonalDataInput():
 				vals[key]["value"] = text.text
 			else:
 				vals[key]["value"] = None
+
+		#資格情報を取得
+		vals["qualifications"]={"label":"資格情報"}
+		list_qual=[]
+		sikaku = self.root.find("qualifications")
+		for value in sikaku.iter("value"):
+			list_qual.append(value.text)
+		vals["qualifications"]["value"] = list_qual
+
+		#使用経験環境を取得
+		vals["environments"]={"label":"使用経験(業務外)"}
+		vals["environments"]["value"] = read_env(self.root.find("environments"))
+
 		print(vals)
 		return vals

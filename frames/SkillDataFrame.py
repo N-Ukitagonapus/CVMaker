@@ -6,7 +6,7 @@ from tkinter import ttk
 from tkinter import scrolledtext
 from tkcalendar import DateEntry
 from constants.const import COLOR, ENV_GENRE, ENV_SET, VALID_ERR, VALID_OK
-from fileio.SkillDataIO import SkillDataOutput
+from fileio.SkillDataIO import SkillDataInput, SkillDataOutput
 from utils.Utilities import Utilities as util
 from tkinter import messagebox as msg
 from data_structure.SkillData import SkillData
@@ -116,19 +116,16 @@ class SkillDataFrame(tk.Frame):
   
 	#入力コントロール
 	def input_control(self,target):
-
-
-		self.btn_load["command"] = lambda: msg.showinfo("Message", "Load Button Has been pushed.")
+		self.btn_load["command"] = lambda: self.data_read(target)
 		self.btn_save["command"] = lambda: self.data_confirm(target)
 		self.btn_qual_edit["command"] = lambda:self.edit_qualifications(self.ret)
 		self.btn_env_edit["command"] = lambda:self.edit_environments(self.ret)
 
 	#データ出力
 	def data_confirm(self,target):
-   
 		def final_validation(input_data: SkillData):
 			input_data.expr_start=self.expr_start.get_date()
-			input_data.pr=self.setpr(self.text_pr.get('1.0',self.text_pr.index(tk.END)))
+			input_data.pr=self.text_pr.get('1.0',self.text_pr.index(tk.END))
 			sval.out_date_check(vals["expr_start"],input_data.expr_start)
 			sval.out_is_not_empty(vals["specialty"],input_data.specialty.get())	
    
@@ -204,7 +201,16 @@ class SkillDataFrame(tk.Frame):
 
 	#データ入力
 	def data_read(self,target):
-		pass
+		try:
+			input = SkillDataInput().read()
+			#inputcheck(input)
+			#set_value(input)
+			#rock_items(input)
+			#show_result(input, target)
+		except Exception as e:
+			print(e)
+			util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)
+
 
 	#取得資格編集サブウィンドウ
 	def edit_qualifications(self,target):
