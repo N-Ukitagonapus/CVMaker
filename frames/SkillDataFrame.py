@@ -201,12 +201,69 @@ class SkillDataFrame(tk.Frame):
 
 	#データ入力
 	def data_read(self,target):
+		def inputcheck(input:dict):
+			sval.in_date_check(input["expr_start"])
+			sval.in_regex_match(input["period_absense_year"],"[0-9]*","数字")
+			sval.in_nuber_between(input["period_absense_month"],0,11,"0から11の間")
+			sval.in_novalidation(input["period_absense_month"])
+			sval.in_novalidation(input["period_absense_month"])
+			sval.in_novalidation(input["qualifications"])
+			sval.in_novalidation(input["pr"])
+
+		def set_value(input):
+			util.setstr_from_read(self.data.shain_num,input["shain_num"])
+			util.setstr_from_read_cut(self.data.name_last_kanji,input["last_name_kanji"],20)
+			util.setstr_from_read_cut(self.data.name_first_kanji,input["first_name_kanji"],20)
+			util.setstr_from_read_cut(self.data.name_last_romaji,input["last_name_romaji"],20)
+			util.setstr_from_read_cut(self.data.name_first_romaji,input["first_name_romaji"],20)
+			util.setstr_from_read(self.data.gender,input["gender"])
+			util.setdate_from_read(self.data.birthday,self.birthday_entry,input["birthday"])
+			util.setstr_from_read(self.data.current_address,input["current_address"])
+			util.setstr_from_read(self.data.nearest_station,input["nearest_station"])
+			util.setstr_from_read(self.data.gakureki,input["gakureki"])
+
+		def rock_items(input):
+			self.text_shain_num["state"] = tk.DISABLED if input["shain_num"]["result"] == VALID_OK else tk.NORMAL
+
+		#ファイル読み込み結果表示
+		def show_result(input,target):
+			subwindow = tk.Toplevel(target)
+			subwindow.title("ファイル読込結果")
+			subwindow.geometry("500x390")
+			subwindow.resizable(False,False)
+			subwindow.grab_set()
+
+			frame_button = tk.Frame(subwindow,borderwidth=1,relief=tk.RAISED)
+			frame_button_inner = tk.Frame(frame_button)
+			button_ok = ttk.Button(frame_button_inner,width=10,text="OK")
+			frame_button.pack(side=tk.BOTTOM,fill=tk.X,padx=10,pady=8)
+			frame_button_inner.pack(pady=5)
+			button_ok.grid(row=0,column=0,padx=15)
+
+			frame_main = tk.LabelFrame(subwindow,relief=tk.RAISED,text = "技術情報 ファイル読込結果")
+			frame_main.pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=10,pady=8)
+			frame_main_inner=tk.Frame(frame_main)
+			frame_main_inner.pack(fill=tk.BOTH,padx=5,pady=5)
+
+			frame_name = []
+			frame_result = []
+			results = list(input.items())
+			for i in range(len(results)):
+				frame_name.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID,bg="white"))
+				frame_result.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID,bg=COLOR[results[i][1]["result"]]))
+				frame_name[i].grid(row=i,column=0,sticky=tk.EW)
+				frame_result[i].grid(row=i,column=1,sticky=tk.EW)
+				tk.Label(frame_name[i],text=results[i][1]["label"],bg="white").pack(side=tk.LEFT,padx=3,pady=3)
+				tk.Label(frame_result[i],text=results[i][1]["msg"],bg=COLOR[results[i][1]["result"]]).pack(side=tk.LEFT,padx=3,pady=3)
+			frame_main_inner.columnconfigure(index=1, weight=1)
+			button_ok["command"] = lambda: subwindow.destroy()
+
 		try:
 			input = SkillDataInput().read()
-			#inputcheck(input)
-			#set_value(input)
-			#rock_items(input)
-			#show_result(input, target)
+			inputcheck(input)
+			set_value(input)
+			rock_items(input)
+			show_result(input, target)
 		except Exception as e:
 			print(e)
 			util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)

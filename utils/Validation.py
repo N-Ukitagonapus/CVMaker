@@ -67,7 +67,7 @@ class StaticValidation:
 		if dict["value"] is None:
 			dict["result"] = VALID_ERR
 			dict["msg"] = msg.MSG_EMPTY
-		elif re.fullmatch(regex, dict["value"]) == False:
+		elif re.fullmatch(regex, dict["value"]) is None:
 			dict["result"] = VALID_ERR
 			dict["msg"] = msg.MSG_INVALID.format(msg_param)
 		elif len(dict["value"]) > maxlength:
@@ -101,3 +101,20 @@ class StaticValidation:
 				print(e)
 				dict["result"] = VALID_ERR
 				dict["msg"] = msg.MSG_DATEFORMAT_FAILURE
+
+	def in_nuber_between(dict,min,max,msg_param):
+		try:
+			if int(dict.value) >= min and int(dict.value) <= max:
+				dict["result"] = VALID_OK
+				dict["msg"] = msg.MSG_OK
+			else:
+				dict["result"] = VALID_ERR
+				dict["msg"] = msg.MSG_INVALID.format(msg_param)
+		except Exception as e:
+			print(e)
+			dict["result"] = VALID_ERR
+			dict["msg"] = msg.MSG_INVALID.format(msg_param)
+   
+	def in_novalidation(dict):
+		dict["result"] = VALID_OK
+		dict["msg"] = msg.MSG_NOVALIDATION   

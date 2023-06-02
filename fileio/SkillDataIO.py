@@ -87,10 +87,10 @@ class SkillDataInput():
 
 		#単体項目を取得
 		vals = {
-			"specialty":{"label":"得意分野"},
 			"expr_start":{"label":"業界開始年月"},
 			"period_absense_year":{"label":"休職期間(年)"},
 			"period_absense_month":{"label":"休職期間(月)"},
+			"specialty":{"label":"得意分野"},
 			"pr":{"label":"自己PR"}
 			}
 		keys = list(vals.keys())
