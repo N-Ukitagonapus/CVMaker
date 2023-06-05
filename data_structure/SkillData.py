@@ -2,7 +2,7 @@
 技術情報
 '''
 import datetime
-from tkinter import IntVar, StringVar
+from tkinter import StringVar
 from data_structure.EnvironmentData import EnvironmentData
 class SkillData:
 	#コンストラクタ(のようなもの)

@@ -102,7 +102,7 @@ class StaticValidation:
 				dict["result"] = VALID_ERR
 				dict["msg"] = msg.MSG_DATEFORMAT_FAILURE
 
-	def in_nuber_between(dict,min,max,msg_param):
+	def in_number_between(dict,min,max,msg_param):
 		try:
 			if int(dict.value) >= min and int(dict.value) <= max:
 				dict["result"] = VALID_OK

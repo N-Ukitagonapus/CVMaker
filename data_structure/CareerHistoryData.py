@@ -1,6 +1,7 @@
 '''
 職務経歴
 '''
+from data_structure.EnvironmentData import EnvironmentData
 class CareerHistoryData:
 	#コンストラクタ(のようなもの)
 	def __init__(self):
@@ -11,14 +12,7 @@ class CareerHistoryData:
 		self.description_project_overview = ""	#プロジェクト概要
 		self.description_system_overview = ""		#システム概要
 		self.description_work = []							#作業概要
-		self.dev_env = {"srv":[] #開発環境・サーバ
-										,"os" : [] #開発環境・OS
-										,"db" : [] #開発環境・DB
-										,"lang" : [] #開発環境・言語
-										,"fw" : [] #開発環境・フレームワーク
-										,"mw" : [] #開発環境・ミドルウェア
-										,"tools" : [] #開発環境・ツール
-										,"pkg":[]} #開発環境・パッケージ
+		self.expr_env = EnvironmentData()				#開発環境
 		self.tasks = []													#作業内容
 		self.scale = ""													#開発規模
 		self.position = ""											#職位

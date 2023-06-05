@@ -204,26 +204,23 @@ class SkillDataFrame(tk.Frame):
 		def inputcheck(input:dict):
 			sval.in_date_check(input["expr_start"])
 			sval.in_regex_match(input["period_absense_year"],"[0-9]*","数字")
-			sval.in_nuber_between(input["period_absense_month"],0,11,"0から11の間")
-			sval.in_novalidation(input["period_absense_month"])
-			sval.in_novalidation(input["period_absense_month"])
+			sval.in_number_between(input["period_absense_month"],0,11,"0から11の間")
+			sval.in_novalidation(input["specialty"])
 			sval.in_novalidation(input["qualifications"])
+			sval.in_novalidation(input["environments"])
 			sval.in_novalidation(input["pr"])
 
 		def set_value(input):
-			util.setstr_from_read(self.data.shain_num,input["shain_num"])
-			util.setstr_from_read_cut(self.data.name_last_kanji,input["last_name_kanji"],20)
-			util.setstr_from_read_cut(self.data.name_first_kanji,input["first_name_kanji"],20)
-			util.setstr_from_read_cut(self.data.name_last_romaji,input["last_name_romaji"],20)
-			util.setstr_from_read_cut(self.data.name_first_romaji,input["first_name_romaji"],20)
-			util.setstr_from_read(self.data.gender,input["gender"])
-			util.setdate_from_read(self.data.birthday,self.birthday_entry,input["birthday"])
-			util.setstr_from_read(self.data.current_address,input["current_address"])
-			util.setstr_from_read(self.data.nearest_station,input["nearest_station"])
-			util.setstr_from_read(self.data.gakureki,input["gakureki"])
-
+			util.setdate_from_read(self.data.expr_start,self.expr_start,input["expr_start"])
+			util.setstr_from_read(self.data.period_absense_year,input["period_absense_year"])
+			util.setstr_from_read(self.data.period_absense_month,input["period_absense_month"])
+			util.setstr_from_read(self.data.specialty,input["specialty"])
+			util.setstr_from_read(self.data.pr,input["pr"])
+			self.data.qualifications = input["qualifications"]["value"]
+			self.data.expr_env.set_values(input["environments"]["value"])
+   
 		def rock_items(input):
-			self.text_shain_num["state"] = tk.DISABLED if input["shain_num"]["result"] == VALID_OK else tk.NORMAL
+			self.expr_start["state"] = tk.DISABLED if input["shain_num"]["result"] == VALID_OK else tk.NORMAL
 
 		#ファイル読み込み結果表示
 		def show_result(input,target):
