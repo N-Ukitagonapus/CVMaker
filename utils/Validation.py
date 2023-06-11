@@ -104,7 +104,7 @@ class StaticValidation:
 
 	def in_number_between(dict,min,max,msg_param):
 		try:
-			if int(dict.value) >= min and int(dict.value) <= max:
+			if int(dict["value"]) >= min and int(dict["value"]) <= max:
 				dict["result"] = VALID_OK
 				dict["msg"] = msg.MSG_OK
 			else:

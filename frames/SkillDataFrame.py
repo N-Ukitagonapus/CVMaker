@@ -97,7 +97,6 @@ class SkillDataFrame(tk.Frame):
 
 		#2行目
 		self.label_specialty.pack(side=tk.LEFT)
-		util.mark_required(self.second_line,self.label_specialty)
 		self.text_specialty.pack(side=tk.LEFT,padx=5)
 		self.second_line.pack(side=tk.TOP,fill=tk.X,pady=5)
   
@@ -203,8 +202,8 @@ class SkillDataFrame(tk.Frame):
 	def data_read(self,target):
 		def inputcheck(input:dict):
 			sval.in_date_check(input["expr_start"])
-			sval.in_regex_match(input["period_absense_year"],"[0-9]*","数字")
-			sval.in_number_between(input["period_absense_month"],0,11,"0から11の間")
+			sval.in_regex_match(input["absense_year"],"[0-9]*","数字")
+			sval.in_number_between(input["absense_month"],0,11,"0から11の間")
 			sval.in_novalidation(input["specialty"])
 			sval.in_novalidation(input["qualifications"])
 			sval.in_novalidation(input["environments"])
@@ -212,15 +211,17 @@ class SkillDataFrame(tk.Frame):
 
 		def set_value(input):
 			util.setdate_from_read(self.data.expr_start,self.expr_start,input["expr_start"])
-			util.setstr_from_read(self.data.period_absense_year,input["period_absense_year"])
-			util.setstr_from_read(self.data.period_absense_month,input["period_absense_month"])
+			util.setstr_from_read(self.data.period_absense_year,input["absense_year"])
+			util.setstr_from_read(self.data.period_absense_month,input["absense_month"])
 			util.setstr_from_read(self.data.specialty,input["specialty"])
 			util.setstr_from_read(self.data.pr,input["pr"])
 			self.data.qualifications = input["qualifications"]["value"]
 			self.data.expr_env.set_values(input["environments"]["value"])
+			self.text_pr.delete("1.0","end")
+			self.text_pr.insert('1.0',(self.data.pr.get()))
    
 		def rock_items(input):
-			self.expr_start["state"] = tk.DISABLED if input["shain_num"]["result"] == VALID_OK else tk.NORMAL
+			self.expr_start["state"] = tk.DISABLED if input["expr_start"]["result"] == VALID_OK else tk.NORMAL
 
 		#ファイル読み込み結果表示
 		def show_result(input,target):
