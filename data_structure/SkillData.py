@@ -7,6 +7,7 @@ from data_structure.EnvironmentData import EnvironmentData
 class SkillData:
 	#コンストラクタ(のようなもの)
 	def __init__(self):
+		self.shain_num = 0
 		self.specialty = StringVar() #得意分野
 		self.expr_start = datetime.date #業界開始年月
 		self.period_absense_year = StringVar()

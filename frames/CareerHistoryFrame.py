@@ -4,14 +4,14 @@ from tkinter import IntVar, StringVar, ttk
 from tkcalendar import DateEntry
 from tkinter import scrolledtext
 from constants.const import ENV_GENRE, POSITIONS, TASKS
+from data_structure.CareerData import CareerData
 from data_structure.CareerHistoryData import CareerHistoryData
 from utils.Utilities import Utilities as util
 from tkinter import messagebox as msg
 class CareerHistoryFrame(tk.Frame):
 	def __init__(self, target):
 
-		self.datas=[]
-		self.datas.append(CareerHistoryData())
+		self.data=CareerHistoryData()
 
 		self.ret=tk.LabelFrame(target,relief=tk.RAISED,text = "職務経歴")
 		self.data_total=1

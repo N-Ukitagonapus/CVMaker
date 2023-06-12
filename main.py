@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from utils.Validation import DynamicValidation as dval
 from frames.PersonalDataFrame import PersonalDataFrame
 from frames.SkillDataFrame import SkillDataFrame
 from frames.CareerHistoryFrame import CareerHistoryFrame
@@ -13,6 +14,18 @@ class Application(tk.Frame):
 		self.master.title("K.S.A.M")
 		self.master.geometry("1200x900")
 
+		self.create_widgets()
+
+	def sync_shain_num(self,event):
+		var = self.frame_personal.data.shain_num.get()
+		if dval.is_numeric(var,3):
+			self.frame_skill.data.shain_num = var
+			self.frame_history.data.shain_num = var
+			print("[YUM!]Sync Shain Number complete!")
+		else:
+			print("[OUCH]Failed to sync Shain Number...")
+
+	def create_widgets(self):
 		#タイトル設定
 		self.frame_title = tk.Frame(self.master,borderwidth=5,relief="groove")
 		self.label_title = tk.Label(self.frame_title, text="Kushimsoft Skillsheet Automatic Maker", font=("Meiryo UI",20,"bold","italic"))
@@ -33,6 +46,18 @@ class Application(tk.Frame):
 
 		self.frame_history = CareerHistoryFrame(self.master)
 		self.frame_history.pack()
+
+		self.frame_personal.data.shain_num.trace('w',self.sync_shain_num)
+  
+		# 社員番号更新イベント
+		# argsのnameと内包StringVarの_nameが一致したらイベントを発生させる。
+	def sync_shain_num(self, *args):
+		tgt = self.frame_personal.data.shain_num
+		if args[0] == tgt._name:
+			var = tgt.get()
+			if dval.is_numeric(var,3):
+				self.frame_skill.data.shain_num = var
+				self.frame_history.data.shain_num = var
 
 if __name__ == "__main__":
 	root = tk.Tk()
