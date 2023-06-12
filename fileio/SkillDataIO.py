@@ -43,6 +43,8 @@ class SkillDataOutput():
 		et.SubElement(base,"expr_start").text = self.data.expr_start.strftime("%Y%m")
 		et.SubElement(base,"absense_year").text = 0 if self.data.period_absense_year.get() == "" else self.data.period_absense_year.get()
 		et.SubElement(base,"absense_month").text = 0 if self.data.period_absense_month.get() == "" else self.data.period_absense_month.get()
+		if self.data.specialty != "":
+			et.SubElement(base,"specialty").text = self.data.specialty.get()
 		create_list(base,self.data.qualifications,"qualifications")
 		create_env(base,self.data.expr_env)
 		if self.data.pr != "":
@@ -88,8 +90,8 @@ class SkillDataInput():
 		#単体項目を取得
 		vals = {
 			"expr_start":{"label":"業界開始年月"},
-			"period_absense_year":{"label":"休職期間(年)"},
-			"period_absense_month":{"label":"休職期間(月)"},
+			"absense_year":{"label":"休職期間(年)"},
+			"absense_month":{"label":"休職期間(月)"},
 			"specialty":{"label":"得意分野"},
 			"pr":{"label":"自己PR"}
 			}
@@ -97,9 +99,9 @@ class SkillDataInput():
 		for key in keys:
 			text = self.root.find(key)
 			if text is not None:
-				vals[key]["value"] = text.text
+				vals[key]["value"] = text.text if key != "expr_start" else text.text + "01"
 			else:
-				vals[key]["value"] = None
+				vals[key]["value"] = ""
 
 		#資格情報を取得
 		vals["qualifications"]={"label":"資格情報"}

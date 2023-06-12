@@ -14,4 +14,4 @@ class SkillData:
 		self.period_absense_month = StringVar()
 		self.qualifications = [] #取得資格
 		self.expr_env = EnvironmentData()
-		self.pr = StringVar() #自己PR
+		self.pr = "" #自己PR
