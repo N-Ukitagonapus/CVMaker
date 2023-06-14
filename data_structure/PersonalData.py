@@ -3,7 +3,6 @@
 '''
 import datetime
 from tkinter import StringVar
-
 class PersonalData:
   #コンストラクタ(のようなもの)
 	def __init__(self):

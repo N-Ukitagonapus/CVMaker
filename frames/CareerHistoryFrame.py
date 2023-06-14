@@ -145,8 +145,8 @@ class CareerHistoryFrame(tk.Frame):
 		self.select_position = ttk.Combobox(self.fourth_line,width=16,state="readonly",value=[val for val in POSITIONS.keys()])
 		self.text_position_etc = ttk.Entry(self.fourth_line,width=16,state="disabled") 
 		#開発メンバ数
-		self.label_members_internal = tk.Entry(self.fourth_line,width=3) 
-		self.label_members_total = tk.Entry(self.fourth_line,width=3) 
+		self.text_members_internal = tk.Entry(self.fourth_line,width=3) 
+		self.text_members_total = tk.Entry(self.fourth_line,width=3) 
 		self.flg_internal_leader = tk.BooleanVar(value = False)
 		self.chk_internal_leader = tk.Checkbutton(self.fourth_line,text="自社リーダー",variable=self.flg_internal_leader)
 
@@ -157,9 +157,9 @@ class CareerHistoryFrame(tk.Frame):
 		self.select_position.pack(side=tk.LEFT,padx=5)
 		self.text_position_etc.pack(side=tk.LEFT,padx=5)
 		self.label_members.pack(side=tk.LEFT,padx=5)
-		self.label_members_internal.pack(side=tk.LEFT,padx=5)
+		self.text_members_internal.pack(side=tk.LEFT,padx=5)
 		self.label_slash_member.pack(side=tk.LEFT,padx=5)
-		self.label_members_total.pack(side=tk.LEFT,padx=5)
+		self.text_members_total.pack(side=tk.LEFT,padx=5)
 		self.chk_internal_leader.pack(side=tk.LEFT,padx=5)
 		self.fourth_line.pack(side=tk.TOP,fill=tk.X)
 
@@ -269,5 +269,30 @@ class CareerHistoryFrame(tk.Frame):
 		def cancel():
 			subwindow.destroy()
 
+	#フォームに値を設定
+	def set_from_data(self, data:CareerData):
+		self.flg_bus_end.set(data.flg_over)
+		self.expr_start.set_date(data.term_start)
+		self.expr_end.set_date(data.term_end)
+		self.text_gyokai.setvar(data.description_gyokai)
+		self.text_proj_ov.delete("1.0","end")
+		self.text_proj_ov.insert('1.0',(data.description_system_overview))
+		self.text_sys_ov.delete("1.0","end")
+		self.text_sys_ov.insert('1.0',(data.description_system_overview))
+		self.text_disc_work.insert('1.0',"\n".join(data.description_work))
+		task_list=list(TASKS.items())
+		for i in range(len(task_list)):
+			if self.flg_tasks[task_list[i][1]] in data.tasks:
+				self.flg_tasks[task_list[i][0]].set(True)
+			else:
+				self.flg_tasks[task_list[i][0]].set(False)
+		self.text_tasks_etc.state = tk.NORMAL if self.flg_tasks["ETC"] else tk.DISABLED
+		self.select_position.set(data.position)
+		self.text_position_etc.set(data.position_etc)
+		self.flg_internal_leader.set(data.flg_internal_leader)
+		self.text_members_total.set(data.members)
+		self.text_members_internal.set(data.members_internal)
+
+	#メインウィンドウへ配置(mainからの呼び出し)
 	def pack(self):
 		self.ret.pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=20,pady=5)
