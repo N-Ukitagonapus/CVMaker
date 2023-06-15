@@ -16,7 +16,7 @@ class CareerData:
 		self.description_project_overview = ""	#プロジェクト概要
 		self.description_system_overview = ""		#システム概要
 		self.description_work = []							#作業概要
-		self.expr_env = EnvironmentData()				#開発環境
+		self.environment = EnvironmentData()				#開発環境
 		self.tasks = []													#作業内容
 		self.tasks_etc = ""											#作業内容その他
 		self.scale = ""													#開発規模

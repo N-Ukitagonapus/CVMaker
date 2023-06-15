@@ -22,9 +22,18 @@ class StaticValidation:
 		dict["result"] = VALID_OK
 		dict["msg"] = msg.MSG_OK
 		for read in input:
-			if read == "" or re.fullmatch("\s*", read):
+			if read == "" or re.fullmatch("(\s|\n)*", read):
 				dict["result"] = VALID_ERR
-				dict["msg"] = msg.MSG_EMPTY
+				dict["msg"] = msg.MSG_ERR_EMPTY
+				break
+
+	def out_warn_if_empty(dict, *input):
+		dict["result"] = VALID_OK
+		dict["msg"] = msg.MSG_OK
+		for read in input:
+			if read == "" or re.fullmatch("(\s|\n)*", read):
+				dict["result"] = VALID_WARN
+				dict["msg"] = msg.MSG_WARN_EMPTY
 				break
 
 	def out_regex_match(dict, regex, msg_param, *input):
@@ -47,7 +56,7 @@ class StaticValidation:
 	def in_is_not_empty(dict):
 		if dict["value"] is None:
 			dict["result"] = VALID_ERR
-			dict["msg"] = msg.MSG_EMPTY
+			dict["msg"] = msg.MSG_ERR_EMPTY
 		else:
 			dict["result"] = VALID_OK
 			dict["msg"] = msg.MSG_OK
@@ -55,7 +64,7 @@ class StaticValidation:
 	def in_regex_match(dict, regex, msg_param):
 		if dict["value"] is None:
 			dict["result"] = VALID_ERR
-			dict["msg"] = msg.MSG_EMPTY
+			dict["msg"] = msg.MSG_ERR_EMPTY
 		elif re.fullmatch(regex, dict["value"]):
 			dict["result"] = VALID_OK
 			dict["msg"] = msg.MSG_OK
@@ -66,7 +75,7 @@ class StaticValidation:
 	def in_regex_and_length(dict, maxlength, regex, msg_param):
 		if dict["value"] is None:
 			dict["result"] = VALID_ERR
-			dict["msg"] = msg.MSG_EMPTY
+			dict["msg"] = msg.MSG_ERR_EMPTY
 		elif re.fullmatch(regex, dict["value"]) is None:
 			dict["result"] = VALID_ERR
 			dict["msg"] = msg.MSG_INVALID.format(msg_param)
@@ -80,7 +89,7 @@ class StaticValidation:
 	def in_maxlength_check(dict, maxlength):
 		if dict["value"] is None:
 			dict["result"] = VALID_ERR
-			dict["msg"] = msg.MSG_EMPTY
+			dict["msg"] = msg.MSG_ERR_EMPTY
 		elif len(dict["value"]) > maxlength:
 			dict["result"] = VALID_WARN
 			dict["msg"] = msg.MSG_WARN_LENGTH.format(maxlength)
@@ -91,7 +100,7 @@ class StaticValidation:
 	def in_date_check(dict):
 		if dict["value"] is None:
 			dict["result"] = VALID_ERR
-			dict["msg"] = msg.MSG_EMPTY   
+			dict["msg"] = msg.MSG_ERR_EMPTY   
 		else:
 			try:
 				entered = datetime.strptime(dict["value"],"%Y%m%d").date() 
@@ -115,6 +124,6 @@ class StaticValidation:
 			dict["result"] = VALID_ERR
 			dict["msg"] = msg.MSG_INVALID.format(msg_param)
    
-	def in_novalidation(dict):
+	def io_novalidation(dict):
 		dict["result"] = VALID_OK
 		dict["msg"] = msg.MSG_NOVALIDATION   

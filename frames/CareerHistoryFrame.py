@@ -3,9 +3,10 @@ import tkinter as tk
 from tkinter import IntVar, StringVar, ttk
 from tkcalendar import DateEntry
 from tkinter import scrolledtext
-from constants.const import ENV_GENRE, POSITIONS, TASKS
+from constants.const import ENV_GENRE, ENV_SET, POSITIONS, TASKS
 from data_structure.CareerData import CareerData
 from data_structure.CareerHistoryData import CareerHistoryData
+from data_structure.EnvironmentData import EnvironmentData
 from utils.Utilities import Utilities as util
 from tkinter import messagebox as msg
 from constants.message import DialogMessage as diag
@@ -227,19 +228,19 @@ class CareerHistoryFrame(tk.Frame):
 		self.button_next["command"] = lambda: next()
 		self.button_add["command"] = lambda: add_data()
 		self.button_del["command"] = lambda: del_data()
-		self.btn_env_edit["command"] = lambda:self.edit_environments(self.ret,)
+		self.btn_env_edit["command"] = lambda:self.edit_environments(self.ret,self.get_current().environment)
 		self.curr_page.bind('<<ComboboxSelected>>', setNumber)
 
-	#開発環境編集
-	def edit_environments(self,target):
+	#使用経験環境編集
+	def edit_environments(self,target,env:EnvironmentData):
 		subwindow = tk.Toplevel(target)
-		subwindow.title("開発環境編集")
+		subwindow.title("使用経験編集")
 		subwindow.geometry("1000x320")
 		subwindow.resizable(False,False)
 		subwindow.grab_set()
   
 		frame_title = tk.Frame(subwindow,borderwidth=5,relief="groove")
-		label_title = tk.Label(frame_title, text="開発環境編集", font=("Meiryo UI",14,"bold"))
+		label_title = tk.Label(frame_title, text="使用経験編集", font=("Meiryo UI",14,"bold"))
 		label_title.pack(side=tk.TOP,padx=10,pady=5)
 		frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
   
@@ -257,10 +258,11 @@ class CareerHistoryFrame(tk.Frame):
 		envs = list(ENV_GENRE.items())
 		label_envs={}
 		text_envs={}
+		entry_envs=env.get_values()
 		for i in range(len(envs)):
 			label_envs[envs[i][0]]=tk.Label(frame_edit, text=envs[i][1])
 			text_envs[envs[i][0]]=scrolledtext.ScrolledText(frame_edit,wrap=tk.WORD)
-			text_envs[envs[i][0]].insert('1.0',"\n".join(self.datas[0].dev_env[envs[i][0]]))
+			text_envs[envs[i][0]].insert('1.0',"\n".join(entry_envs[envs[i][0]]))
 			label_envs[envs[i][0]].grid(row=0,column=i,padx=2,pady=5)
 			text_envs[envs[i][0]].grid(row=1,column=i,padx=2,pady=5)
 			frame_edit.grid_columnconfigure(i, weight=1)
@@ -270,8 +272,10 @@ class CareerHistoryFrame(tk.Frame):
 		btn_cancel["command"] = lambda: cancel()
 
 		def update():
+			env_set = ENV_SET
 			for key in text_envs.keys():
-				self.datas[0].dev_env[key] = util.tidy_list((text_envs[key].get('1.0',text_envs[key].index(tk.END))).split("\n"))
+				env_set[key] = util.tidy_list((text_envs[key].get('1.0',text_envs[key].index(tk.END))).split("\n"))
+			env.set_values(env_set)
 			subwindow.destroy()
 
 		def cancel():

@@ -56,7 +56,7 @@ class SkillDataFrame(tk.Frame):
 		self.label_specialty = tk.Label(self.second_line,text="得意分野")
 		#得意分野
 		self.text_specialty = ttk.Entry(self.second_line,width=100,
-				     textvariable=self.data.specialty)
+				    	textvariable=self.data.specialty)
 
 		#3行目
 		self.third_line=tk.Frame(self.ret)
@@ -125,14 +125,22 @@ class SkillDataFrame(tk.Frame):
 			input_data.expr_start=self.expr_start.get_date()
 			input_data.pr=self.text_pr.get('1.0',self.text_pr.index(tk.END))
 			sval.out_date_check(vals["expr_start"],input_data.expr_start)
-			sval.out_is_not_empty(vals["specialty"],input_data.specialty.get())	
-   
+			sval.io_novalidation(vals["absense"])
+			sval.out_warn_if_empty(vals["specialty"],input_data.specialty.get())
+			sval.io_novalidation(vals["qualifications"])
+			sval.io_novalidation(vals["expr_env"])
+			sval.out_warn_if_empty(vals["pr"],input_data.pr)
+
 		def rock_items(res):
 			self.expr_start["state"] = tk.DISABLED if res["expr_start"]["result"] == VALID_OK else tk.NORMAL
 
 		vals = {
 			"expr_start":{"label":"業務開始日"},
-			"specialty":{"label":"得意分野"}
+			"absense":{"label":"休職期間"},
+			"specialty":{"label":"得意分野"},
+			"qualifications":{"label":"取得資格"},
+			"expr_env":{"label":"使用経験(業務外)"},
+			"pr":{"label":"自己PR"},
 		}
   
 		final_validation(self.data)
@@ -203,21 +211,20 @@ class SkillDataFrame(tk.Frame):
 			sval.in_date_check(input["expr_start"])
 			sval.in_regex_match(input["absense_year"],"[0-9]*","数字")
 			sval.in_number_between(input["absense_month"],0,11,"0から11の間")
-			sval.in_novalidation(input["specialty"])
-			sval.in_novalidation(input["qualifications"])
-			sval.in_novalidation(input["environments"])
-			sval.in_novalidation(input["pr"])
-
+			sval.io_novalidation(input["specialty"])
+			sval.io_novalidation(input["qualifications"])
+			sval.io_novalidation(input["environments"])
+			sval.io_novalidation(input["pr"])
+	
 		def set_value(input):
 			util.setdate_from_read(self.data.expr_start,self.expr_start,input["expr_start"])
 			util.setstr_from_read(self.data.period_absense_year,input["absense_year"])
 			util.setstr_from_read(self.data.period_absense_month,input["absense_month"])
 			util.setstr_from_read(self.data.specialty,input["specialty"])
-			util.setstr_from_read(self.data.pr,input["pr"])
 			self.data.qualifications = input["qualifications"]["value"]
 			self.data.expr_env.set_values(input["environments"]["value"])
 			self.text_pr.delete("1.0","end")
-			self.text_pr.insert('1.0',(self.data.pr.get()))
+			self.text_pr.insert('1.0',(input["pr"]["value"]))
    
 		def rock_items(input):
 			self.expr_start["state"] = tk.DISABLED if input["expr_start"]["result"] == VALID_OK else tk.NORMAL
