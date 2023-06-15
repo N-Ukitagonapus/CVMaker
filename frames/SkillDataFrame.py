@@ -16,7 +16,6 @@ from constants.message import DialogMessage as diag
 class SkillDataFrame(tk.Frame):
 	def __init__(self, target):
 		self.data = SkillData()
-		self.data.qualifications = ["初級シスアド", "基本情報技術者", "英検2級", "Oracle Bronze 12c"]
 		self.area_define(target)
 		self.input_control(target)
 		self.assembly()

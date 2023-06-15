@@ -8,13 +8,13 @@ from data_structure.CareerData import CareerData
 from data_structure.CareerHistoryData import CareerHistoryData
 from utils.Utilities import Utilities as util
 from tkinter import messagebox as msg
+from constants.message import DialogMessage as diag
 class CareerHistoryFrame(tk.Frame):
 	def __init__(self, target):
 
 		self.data=CareerHistoryData()
 
 		self.ret=tk.LabelFrame(target,relief=tk.RAISED,text = "職務経歴")
-		self.data_total=1
 		self.data_curr=1
   
 		#トップフレーム
@@ -47,9 +47,9 @@ class CareerHistoryFrame(tk.Frame):
 
 		#ページ送りフレーム
 		self.subframe_page = tk.Frame(self.frame_control)
-		self.curr_page = ttk.Combobox(self.subframe_page,width=3,state="readonly",justify="center",value=[i for i in range(1,self.data_total+1)])
+		self.curr_page = ttk.Combobox(self.subframe_page,width=3,state="readonly",justify="center",value=[1])
 		self.curr_page.set(1)
-		self.total_page = tk.Label(self.subframe_page,text=self.data_total)
+		self.total_page = tk.Label(self.subframe_page,text=1)
 		self.label_slash_page = tk.Label(self.subframe_page,text="／")
 
 		#追加・削除ボタンのサブフレーム
@@ -80,18 +80,21 @@ class CareerHistoryFrame(tk.Frame):
 		self.label_kara = tk.Label(self.first_line,text="～")
     
 		#業務期間
-		self.expr_start = DateEntry(self.first_line,day=1,locale='ja_JP',date_pattern='yyyy/mm/dd')
-		self.expr_end = DateEntry(self.first_line,day=util.get_last_date(datetime.date.today()).day,locale='ja_JP',date_pattern='yyyy/mm/dd')
+		self.term_start = DateEntry(self.first_line,day=1,locale='ja_JP',date_pattern='yyyy/mm/dd')
+		self.term_end = DateEntry(self.first_line,day=util.get_last_date(datetime.date.today()).day,locale='ja_JP',date_pattern='yyyy/mm/dd')
 
 		#終了フラグ
 		self.flg_bus_end = tk.BooleanVar(value = False)
-		self.chk_bus_end = tk.Checkbutton(self.first_line,text="業務終了", variable=self.flg_bus_end)
+		self.chk_bus_end = ttk.Checkbutton(self.first_line,text="業務終了", variable=self.flg_bus_end)
+
+		self.uuid=tk.Label(self.first_line,text=self.get_current().uuid)
 
 		#組立
-		self.expr_start.pack(side=tk.LEFT,padx=5)
+		self.term_start.pack(side=tk.LEFT,padx=5)
 		self.label_kara.pack(side=tk.LEFT,padx=5)
-		self.expr_end.pack(side=tk.LEFT,padx=5)
+		self.term_end.pack(side=tk.LEFT,padx=5)
 		self.chk_bus_end.pack(side=tk.LEFT,padx=5)
+		self.uuid.pack(side=tk.LEFT,padx=5)
 		self.first_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 
 		#2行目
@@ -145,10 +148,10 @@ class CareerHistoryFrame(tk.Frame):
 		self.select_position = ttk.Combobox(self.fourth_line,width=16,state="readonly",value=[val for val in POSITIONS.keys()])
 		self.text_position_etc = ttk.Entry(self.fourth_line,width=16,state="disabled") 
 		#開発メンバ数
-		self.text_members_internal = tk.Entry(self.fourth_line,width=3) 
-		self.text_members_total = tk.Entry(self.fourth_line,width=3) 
+		self.text_members_internal = ttk.Entry(self.fourth_line,width=3) 
+		self.text_members_total = ttk.Entry(self.fourth_line,width=3) 
 		self.flg_internal_leader = tk.BooleanVar(value = False)
-		self.chk_internal_leader = tk.Checkbutton(self.fourth_line,text="自社リーダー",variable=self.flg_internal_leader)
+		self.chk_internal_leader = ttk.Checkbutton(self.fourth_line,text="自社リーダー",variable=self.flg_internal_leader)
 
 		#組立
 		self.label_env.pack(side=tk.LEFT,padx=5)
@@ -175,7 +178,7 @@ class CareerHistoryFrame(tk.Frame):
 		task_list=list(TASKS.items())
 		for i in range(len(task_list)):
 			self.flg_tasks[task_list[i][0]] = tk.BooleanVar(value = False)
-			self.chk_tasks[task_list[i][0]] = tk.Checkbutton(self.fifth_line,text=task_list[i][1],variable=self.flg_tasks[task_list[i][0]])
+			self.chk_tasks[task_list[i][0]] = ttk.Checkbutton(self.fifth_line,text=task_list[i][1],variable=self.flg_tasks[task_list[i][0]])
 			self.chk_tasks[task_list[i][0]].grid(row=i//7,column=(i%7)+1,padx=5,sticky=tk.W)
 
 		#作業内容その他
@@ -189,38 +192,43 @@ class CareerHistoryFrame(tk.Frame):
 	#ボタンコントロール
 	def input_control(self):
 		def prev():
-			self.data_curr -= 1 if self.data_curr > 1 else 0
-			self.curr_page.set(self.data_curr)
+			if self.data_curr > 1:
+				self.data_curr -= 1
+				self.updadte_widget(self.data_curr)
 		def next():
-			self.data_curr += 1 if self.data_curr < self.data_total else 0
-			self.curr_page.set(self.data_curr)
+			if self.data_curr < len(self.data.history_list):
+				self.data_curr += 1
+				self.updadte_widget(self.data_curr)
 		def add_data():
-			self.data_total += 1
+			self.data.history_list.append(CareerData())
 			update_datanum()
 		def del_data():
-			if self.data_total > 1 :
-				self.data_total -= 1
-				update_datanum()
-				if self.data_curr > self.data_total:
-					self.data_curr -= 1
-					self.curr_page.set(self.data_curr)
+			if len(self.data.history_list) > 1 :
+				if util.msgbox_ask(diag.DIALOG_ASK_DELETE_CAREERDATA):
+					del self.data.history_list[self.data_curr - 1]
+					update_datanum()
+					if self.data_curr > 1:
+						self.data_curr -= 1
+						self.curr_page.set(self.data_curr)
+					self.updadte_widget(self.data_curr)
 			else:
-				msg.showinfo("もう消せないよ！", "これ以上データを消せません。")
+				util.msgbox_showmsg(diag.DIALOG_CANT_DELETE)
 		def update_datanum():
-			self.total_page["text"] = self.data_total
-			self.curr_page["value"]=[i for i in range(1,self.data_total+1)]
+			data_total = len(self.data.history_list)
+			self.total_page["text"] = data_total
+			self.curr_page["value"]=[i for i in range(1,data_total+1)]
 		def setNumber(event):
 			self.data_curr = int(event.widget.get())
-
+			self.updadte_widget(self.data_curr)
+   
 		self.btn_load["command"] = lambda: msg.showinfo("Message", "Load Button Has been pushed.")
 		self.btn_save["command"] = lambda: msg.showinfo("Message", "Save Button Has been pushed.")
 		self.button_prev["command"] = lambda: prev()
 		self.button_next["command"] = lambda: next()
 		self.button_add["command"] = lambda: add_data()
 		self.button_del["command"] = lambda: del_data()
-		self.btn_env_edit["command"] = lambda:self.edit_environments(self.ret)
+		self.btn_env_edit["command"] = lambda:self.edit_environments(self.ret,)
 		self.curr_page.bind('<<ComboboxSelected>>', setNumber)
-
 
 	#開発環境編集
 	def edit_environments(self,target):
@@ -269,11 +277,17 @@ class CareerHistoryFrame(tk.Frame):
 		def cancel():
 			subwindow.destroy()
 
+	#画面更新
+	def updadte_widget(self,page):
+		self.curr_page.set(page)
+		self.set_from_data(self.data.history_list[page-1])
+
 	#フォームに値を設定
 	def set_from_data(self, data:CareerData):
+		self.uuid["text"]=data.uuid
 		self.flg_bus_end.set(data.flg_over)
-		self.expr_start.set_date(data.term_start)
-		self.expr_end.set_date(data.term_end)
+		self.term_start.set_date(data.term_start)
+		self.term_end.set_date(data.term_end)
 		self.text_gyokai.setvar(data.description_gyokai)
 		self.text_proj_ov.delete("1.0","end")
 		self.text_proj_ov.insert('1.0',(data.description_system_overview))
@@ -282,16 +296,19 @@ class CareerHistoryFrame(tk.Frame):
 		self.text_disc_work.insert('1.0',"\n".join(data.description_work))
 		task_list=list(TASKS.items())
 		for i in range(len(task_list)):
-			if self.flg_tasks[task_list[i][1]] in data.tasks:
+			if self.flg_tasks[task_list[i][0]] in data.tasks:
 				self.flg_tasks[task_list[i][0]].set(True)
 			else:
 				self.flg_tasks[task_list[i][0]].set(False)
 		self.text_tasks_etc.state = tk.NORMAL if self.flg_tasks["ETC"] else tk.DISABLED
 		self.select_position.set(data.position)
-		self.text_position_etc.set(data.position_etc)
+		self.text_position_etc.setvar(data.position_etc)
 		self.flg_internal_leader.set(data.flg_internal_leader)
-		self.text_members_total.set(data.members)
-		self.text_members_internal.set(data.members_internal)
+		self.text_members_total.setvar(str(data.members))
+		self.text_members_internal.setvar(str(data.members_internal))
+
+	def get_current(self):
+		return self.data.history_list[self.data_curr - 1]
 
 	#メインウィンドウへ配置(mainからの呼び出し)
 	def pack(self):
