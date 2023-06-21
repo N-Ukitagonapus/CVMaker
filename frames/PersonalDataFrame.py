@@ -28,7 +28,6 @@ class PersonalDataFrame(tk.Frame):
 	def area_define(self, target):
 		#バリデーション定義
 		is_numeric = target.register(dval.is_numeric)
-		validate_romaji = target.register(dval.validate_romaji)
 		length_limit = target.register(dval.length_limit)
   
 		self.ret=tk.LabelFrame(target,relief=tk.RAISED,text = "個人基本情報")
@@ -145,14 +144,17 @@ class PersonalDataFrame(tk.Frame):
 
 	#入力コントロール
 	def input_control(self,target):
+		def birthday_set(event):
+			self.data.birthday=self.birthday_entry.get_date()
 		self.btn_load["command"] = lambda: self.data_read(target)
 		self.btn_save["command"] = lambda: self.data_confirm(target)
 		self.btn_edit["command"] = lambda: self.reactivate_items(target)
+		self.birthday_entry.bind("<FocusOut>",func = birthday_set)
+
 
 	#データ出力
 	def data_confirm(self,target):
 		def final_validation(input_data: PersonalData):
-			input_data.birthday=self.birthday_entry.get_date()
 			sval.out_regex_match(vals["shain_num"],r"[0-9]{3}","数字3桁",input_data.shain_num.get())
 			sval.out_is_not_empty(vals["name_kanji"],input_data.name_last_kanji.get(),input_data.name_first_kanji.get())
 			sval.out_regex_match(vals["name_romaji"],r"^[a-zA-Z]+$","英字各15桁以内",input_data.name_last_romaji.get(),input_data.name_first_romaji.get())

@@ -1,8 +1,9 @@
 '''
 技術情報フレーム
 '''
+from datetime import datetime
 import tkinter as tk
-from tkinter import ttk
+from tkinter import StringVar, ttk
 from tkinter import scrolledtext
 from tkcalendar import DateEntry
 from constants.const import COLOR, ENV_GENRE, ENV_SET, VALID_ERR, VALID_OK
@@ -13,6 +14,8 @@ from data_structure.SkillData import SkillData
 from utils.Validation import DynamicValidation as dval
 from utils.Validation import StaticValidation as sval
 from constants.message import DialogMessage as diag
+from utils.Utilities import Utilities as util
+
 class SkillDataFrame(tk.Frame):
 	def __init__(self, target):
 		self.data = SkillData()
@@ -36,7 +39,8 @@ class SkillDataFrame(tk.Frame):
 		self.label_absense_mth = tk.Label(self.first_line,text="月")
   
 		#業界経験開始年月
-		self.expr_start = DateEntry(self.first_line,day=1,locale='ja_JP',date_pattern='yyyy/mm/dd')
+		self.str_start_date = StringVar()
+		self.expr_start = DateEntry(self.first_line,day=1,locale='ja_JP',date_pattern='yyyy/mm/dd',textvariable=self.str_start_date)
 		#休職期間-年
 		self.text_absense_year = ttk.Entry(self.first_line, width=5,
 				    textvariable=self.data.period_absense_year,
@@ -114,11 +118,19 @@ class SkillDataFrame(tk.Frame):
   
 	#入力コントロール
 	def input_control(self,target):
+		def expr_start_set(*args):
+			try:
+				date_conv = util.get_first_date(datetime.strptime(self.str_start_date.get(),"%Y/%m/%d"))
+				self.expr_start.set_date(date_conv)
+				self.data.expr_start=date_conv
+			except ValueError:
+				return
 		self.btn_load["command"] = lambda: self.data_read(target)
 		self.btn_save["command"] = lambda: self.data_confirm(target)
 		self.btn_qual_edit["command"] = lambda:self.edit_qualifications(self.ret)
 		self.btn_env_edit["command"] = lambda:self.edit_environments(self.ret)
-
+		self.str_start_date.trace('w',expr_start_set)
+  
 	#データ出力
 	def data_confirm(self,target):
 		def final_validation(input_data: SkillData):
@@ -130,9 +142,6 @@ class SkillDataFrame(tk.Frame):
 			sval.io_novalidation(vals["qualifications"])
 			sval.io_novalidation(vals["expr_env"])
 			sval.out_warn_if_empty(vals["pr"],input_data.pr)
-
-		def rock_items(res):
-			self.expr_start["state"] = tk.DISABLED if res["expr_start"]["result"] == VALID_OK else tk.NORMAL
 
 		vals = {
 			"expr_start":{"label":"業務開始日"},
@@ -196,7 +205,6 @@ class SkillDataFrame(tk.Frame):
 		def do_output():
 			try:
 				SkillDataOutput(self.data).output()
-				rock_items(vals)
 			except Exception as e:
 				print(e)
 				util.msgbox_showmsg(diag.DIALOG_OUTPUT_ERROR)
@@ -225,9 +233,6 @@ class SkillDataFrame(tk.Frame):
 			self.data.expr_env.set_values(input["environments"]["value"])
 			self.text_pr.delete("1.0","end")
 			self.text_pr.insert('1.0',(input["pr"]["value"]))
-   
-		def rock_items(input):
-			self.expr_start["state"] = tk.DISABLED if input["expr_start"]["result"] == VALID_OK else tk.NORMAL
 
 		#ファイル読み込み結果表示
 		def show_result(input,target):
@@ -266,12 +271,10 @@ class SkillDataFrame(tk.Frame):
 			input = SkillDataInput().read()
 			inputcheck(input)
 			set_value(input)
-			rock_items(input)
 			show_result(input, target)
 		except Exception as e:
 			print(e)
 			util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)
-
 
 	#取得資格編集サブウィンドウ
 	def edit_qualifications(self,target):

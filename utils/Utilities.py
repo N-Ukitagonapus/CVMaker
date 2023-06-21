@@ -1,5 +1,5 @@
 import calendar
-from datetime import datetime
+from datetime import datetime, date
 from monthdelta import monthmod 
 import tkinter as tk
 from tkinter import StringVar, messagebox as msgbox
@@ -34,7 +34,7 @@ class Utilities:
 
 	#年月の初日を取得
 	def get_first_date(dt):
-		return datetime.date(dt.year, dt.month, 1)
+		return date(dt.year, dt.month, 1)
 	
 	#年月の最終日を取得
 	def get_last_date(dt):
