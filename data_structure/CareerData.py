@@ -2,7 +2,10 @@
 職務経歴
 '''
 import datetime
+from tkinter import StringVar, Text
+from tkinter.scrolledtext import ScrolledText
 import uuid
+from tkcalendar import DateEntry
 from data_structure.EnvironmentData import EnvironmentData
 from utils.Utilities import Utilities as util
 class CareerData:
@@ -16,12 +19,45 @@ class CareerData:
 		self.description_project_overview = ""	#プロジェクト概要
 		self.description_system_overview = ""		#システム概要
 		self.description_work = []							#作業概要
-		self.environment = EnvironmentData()				#開発環境
+		self.environment = EnvironmentData()		#開発環境
 		self.tasks = []													#作業内容
 		self.tasks_etc = ""											#作業内容その他
 		self.scale = ""													#開発規模
 		self.position = ""											#職位
-		self.position_etc = ""									#職位
+		self.position_etc = ""									#職位その他
 		self.flg_internal_leader = False				#自社リーダーフラグ
 		self.members = 0												#メンバー人数
 		self.members_internal = 0								#自社メンバー人数
+
+	def set_flg_over(self,input:bool):
+		self.flg_over = input
+
+	def set_term_start(self,input:DateEntry):
+		self.term_start = util.get_first_date(datetime.strptime(input.get(),"%Y/%m/%d"))
+		input.set_date(self.term_start)
+
+	def set_term_end(self,input:DateEntry):
+		self.term_end = util.get_last_date(datetime.strptime(input.get(),"%Y/%m/%d"))
+		input.set_date(self.term_end)
+
+	def set_gyokai(self,input:StringVar):
+		self.description_gyokai = input.get
+
+	def set_proj_overview(self,input:ScrolledText):
+		self.description_project_overview = input.get('1.0','end')
+
+	def set_sys_overview(self,input:ScrolledText):
+		self.description_system_overview = input.get('1.0','end')
+
+	def set_works(self,input:Text):
+		self.description_work = input.get('1.0','end').split(",")
+
+	def set_environment(self,input:dict):
+		self.environment.set_values(input)
+
+	def set_tasks(self,input:dict):
+		self.tasks = []
+		task_list=list(TASKS.items())
+		for i in range(len(task_list)):
+			if input[i].get():
+				self.tasks.append(TASKS[i])
