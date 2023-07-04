@@ -6,7 +6,9 @@ from tkinter import StringVar, Text
 from tkinter.scrolledtext import ScrolledText
 import uuid
 from tkcalendar import DateEntry
+from constants.const import TASKS
 from data_structure.EnvironmentData import EnvironmentData
+from data_structure.ScaleData import ScaleData
 from utils.Utilities import Utilities as util
 class CareerData:
 	#コンストラクタ(のようなもの)
@@ -22,7 +24,7 @@ class CareerData:
 		self.environment = EnvironmentData()		#開発環境
 		self.tasks = []													#作業内容
 		self.tasks_etc = ""											#作業内容その他
-		self.scale = ""													#開発規模
+		self.scale = ScaleData()								#開発規模
 		self.position = ""											#職位
 		self.position_etc = ""									#職位その他
 		self.flg_internal_leader = False				#自社リーダーフラグ

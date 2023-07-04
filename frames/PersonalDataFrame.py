@@ -27,8 +27,8 @@ class PersonalDataFrame(tk.Frame):
 	#エリア定義
 	def area_define(self, target):
 		#バリデーション定義
-		is_numeric = target.register(dval.is_numeric)
-		length_limit = target.register(dval.length_limit)
+		is_numeric = self.register(dval.is_numeric)
+		length_limit = self.register(dval.length_limit)
   
 		self.ret=tk.LabelFrame(target,relief=tk.RAISED,text = "個人基本情報")
 		#1行目
