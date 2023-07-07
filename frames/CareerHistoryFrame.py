@@ -7,6 +7,7 @@ from constants.const import ENV_GENRE, ENV_SET, POSITIONS, TASKS
 from data_structure.CareerData import CareerData
 from data_structure.CareerHistoryData import CareerHistoryData
 from data_structure.EnvironmentData import EnvironmentData
+from frames.subframe.ScaleDataSubFrame import ScaleDataSubFrame
 from utils.Utilities import Utilities as util
 from tkinter import messagebox as msg
 from constants.message import DialogMessage as diag
@@ -14,10 +15,15 @@ class CareerHistoryFrame(tk.Frame):
 	def __init__(self, target):
 
 		self.data=CareerHistoryData()
-
-		self.ret=tk.LabelFrame(target,relief=tk.RAISED,text = "職務経歴")
 		self.data_curr=1
-  
+
+		self.area_define(target)
+		self.input_control(target)
+		self.assembly()
+
+	def area_define(self, target):
+		self.ret=tk.LabelFrame(target,relief=tk.RAISED,text = "職務経歴")
+
 		#トップフレーム
 		self.top_frame=tk.Frame(self.ret)
   
@@ -29,13 +35,6 @@ class CareerHistoryFrame(tk.Frame):
 		self.btn_load = ttk.Button(self.top_frame,width=5,text="読込")
 		#保存ボタン
 		self.btn_save = ttk.Button(self.top_frame,width=5,text="保存")
-		#組立
-		self.label_now_yrmth.pack(side=tk.LEFT,padx=5)
-		self.label_genzai.pack(side=tk.LEFT,padx=5)
-		self.btn_save.pack(side=tk.RIGHT,padx=10)
-		self.btn_load.pack(side=tk.RIGHT,padx=10)
-		self.top_frame.pack(side=tk.TOP,fill=tk.X,pady=5)
-		##1行目ここまで
 
 	#メインフレーム
 		self.frame_main = tk.Frame(self.ret,relief=tk.RAISED,borderwidth=2)
@@ -56,23 +55,7 @@ class CareerHistoryFrame(tk.Frame):
 		#追加・削除ボタンのサブフレーム
 		self.subframe_adddel = tk.Frame(self.frame_control)
 		self.button_add = ttk.Button(self.subframe_adddel,text="追加",width=5)
-		self.button_del = ttk.Button(self.subframe_adddel,text="削除",width=5)	
-
-		#組立
-		self.button_add.pack(side=tk.LEFT,padx=1)
-		self.button_del.pack(side=tk.LEFT,padx=1)
-		self.subframe_adddel.pack(side=tk.TOP)
-
-		self.curr_page.pack(side=tk.TOP)
-		self.label_slash_page.pack(side=tk.TOP)
-		self.total_page.pack(side=tk.TOP)
-
-		self.button_prev.pack(side=tk.TOP,expand=True,fill=tk.Y)
-		self.subframe_page.pack(side=tk.TOP)
-		self.button_next.pack(side=tk.TOP,expand=True,fill=tk.Y)
-
-		self.frame_control.pack(side=tk.RIGHT,padx=2,fill=tk.Y)
-		self.frame_main.pack(side=tk.TOP,expand=True,fill=tk.BOTH,padx=2,pady=2)   
+		self.button_del = ttk.Button(self.subframe_adddel,text="削除",width=5)	 
 
 		#1行目
 		self.first_line = tk.Frame(self.frame_main)
@@ -90,14 +73,6 @@ class CareerHistoryFrame(tk.Frame):
 
 		self.uuid=tk.Label(self.first_line,text=self.get_current().uuid)
 
-		#組立
-		self.term_start.pack(side=tk.LEFT,padx=5)
-		self.label_kara.pack(side=tk.LEFT,padx=5)
-		self.term_end.pack(side=tk.LEFT,padx=5)
-		self.chk_bus_end.pack(side=tk.LEFT,padx=5)
-		self.uuid.pack(side=tk.LEFT,padx=5)
-		self.first_line.pack(side=tk.TOP,fill=tk.X,pady=2)
-
 		#2行目
 		self.second_line = tk.Frame(self.frame_main)
   
@@ -106,11 +81,6 @@ class CareerHistoryFrame(tk.Frame):
     
 		#業務期間
 		self.text_gyokai = ttk.Entry(self.second_line, width=10)
-
-		#組立  
-		self.label_gyokai.pack(side=tk.LEFT,padx=5)
-		self.text_gyokai.pack(side=tk.LEFT,padx=5)
-		self.second_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 
 		#3行目
 		self.third_line = tk.Frame(self.frame_main)
@@ -123,28 +93,20 @@ class CareerHistoryFrame(tk.Frame):
 		self.text_proj_ov = scrolledtext.ScrolledText(self.third_line,wrap=tk.WORD,width=80,height=3)  
 		self.text_sys_ov = scrolledtext.ScrolledText(self.third_line,wrap=tk.WORD,width=80,height=3)  
 		self.text_disc_work = tk.Text(self.third_line,wrap=tk.WORD,height=2)
-  
-		#組立
-		self.label_proj_ov.grid(row=0,column=0,padx=5)
-		self.text_proj_ov.grid(row=0,column=1,padx=5,sticky=tk.NSEW)
-		self.label_sys_ov.grid(row=1,column=0,padx=5)
-		self.text_sys_ov.grid(row=1,column=1,padx=5,sticky=tk.NSEW)
-		self.label_disc_work.grid(row=2,column=0,padx=5)
-		self.text_disc_work.grid(row=2,column=1,padx=5,sticky=tk.NSEW)
-		self.third_line.grid_columnconfigure(1, weight=1)
-		self.third_line.pack(side=tk.TOP,expand=True,fill=tk.X)
 
 		#4行目
 		self.fourth_line = tk.Frame(self.frame_main)
-
   	#フレーム・ラベル定義
 		self.label_env = tk.Label(self.fourth_line,text="開発環境")
+		self.label_scale = tk.Label(self.fourth_line,text="開発規模")
 		self.label_position = tk.Label(self.fourth_line,text="職位") 
 		self.label_members = tk.Label(self.fourth_line,text="開発メンバ数(自社/総数)") 
 		self.label_slash_member = tk.Label(self.fourth_line,text="/")
 
 		#開発環境
 		self.btn_env_edit = ttk.Button(self.fourth_line,width=5,text="編集")
+		#開発規模
+		self.btn_scale_edit = ttk.Button(self.fourth_line,width=5,text="編集")
 		#職位
 		self.select_position = ttk.Combobox(self.fourth_line,width=16,state="readonly",value=[val for val in POSITIONS.keys()])
 		self.text_position_etc = ttk.Entry(self.fourth_line,width=16,state="disabled") 
@@ -153,19 +115,6 @@ class CareerHistoryFrame(tk.Frame):
 		self.text_members_total = ttk.Entry(self.fourth_line,width=3) 
 		self.flg_internal_leader = tk.BooleanVar(value = False)
 		self.chk_internal_leader = ttk.Checkbutton(self.fourth_line,text="自社リーダー",variable=self.flg_internal_leader)
-
-		#組立
-		self.label_env.pack(side=tk.LEFT,padx=5)
-		self.btn_env_edit.pack(side=tk.LEFT,padx=5)
-		self.label_position.pack(side=tk.LEFT,padx=5)  
-		self.select_position.pack(side=tk.LEFT,padx=5)
-		self.text_position_etc.pack(side=tk.LEFT,padx=5)
-		self.label_members.pack(side=tk.LEFT,padx=5)
-		self.text_members_internal.pack(side=tk.LEFT,padx=5)
-		self.label_slash_member.pack(side=tk.LEFT,padx=5)
-		self.text_members_total.pack(side=tk.LEFT,padx=5)
-		self.chk_internal_leader.pack(side=tk.LEFT,padx=5)
-		self.fourth_line.pack(side=tk.TOP,fill=tk.X)
 
 		#5行目
 		self.fifth_line = tk.Frame(self.frame_main)
@@ -186,12 +135,74 @@ class CareerHistoryFrame(tk.Frame):
 		self.text_tasks_etc = ttk.Entry(self.fifth_line,width=16,state="disabled") 
 		self.text_tasks_etc.grid(row=1,column=8,padx=5,sticky=tk.W)
 
+	#組み立て
+	def assembly(self):
+
+		#トップフレーム
+		self.label_now_yrmth.pack(side=tk.LEFT,padx=5)
+		self.label_genzai.pack(side=tk.LEFT,padx=5)
+		self.btn_save.pack(side=tk.RIGHT,padx=10)
+		self.btn_load.pack(side=tk.RIGHT,padx=10)
+		self.top_frame.pack(side=tk.TOP,fill=tk.X,pady=5)
+
+		#メイン&ページ送りフレーム
+		self.button_add.pack(side=tk.LEFT,padx=1)
+		self.button_del.pack(side=tk.LEFT,padx=1)
+		self.subframe_adddel.pack(side=tk.TOP)
+		self.curr_page.pack(side=tk.TOP)
+		self.label_slash_page.pack(side=tk.TOP)
+		self.total_page.pack(side=tk.TOP)
+		self.button_prev.pack(side=tk.TOP,expand=True,fill=tk.Y)
+		self.subframe_page.pack(side=tk.TOP)
+		self.button_next.pack(side=tk.TOP,expand=True,fill=tk.Y)
+		self.frame_control.pack(side=tk.RIGHT,padx=2,fill=tk.Y)
+		self.frame_main.pack(side=tk.TOP,expand=True,fill=tk.BOTH,padx=2,pady=2)  
+
+		#1行目
+		self.term_start.pack(side=tk.LEFT,padx=5)
+		self.label_kara.pack(side=tk.LEFT,padx=5)
+		self.term_end.pack(side=tk.LEFT,padx=5)
+		self.chk_bus_end.pack(side=tk.LEFT,padx=5)
+		self.uuid.pack(side=tk.LEFT,padx=5)
+		self.first_line.pack(side=tk.TOP,fill=tk.X,pady=2)
+
+		#2行目
+		self.label_gyokai.pack(side=tk.LEFT,padx=5)
+		self.text_gyokai.pack(side=tk.LEFT,padx=5)
+		self.second_line.pack(side=tk.TOP,fill=tk.X,pady=2)
+
+		#3行目
+		self.label_proj_ov.grid(row=0,column=0,padx=5)
+		self.text_proj_ov.grid(row=0,column=1,padx=5,sticky=tk.NSEW)
+		self.label_sys_ov.grid(row=1,column=0,padx=5)
+		self.text_sys_ov.grid(row=1,column=1,padx=5,sticky=tk.NSEW)
+		self.label_disc_work.grid(row=2,column=0,padx=5)
+		self.text_disc_work.grid(row=2,column=1,padx=5,sticky=tk.NSEW)
+		self.third_line.grid_columnconfigure(1, weight=1)
+		self.third_line.pack(side=tk.TOP,expand=True,fill=tk.X)
+
+   	#4行目
+		self.label_env.pack(side=tk.LEFT,padx=5)
+		self.btn_env_edit.pack(side=tk.LEFT,padx=5)
+
+		self.label_scale.pack(side=tk.LEFT,padx=5)
+		self.btn_scale_edit.pack(side=tk.LEFT,padx=5)
+
+		self.label_position.pack(side=tk.LEFT,padx=5)  
+		self.select_position.pack(side=tk.LEFT,padx=5)
+		self.text_position_etc.pack(side=tk.LEFT,padx=5)
+
+		self.label_members.pack(side=tk.LEFT,padx=5)
+		self.text_members_internal.pack(side=tk.LEFT,padx=5)
+		self.label_slash_member.pack(side=tk.LEFT,padx=5)
+		self.text_members_total.pack(side=tk.LEFT,padx=5)
+		self.chk_internal_leader.pack(side=tk.LEFT,padx=5)
+		self.fourth_line.pack(side=tk.TOP,fill=tk.X)
+  
+		#5行目
 		self.fifth_line.pack(side=tk.TOP,fill=tk.X)
-
-		self.input_control()
-
 	#ボタンコントロール
-	def input_control(self):
+	def input_control(self, target):
 		def prev():
 			if self.data_curr > 1:
 				self.data_curr -= 1
@@ -229,6 +240,7 @@ class CareerHistoryFrame(tk.Frame):
 		self.button_add["command"] = lambda: add_data()
 		self.button_del["command"] = lambda: del_data()
 		self.btn_env_edit["command"] = lambda:self.edit_environments(self.ret,self.get_current().environment)
+		self.btn_scale_edit["command"] = lambda:ScaleDataSubFrame().edit_scale(target,self.get_current().scale)
 		self.curr_page.bind('<<ComboboxSelected>>', setNumber)
 
 	#使用経験環境編集
@@ -311,7 +323,7 @@ class CareerHistoryFrame(tk.Frame):
 		self.text_members_total.setvar(str(data.members))
 		self.text_members_internal.setvar(str(data.members_internal))
 
-	def get_current(self):
+	def get_current(self) -> CareerData:
 		return self.data.history_list[self.data_curr - 1]
 
 	#メインウィンドウへ配置(mainからの呼び出し)

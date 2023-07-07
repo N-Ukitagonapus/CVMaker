@@ -27,6 +27,13 @@ class Utilities:
 			tgtval = entered_date
 			tgtentry.set_date(entered_date)
 
+
+	def int_from_str(input:str) -> int:
+		try:
+			return int(input)
+		except ValueError:
+			return 0
+ 
 	#2日付間の差分(年)を取得
 	def get_year_sub(dt_from, dt_to):
 		monthdelta = monthmod(dt_from,dt_to)
