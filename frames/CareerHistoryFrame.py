@@ -27,6 +27,7 @@ class CareerHistoryFrame(tk.Frame):
 		self.assembly()
 
 	def area_define(self, target):
+		
 		#バリデーション定義
 		is_numeric = target.register(dval.is_numeric)
    
@@ -290,12 +291,38 @@ class CareerHistoryFrame(tk.Frame):
 				self.term_end.set_date(conv)
 			except ValueError:
 				return
+		def set_gyokai(*args):
+			self.get_current().set_gyokai(self.str_gyokai)
+		def proj_ov_set(event):
+			self.get_current().set_proj_overview(self.text_proj_ov)
+		def sys_ov_set(event):
+			self.get_current().set_sys_overview_overview(self.text_sys_ov)
+		def disc_work_set(event):
+			self.get_current().set_works(self.text_disc_work)
+		def set_tasks(*args):
+			self.get_current().set_tasks(self.flg_tasks)
+			if self.flg_tasks["ETC"].get() and self.text_tasks_etc["state"] != tk.NORMAL :
+				self.text_tasks_etc["state"] = tk.NORMAL 
+			else:
+				self.text_tasks_etc["state"] = tk.DISABLED
+				self.str_tasks_etc.set("")
+		def set_task_etc(*args):
+			self.get_current().set_tasks_etc(self.str_tasks_etc)
 
-  
 		self.page_num.trace('w', set_datanum)
 		self.flg_bus_end.trace('w',set_flg_over)
 		self.str_term_start.trace('w',set_term_first)
 		self.str_term_end.trace('w',set_term_last)
+		self.str_gyokai.trace('w',set_gyokai)
+
+		self.text_proj_ov.bind("<FocusOut>",func = proj_ov_set)
+		self.text_sys_ov.bind("<FocusOut>",func = sys_ov_set)
+		self.text_disc_work.bind("<FocusOut>",func = disc_work_set)
+
+		task_keys=list(TASKS.keys())
+		for i in range(len(task_keys)):
+			self.flg_tasks[task_keys[i]].trace('w',set_tasks)
+		self.str_tasks_etc.trace('w',set_task_etc)
 
 	#画面更新
 	def updadte_widget(self,page):
@@ -320,9 +347,9 @@ class CareerHistoryFrame(tk.Frame):
 				self.flg_tasks[task_list[i][0]].set(True)
 			else:
 				self.flg_tasks[task_list[i][0]].set(False)
-		self.text_tasks_etc.state = tk.NORMAL if self.flg_tasks["ETC"] else tk.DISABLED
+		self.text_tasks_etc["state"] = tk.NORMAL if self.flg_tasks["ETC"] else tk.DISABLED
 		self.select_position.set(data.position)
-		self.text_position_etc.state = tk.NORMAL if data.position == POSITIONS["その他"] else tk.DISABLED
+		self.text_position_etc["state"] = tk.NORMAL if data.position == POSITIONS["その他"] else tk.DISABLED
 		self.text_position_etc.setvar(data.position_etc)
 		self.flg_internal_leader.set(data.flg_internal_leader)
 		self.text_members_total.setvar(str(data.members))

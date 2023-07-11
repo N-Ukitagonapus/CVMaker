@@ -52,15 +52,12 @@ class CareerData:
 	def set_works(self,input:Text):
 		self.description_work = input.get('1.0','end').split(",")
 
-	def set_environment(self,input:dict):
-		self.environment.set_values(input)
-
 	def set_tasks(self,input:dict):
 		self.tasks = []
-		task_list=list(TASKS.items())
-		for i in range(len(task_list)):
-			if input[i].get():
-				self.tasks.append(TASKS[i])
+		task_keys=list(TASKS.keys())
+		for i in range(len(task_keys)):
+			if input[task_keys[i]].get():
+				self.tasks.append(TASKS[task_keys[i]])
 
 	def set_tasks_etc(self,input:StringVar):
 		self.tasks_etc = input.get()
