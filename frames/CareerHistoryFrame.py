@@ -1,27 +1,35 @@
 import datetime
+import os
 import tkinter as tk
-from tkinter import IntVar, StringVar, ttk
+from tkinter import BooleanVar, IntVar, StringVar, ttk
 from tkcalendar import DateEntry
 from tkinter import scrolledtext
 from constants.const import ENV_GENRE, ENV_SET, POSITIONS, TASKS
 from data_structure.CareerData import CareerData
 from data_structure.CareerHistoryData import CareerHistoryData
 from data_structure.EnvironmentData import EnvironmentData
+from frames.subframe.EnvironmentSubFrame import EnvironmentSubFrame
 from frames.subframe.ScaleDataSubFrame import ScaleDataSubFrame
 from utils.Utilities import Utilities as util
 from tkinter import messagebox as msg
 from constants.message import DialogMessage as diag
+from utils.Validation import DynamicValidation as dval
 class CareerHistoryFrame(tk.Frame):
+  
 	def __init__(self, target):
 
 		self.data=CareerHistoryData()
 		self.data_curr=1
 
 		self.area_define(target)
-		self.input_control(target)
+		self.button_control(target)
+		self.input_control()
 		self.assembly()
 
 	def area_define(self, target):
+		#バリデーション定義
+		is_numeric = target.register(dval.is_numeric)
+   
 		self.ret=tk.LabelFrame(target,relief=tk.RAISED,text = "職務経歴")
 
 		#トップフレーム
@@ -64,11 +72,15 @@ class CareerHistoryFrame(tk.Frame):
 		self.label_kara = tk.Label(self.first_line,text="～")
     
 		#業務期間
-		self.term_start = DateEntry(self.first_line,day=1,locale='ja_JP',date_pattern='yyyy/mm/dd')
-		self.term_end = DateEntry(self.first_line,day=util.get_last_date(datetime.date.today()).day,locale='ja_JP',date_pattern='yyyy/mm/dd')
+		##開始年月
+		self.str_term_start = StringVar()
+		self.term_start = DateEntry(self.first_line, day=1, locale='ja_JP', date_pattern='yyyy/mm/dd', textvariable=self.str_term_start)
+		##終了年月
+		self.str_term_end = StringVar()
+		self.term_end = DateEntry(self.first_line, day=util.get_last_date(datetime.date.today()).day, locale='ja_JP', date_pattern='yyyy/mm/dd', textvariable=self.str_term_end)
 
 		#終了フラグ
-		self.flg_bus_end = tk.BooleanVar(value = False)
+		self.flg_bus_end = BooleanVar(value = False)
 		self.chk_bus_end = ttk.Checkbutton(self.first_line,text="業務終了", variable=self.flg_bus_end)
 
 		self.uuid=tk.Label(self.first_line,text=self.get_current().uuid)
@@ -80,7 +92,8 @@ class CareerHistoryFrame(tk.Frame):
 		self.label_gyokai = tk.Label(self.second_line,text="業界")
     
 		#業務期間
-		self.text_gyokai = ttk.Entry(self.second_line, width=10)
+		self.str_gyokai = StringVar()
+		self.text_gyokai = ttk.Entry(self.second_line, width=10, textvariable=self.str_gyokai)
 
 		#3行目
 		self.third_line = tk.Frame(self.frame_main)
@@ -108,13 +121,23 @@ class CareerHistoryFrame(tk.Frame):
 		#開発規模
 		self.btn_scale_edit = ttk.Button(self.fourth_line,width=5,text="編集")
 		#職位
-		self.select_position = ttk.Combobox(self.fourth_line,width=16,state="readonly",value=[val for val in POSITIONS.keys()])
-		self.text_position_etc = ttk.Entry(self.fourth_line,width=16,state="disabled") 
+		self.str_position = StringVar()
+		self.select_position = ttk.Combobox(self.fourth_line, width=16, state="readonly", value=[val for val in POSITIONS.keys()], textvariable=self.str_position)
+		self.str_position_etc = StringVar()
+		self.text_position_etc = ttk.Entry(self.fourth_line, width=16, state="disabled", textvariable=self.str_position_etc) 
 		#開発メンバ数
-		self.text_members_internal = ttk.Entry(self.fourth_line,width=3) 
-		self.text_members_total = ttk.Entry(self.fourth_line,width=3) 
-		self.flg_internal_leader = tk.BooleanVar(value = False)
-		self.chk_internal_leader = ttk.Checkbutton(self.fourth_line,text="自社リーダー",variable=self.flg_internal_leader)
+		self.str_members_internal = StringVar()
+		self.text_members_internal = ttk.Entry(self.fourth_line, width=5,
+          textvariable=self.str_members_internal,
+				  validatecommand = (is_numeric, '%P', 5),
+					validate='key')
+		self.str_members_total = StringVar()
+		self.text_members_total = ttk.Entry(self.fourth_line, width=5,
+          textvariable=self.str_members_total,
+				  validatecommand = (is_numeric, '%P', 5),
+					validate='key')
+		self.flg_internal_leader = BooleanVar(value = False)
+		self.chk_internal_leader = ttk.Checkbutton(self.fourth_line, text="自社リーダー", variable=self.flg_internal_leader)
 
 		#5行目
 		self.fifth_line = tk.Frame(self.frame_main)
@@ -125,14 +148,16 @@ class CareerHistoryFrame(tk.Frame):
 		#作業内容
 		self.flg_tasks={}
 		self.chk_tasks={}
-		task_list=list(TASKS.items())
-		for i in range(len(task_list)):
-			self.flg_tasks[task_list[i][0]] = tk.BooleanVar(value = False)
-			self.chk_tasks[task_list[i][0]] = ttk.Checkbutton(self.fifth_line,text=task_list[i][1],variable=self.flg_tasks[task_list[i][0]])
-			self.chk_tasks[task_list[i][0]].grid(row=i//7,column=(i%7)+1,padx=5,sticky=tk.W)
+		task_keys=list(TASKS.keys())
+  
+		for i in range(len(task_keys)):
+			self.flg_tasks[task_keys[i]] = BooleanVar(value = False)
+			self.chk_tasks[task_keys[i]] = ttk.Checkbutton(self.fifth_line,text=TASKS[task_keys[i]],variable=self.flg_tasks[task_keys[i]])
+			self.chk_tasks[task_keys[i]].grid(row=i//7,column=(i%7)+1,padx=5,sticky=tk.W)
 
 		#作業内容その他
-		self.text_tasks_etc = ttk.Entry(self.fifth_line,width=16,state="disabled") 
+		self.str_tasks_etc = StringVar()
+		self.text_tasks_etc = ttk.Entry(self.fifth_line, width=16, state="disabled", textvariable=self.str_tasks_etc) 
 		self.text_tasks_etc.grid(row=1,column=8,padx=5,sticky=tk.W)
 
 	#組み立て
@@ -201,8 +226,9 @@ class CareerHistoryFrame(tk.Frame):
   
 		#5行目
 		self.fifth_line.pack(side=tk.TOP,fill=tk.X)
+  
 	#ボタンコントロール
-	def input_control(self, target):
+	def button_control(self, target):
 		def prev():
 			if self.data_curr > 1:
 				self.data_curr -= 1
@@ -229,69 +255,31 @@ class CareerHistoryFrame(tk.Frame):
 			data_total = len(self.data.history_list)
 			self.total_page["text"] = data_total
 			self.curr_page["value"]=[i for i in range(1,data_total+1)]
-		def setNumber(event):
-			self.data_curr = int(event.widget.get())
-			self.updadte_widget(self.data_curr)
-   
+
 		self.btn_load["command"] = lambda: msg.showinfo("Message", "Load Button Has been pushed.")
 		self.btn_save["command"] = lambda: msg.showinfo("Message", "Save Button Has been pushed.")
 		self.button_prev["command"] = lambda: prev()
 		self.button_next["command"] = lambda: next()
 		self.button_add["command"] = lambda: add_data()
 		self.button_del["command"] = lambda: del_data()
-		self.btn_env_edit["command"] = lambda:self.edit_environments(self.ret,self.get_current().environment)
-		self.btn_scale_edit["command"] = lambda:ScaleDataSubFrame().edit_scale(target,self.get_current().scale)
+		self.btn_env_edit["command"] = lambda:EnvironmentSubFrame().edit_envs(target, "開発環境編集", self.get_current().environment)
+		self.btn_scale_edit["command"] = lambda:ScaleDataSubFrame().edit_scale(target, self.get_current().scale)
+
+
+	#入力コントロール
+	def input_control(self):
+   
+		def setNumber(event):
+			self.data_curr = int(event.widget.get())
+			self.updadte_widget(self.data_curr)
+
+		def set_flg_over(*args):
+			self.get_current().set_flg_over(self.flg_bus_end)
+
+		def set_term_first(*args):
+			self.get_current().set_term_start()
+
 		self.curr_page.bind('<<ComboboxSelected>>', setNumber)
-
-	#使用経験環境編集
-	def edit_environments(self,target,env:EnvironmentData):
-		subwindow = tk.Toplevel(target)
-		subwindow.title("使用経験編集")
-		subwindow.geometry("1000x320")
-		subwindow.resizable(False,False)
-		subwindow.grab_set()
-  
-		frame_title = tk.Frame(subwindow,borderwidth=5,relief="groove")
-		label_title = tk.Label(frame_title, text="使用経験編集", font=("Meiryo UI",14,"bold"))
-		label_title.pack(side=tk.TOP,padx=10,pady=5)
-		frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
-  
-		btn_frame = tk.Frame(subwindow,borderwidth=2,relief="groove")
-		btn_ok = ttk.Button(btn_frame,text="OK")
-		btn_cancel = ttk.Button(btn_frame,text="キャンセル")
-		btn_ok.pack(side=tk.LEFT,padx=10,pady=5)
-		btn_cancel.pack(side=tk.RIGHT,padx=10,pady=5)
-		btn_frame.pack(side=tk.BOTTOM,padx=20,pady=5)
-
-		label_desc = tk.Label(subwindow, text="複数ある場合は改行区切りで入力してください。")
-		label_desc.pack(side=tk.TOP,pady=5)
-
-		frame_edit = tk.Frame(subwindow)
-		envs = list(ENV_GENRE.items())
-		label_envs={}
-		text_envs={}
-		entry_envs=env.get_values()
-		for i in range(len(envs)):
-			label_envs[envs[i][0]]=tk.Label(frame_edit, text=envs[i][1])
-			text_envs[envs[i][0]]=scrolledtext.ScrolledText(frame_edit,wrap=tk.WORD)
-			text_envs[envs[i][0]].insert('1.0',"\n".join(entry_envs[envs[i][0]]))
-			label_envs[envs[i][0]].grid(row=0,column=i,padx=2,pady=5)
-			text_envs[envs[i][0]].grid(row=1,column=i,padx=2,pady=5)
-			frame_edit.grid_columnconfigure(i, weight=1)
-		frame_edit.grid_rowconfigure(1, weight=1)
-		frame_edit.pack(side=tk.TOP,expand=True,padx=10,pady=5)
-		btn_ok["command"] = lambda: update()
-		btn_cancel["command"] = lambda: cancel()
-
-		def update():
-			env_set = ENV_SET
-			for key in text_envs.keys():
-				env_set[key] = util.tidy_list((text_envs[key].get('1.0',text_envs[key].index(tk.END))).split("\n"))
-			env.set_values(env_set)
-			subwindow.destroy()
-
-		def cancel():
-			subwindow.destroy()
 
 	#画面更新
 	def updadte_widget(self,page):

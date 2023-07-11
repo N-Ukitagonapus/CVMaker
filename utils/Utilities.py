@@ -27,7 +27,7 @@ class Utilities:
 			tgtval = entered_date
 			tgtentry.set_date(entered_date)
 
-
+	#文字列⇒数値変換(読み取り失敗時は0)
 	def int_from_str(input:str) -> int:
 		try:
 			return int(input)

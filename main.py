@@ -49,8 +49,8 @@ class Application(tk.Frame):
 
 		self.frame_personal.data.shain_num.trace('w',self.sync_shain_num)
   
-		# 社員番号更新イベント
-		# argsのnameと内包StringVarの_nameが一致したらイベントを発生させる。
+	# 社員番号更新イベント
+	# argsのnameと内包StringVarの_nameが一致したらイベントを発生させる。
 	def sync_shain_num(self, *args):
 		tgt = self.frame_personal.data.shain_num
 		if args[0] == tgt._name:
