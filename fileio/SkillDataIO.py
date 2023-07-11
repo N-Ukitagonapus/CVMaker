@@ -42,8 +42,8 @@ class SkillDataOutput():
 
 		et.SubElement(base,"shain_num").text = self.data.shain_num
 		et.SubElement(base,"expr_start").text = self.data.expr_start.strftime("%Y%m")
-		et.SubElement(base,"absense_year").text = 0 if self.data.period_absense_year.get() == "" else self.data.period_absense_year.get()
-		et.SubElement(base,"absense_month").text = 0 if self.data.period_absense_month.get() == "" else self.data.period_absense_month.get()
+		et.SubElement(base,"absense_year").text = "0" if self.data.period_absense_year.get() == "" else self.data.period_absense_year.get()
+		et.SubElement(base,"absense_month").text = "0" if self.data.period_absense_month.get() == "" else self.data.period_absense_month.get()
 		if self.data.specialty != "":
 			et.SubElement(base,"specialty").text = self.data.specialty.get()
 		create_list(base,self.data.qualifications,"qualifications")
