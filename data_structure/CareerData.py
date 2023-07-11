@@ -34,13 +34,11 @@ class CareerData:
 	def set_flg_over(self,input:BooleanVar):
 		self.flg_over = input.get()
 
-	def set_term_start(self,input:DateEntry):
-		self.term_start = util.get_first_date(datetime.strptime(input.get(),"%Y/%m/%d"))
-		input.set_date(self.term_start)
-
-	def set_term_end(self,input:DateEntry):
-		self.term_end = util.get_last_date(datetime.strptime(input.get(),"%Y/%m/%d"))
-		input.set_date(self.term_end)
+	def set_term_start(self,input:datetime):
+		self.term_start = input
+  
+	def set_term_end(self,input:datetime):
+		self.term_end = input
 
 	def set_gyokai(self,input:StringVar):
 		self.description_gyokai = input.get

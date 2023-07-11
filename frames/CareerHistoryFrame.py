@@ -1,5 +1,5 @@
 import datetime
-import os
+from datetime import datetime as dt
 import tkinter as tk
 from tkinter import BooleanVar, IntVar, StringVar, ttk
 from tkcalendar import DateEntry
@@ -19,7 +19,7 @@ class CareerHistoryFrame(tk.Frame):
 	def __init__(self, target):
 
 		self.data=CareerHistoryData()
-		self.data_curr=1
+		self.data_num=1
 
 		self.area_define(target)
 		self.button_control(target)
@@ -55,8 +55,9 @@ class CareerHistoryFrame(tk.Frame):
 
 		#ページ送りフレーム
 		self.subframe_page = tk.Frame(self.frame_control)
-		self.curr_page = ttk.Combobox(self.subframe_page,width=3,state="readonly",justify="center",value=[1])
-		self.curr_page.set(1)
+		self.page_num = IntVar()
+		self.page_num.set(self.data_num)
+		self.curr_page = ttk.Combobox(self.subframe_page,width=3,textvariable=self.page_num,state="readonly",justify="center",value=[1])
 		self.total_page = tk.Label(self.subframe_page,text=1)
 		self.label_slash_page = tk.Label(self.subframe_page,text="／")
 
@@ -230,25 +231,24 @@ class CareerHistoryFrame(tk.Frame):
 	#ボタンコントロール
 	def button_control(self, target):
 		def prev():
-			if self.data_curr > 1:
-				self.data_curr -= 1
-				self.updadte_widget(self.data_curr)
+			if self.data_num > 1:
+				self.data_num -= 1
+				self.page_num.set(self.data_num)
 		def next():
-			if self.data_curr < len(self.data.history_list):
-				self.data_curr += 1
-				self.updadte_widget(self.data_curr)
+			if self.data_num < len(self.data.history_list):
+				self.data_num += 1
+				self.page_num.set(self.data_num)
 		def add_data():
 			self.data.history_list.append(CareerData())
 			update_datanum()
 		def del_data():
 			if len(self.data.history_list) > 1 :
 				if util.msgbox_ask(diag.DIALOG_ASK_DELETE_CAREERDATA):
-					del self.data.history_list[self.data_curr - 1]
+					del self.data.history_list[self.data_num - 1]
 					update_datanum()
-					if self.data_curr > 1:
-						self.data_curr -= 1
-						self.curr_page.set(self.data_curr)
-					self.updadte_widget(self.data_curr)
+					if self.data_num > 1:
+						self.data_num -= 1
+						self.page_num.set(self.data_num)
 			else:
 				util.msgbox_showmsg(diag.DIALOG_CANT_DELETE)
 		def update_datanum():
@@ -269,17 +269,33 @@ class CareerHistoryFrame(tk.Frame):
 	#入力コントロール
 	def input_control(self):
    
-		def setNumber(event):
-			self.data_curr = int(event.widget.get())
-			self.updadte_widget(self.data_curr)
+		def set_datanum(*args):
+			self.data_num = int(self.page_num.get())
+			self.updadte_widget(self.data_num)
 
 		def set_flg_over(*args):
 			self.get_current().set_flg_over(self.flg_bus_end)
 
 		def set_term_first(*args):
-			self.get_current().set_term_start()
+			try:
+				conv = util.get_first_date(dt.strptime(self.str_term_start.get(),"%Y/%m/%d"))
+				self.get_current().set_term_start(conv)
+				self.term_start.set_date(conv)
+			except ValueError:
+				return
+		def set_term_last(*args):
+			try:
+				conv = util.get_last_date(dt.strptime(self.str_term_end.get(),"%Y/%m/%d"))
+				self.get_current().set_term_end(conv)
+				self.term_end.set_date(conv)
+			except ValueError:
+				return
 
-		self.curr_page.bind('<<ComboboxSelected>>', setNumber)
+  
+		self.page_num.trace('w', set_datanum)
+		self.flg_bus_end.trace('w',set_flg_over)
+		self.str_term_start.trace('w',set_term_first)
+		self.str_term_end.trace('w',set_term_last)
 
 	#画面更新
 	def updadte_widget(self,page):
@@ -306,13 +322,14 @@ class CareerHistoryFrame(tk.Frame):
 				self.flg_tasks[task_list[i][0]].set(False)
 		self.text_tasks_etc.state = tk.NORMAL if self.flg_tasks["ETC"] else tk.DISABLED
 		self.select_position.set(data.position)
+		self.text_position_etc.state = tk.NORMAL if data.position == POSITIONS["その他"] else tk.DISABLED
 		self.text_position_etc.setvar(data.position_etc)
 		self.flg_internal_leader.set(data.flg_internal_leader)
 		self.text_members_total.setvar(str(data.members))
 		self.text_members_internal.setvar(str(data.members_internal))
 
 	def get_current(self) -> CareerData:
-		return self.data.history_list[self.data_curr - 1]
+		return self.data.history_list[self.data_num - 1]
 
 	#メインウィンドウへ配置(mainからの呼び出し)
 	def pack(self):

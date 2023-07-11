@@ -93,7 +93,7 @@ class ScaleDataSubFrame:
 		grid_input(f_coding,2,val_forms,"本")
 		grid_input(f_coding,3,val_etc1_num,"本")
 		grid_input(f_coding,4,val_etc2_num,"本")
-		grid_input(f_coding,5,val_total_steps,"ステップ")
+		grid_input(f_coding,5,val_total_steps,"St.")
 		##テスト
 		grid_input(f_testing,0,val_uts,"ケース")
 		grid_input(f_testing,1,val_its,"ケース")
