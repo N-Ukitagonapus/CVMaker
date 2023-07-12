@@ -296,7 +296,7 @@ class CareerHistoryFrame(tk.Frame):
 		def proj_ov_set(event):
 			self.get_current().set_proj_overview(self.text_proj_ov)
 		def sys_ov_set(event):
-			self.get_current().set_sys_overview_overview(self.text_sys_ov)
+			self.get_current().set_sys_overview(self.text_sys_ov)
 		def disc_work_set(event):
 			self.get_current().set_works(self.text_disc_work)
 		def set_tasks(*args):
@@ -308,7 +308,22 @@ class CareerHistoryFrame(tk.Frame):
 				self.str_tasks_etc.set("")
 		def set_task_etc(*args):
 			self.get_current().set_tasks_etc(self.str_tasks_etc)
-
+		def set_position(*args):
+			self.get_current().set_position(self.str_position)
+			if self.str_position.get() == "その他" and self.text_position_etc["state"] != tk.NORMAL :
+				self.text_position_etc["state"] = tk.NORMAL 
+			else:
+				self.text_position_etc["state"] = tk.DISABLED
+				self.str_position_etc.set("")
+		def set_position_etc(*args):
+			self.get_current().set_position_etc(self.str_position_etc)
+		def set_members_internal(*args):
+			self.get_current().set_members_internal(self.str_members_internal)
+		def set_members_total(*args):
+			self.get_current().set_members(self.str_members_total)
+		def set_internal_leader(*args):
+			self.get_current().set_flg_internal_leader(self.flg_internal_leader)
+  
 		self.page_num.trace('w', set_datanum)
 		self.flg_bus_end.trace('w',set_flg_over)
 		self.str_term_start.trace('w',set_term_first)
@@ -324,10 +339,16 @@ class CareerHistoryFrame(tk.Frame):
 			self.flg_tasks[task_keys[i]].trace('w',set_tasks)
 		self.str_tasks_etc.trace('w',set_task_etc)
 
+		self.str_position.trace('w',set_position)
+		self.str_position_etc.trace('w',set_position_etc)
+		self.str_members_internal.trace('w',set_members_internal)
+		self.str_members_total.trace('w',set_members_total)
+		self.flg_internal_leader.trace('w',set_internal_leader)
+
 	#画面更新
 	def updadte_widget(self,page):
-		self.curr_page.set(page)
-		self.set_from_data(self.data.history_list[page-1])
+		self.page_num.set(page)
+		self.set_from_data(self.get_current())
 
 	#フォームに値を設定
 	def set_from_data(self, data:CareerData):
@@ -335,26 +356,29 @@ class CareerHistoryFrame(tk.Frame):
 		self.flg_bus_end.set(data.flg_over)
 		self.term_start.set_date(data.term_start)
 		self.term_end.set_date(data.term_end)
-		self.text_gyokai.setvar(data.description_gyokai)
+		self.str_gyokai.set(data.description_gyokai)
 		self.text_proj_ov.delete("1.0","end")
 		self.text_proj_ov.insert('1.0',(data.description_system_overview))
 		self.text_sys_ov.delete("1.0","end")
 		self.text_sys_ov.insert('1.0',(data.description_system_overview))
+		self.text_disc_work.delete("1.0","end")
 		self.text_disc_work.insert('1.0',"\n".join(data.description_work))
-		task_list=list(TASKS.items())
-		for i in range(len(task_list)):
-			if self.flg_tasks[task_list[i][0]] in data.tasks:
-				self.flg_tasks[task_list[i][0]].set(True)
+		keys=list(TASKS.keys())
+		for i in keys:
+			if TASKS[i] in data.tasks:
+				self.flg_tasks[i].set(True)
 			else:
-				self.flg_tasks[task_list[i][0]].set(False)
-		self.text_tasks_etc["state"] = tk.NORMAL if self.flg_tasks["ETC"] else tk.DISABLED
-		self.select_position.set(data.position)
+				self.flg_tasks[i].set(False)
+		self.text_tasks_etc["state"] = tk.NORMAL if self.flg_tasks["ETC"].get() else tk.DISABLED
+		self.str_tasks_etc.set(data.tasks_etc)
+		self.str_position.set(data.position)
 		self.text_position_etc["state"] = tk.NORMAL if data.position == POSITIONS["その他"] else tk.DISABLED
-		self.text_position_etc.setvar(data.position_etc)
+		self.str_position_etc.set(data.position_etc)
 		self.flg_internal_leader.set(data.flg_internal_leader)
-		self.text_members_total.setvar(str(data.members))
-		self.text_members_internal.setvar(str(data.members_internal))
+		self.str_members_total.set(str(data.members))
+		self.str_members_internal.set(str(data.members_internal))
 
+	#現在の経歴データ呼出
 	def get_current(self) -> CareerData:
 		return self.data.history_list[self.data_num - 1]
 
