@@ -5,7 +5,6 @@ import datetime
 from tkinter import BooleanVar, StringVar, Text
 from tkinter.scrolledtext import ScrolledText
 import uuid
-from tkcalendar import DateEntry
 from constants.const import TASKS
 from data_structure.EnvironmentData import EnvironmentData
 from data_structure.ScaleData import ScaleData
@@ -41,7 +40,7 @@ class CareerData:
 		self.term_end = input
 
 	def set_gyokai(self,input:StringVar):
-		self.description_gyokai = input.get
+		self.description_gyokai = input.get()
 
 	def set_proj_overview(self,input:ScrolledText):
 		self.description_project_overview = input.get('1.0','end')
