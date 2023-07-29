@@ -8,6 +8,7 @@ from tkinter import scrolledtext
 from tkcalendar import DateEntry
 from constants.const import COLOR, ENV_GENRE, ENV_SET, VALID_ERR, VALID_OK
 from fileio.SkillDataIO import SkillDataInput, SkillDataOutput
+from frames.subframe.EnvironmentSubFrame import EnvironmentSubFrame
 from utils.Utilities import Utilities as util
 from tkinter import messagebox as msg
 from data_structure.SkillData import SkillData
@@ -128,7 +129,7 @@ class SkillDataFrame(tk.Frame):
 		self.btn_load["command"] = lambda: self.data_read(target)
 		self.btn_save["command"] = lambda: self.data_confirm(target)
 		self.btn_qual_edit["command"] = lambda:self.edit_qualifications(self.ret)
-		self.btn_env_edit["command"] = lambda:self.edit_environments(self.ret)
+		self.btn_env_edit["command"]  = lambda:EnvironmentSubFrame().edit_envs(target, "使用経験編集", self.data.expr_env)
 		self.str_start_date.trace('w',expr_start_set)
   
 	#データ出力

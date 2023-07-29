@@ -274,24 +274,24 @@ class CareerHistoryFrame(tk.Frame):
 			self.data_num = int(self.page_num.get())
 			self.updadte_widget(self.data_num)
 
-		def set_flg_over(*args):
+		def set_flg_over(event):
 			self.get_current().set_flg_over(self.flg_bus_end)
 
-		def set_term_first(*args):
+		def set_term_first(event):
 			try:
 				conv = util.get_first_date(dt.strptime(self.str_term_start.get(),"%Y/%m/%d"))
 				self.get_current().set_term_start(conv)
 				self.term_start.set_date(conv)
 			except ValueError:
 				return
-		def set_term_last(*args):
+		def set_term_last(event):
 			try:
 				conv = util.get_last_date(dt.strptime(self.str_term_end.get(),"%Y/%m/%d"))
 				self.get_current().set_term_end(conv)
 				self.term_end.set_date(conv)
 			except ValueError:
 				return
-		def set_gyokai(*args):
+		def set_gyokai(event):
 			self.get_current().set_gyokai(self.str_gyokai)
 		def proj_ov_set(event):
 			self.get_current().set_proj_overview(self.text_proj_ov)
@@ -299,36 +299,36 @@ class CareerHistoryFrame(tk.Frame):
 			self.get_current().set_sys_overview(self.text_sys_ov)
 		def disc_work_set(event):
 			self.get_current().set_works(self.text_disc_work)
-		def set_tasks(*args):
+		def set_tasks():
 			self.get_current().set_tasks(self.flg_tasks)
 			if self.flg_tasks["ETC"].get() and self.text_tasks_etc["state"] != tk.NORMAL :
 				self.text_tasks_etc["state"] = tk.NORMAL 
 			else:
 				self.text_tasks_etc["state"] = tk.DISABLED
 				self.str_tasks_etc.set("")
-		def set_task_etc(*args):
+		def set_task_etc(event):
 			self.get_current().set_tasks_etc(self.str_tasks_etc)
-		def set_position(*args):
+		def set_position(event):
 			self.get_current().set_position(self.str_position)
 			if self.str_position.get() == "その他" and self.text_position_etc["state"] != tk.NORMAL :
 				self.text_position_etc["state"] = tk.NORMAL 
 			else:
 				self.text_position_etc["state"] = tk.DISABLED
 				self.str_position_etc.set("")
-		def set_position_etc(*args):
+		def set_position_etc(event):
 			self.get_current().set_position_etc(self.str_position_etc)
-		def set_members_internal(*args):
+		def set_members_internal(event):
 			self.get_current().set_members_internal(self.str_members_internal)
-		def set_members_total(*args):
+		def set_members_total(event):
 			self.get_current().set_members(self.str_members_total)
-		def set_internal_leader(*args):
+		def set_internal_leader():
 			self.get_current().set_flg_internal_leader(self.flg_internal_leader)
   
-		self.page_num.trace('w', set_datanum)
-		self.flg_bus_end.trace('w',set_flg_over)
-		self.str_term_start.trace('w',set_term_first)
-		self.str_term_end.trace('w',set_term_last)
-		self.str_gyokai.trace('w',set_gyokai)
+		self.page_num.trace('w',set_datanum)
+		self.chk_bus_end.bind("<ButtonPress>",func = set_flg_over)
+		self.term_start.bind("<FocusOut>",func = set_term_first)
+		self.term_end.bind("<FocusOut>",func = set_term_last)
+		self.text_gyokai.bind("<FocusOut>",func = set_gyokai)
 
 		self.text_proj_ov.bind("<FocusOut>",func = proj_ov_set)
 		self.text_sys_ov.bind("<FocusOut>",func = sys_ov_set)
@@ -336,14 +336,14 @@ class CareerHistoryFrame(tk.Frame):
 
 		task_keys=list(TASKS.keys())
 		for i in range(len(task_keys)):
-			self.flg_tasks[task_keys[i]].trace('w',set_tasks)
-		self.str_tasks_etc.trace('w',set_task_etc)
+			self.chk_tasks[task_keys[i]]["command"] = lambda:set_tasks()
+		self.text_tasks_etc.bind("<FocusOut>",func = set_task_etc)
 
-		self.str_position.trace('w',set_position)
-		self.str_position_etc.trace('w',set_position_etc)
-		self.str_members_internal.trace('w',set_members_internal)
-		self.str_members_total.trace('w',set_members_total)
-		self.flg_internal_leader.trace('w',set_internal_leader)
+		self.select_position.bind('<<ComboboxSelected>>',func = set_position)
+		self.text_position_etc.bind("<FocusOut>",func = set_position_etc)
+		self.text_members_internal.bind("<FocusOut>",func = set_members_internal)
+		self.text_members_total.bind("<FocusOut>",func = set_members_total)
+		self.chk_internal_leader["command"] = lambda:set_internal_leader()
 
 	#画面更新
 	def updadte_widget(self,page):
