@@ -8,6 +8,7 @@ from constants.const import ENV_GENRE, ENV_SET, POSITIONS, TASKS
 from data_structure.CareerData import CareerData
 from data_structure.CareerHistoryData import CareerHistoryData
 from data_structure.EnvironmentData import EnvironmentData
+from fileio.CareerHistoryDataIO import CareerHistoryOutValidation
 from frames.subframe.EnvironmentSubFrame import EnvironmentSubFrame
 from frames.subframe.ScaleDataSubFrame import ScaleDataSubFrame
 from utils.Utilities import Utilities as util
@@ -258,7 +259,7 @@ class CareerHistoryFrame(tk.Frame):
 			self.curr_page["value"]=[i for i in range(1,data_total+1)]
 
 		self.btn_load["command"] = lambda: msg.showinfo("Message", "Load Button Has been pushed.")
-		self.btn_save["command"] = lambda: msg.showinfo("Message", "Save Button Has been pushed.")
+		self.btn_save["command"] = lambda: CareerHistoryOutValidation().check_input(target,self.data)
 		self.button_prev["command"] = lambda: prev()
 		self.button_next["command"] = lambda: next()
 		self.button_add["command"] = lambda: add_data()
@@ -287,7 +288,7 @@ class CareerHistoryFrame(tk.Frame):
 		def set_term_last(event):
 			try:
 				conv = util.get_last_date(dt.strptime(self.str_term_end.get(),"%Y/%m/%d"))
-				self.get_current().set_term_end(conv)
+				self.get_current().set_term_end(conv.date())
 				self.term_end.set_date(conv)
 			except ValueError:
 				return
@@ -330,8 +331,8 @@ class CareerHistoryFrame(tk.Frame):
 		self.term_end.bind("<FocusOut>",func = set_term_last)
 		self.text_gyokai.bind("<FocusOut>",func = set_gyokai)
 
-		self.text_proj_ov.bind("<FocusOut>",func = proj_ov_set)
-		self.text_sys_ov.bind("<FocusOut>",func = sys_ov_set)
+		self.text_proj_ov.bind("<KeyPress>",func = proj_ov_set)
+		self.text_sys_ov.bind("<KeyPress>",func = sys_ov_set)
 		self.text_disc_work.bind("<FocusOut>",func = disc_work_set)
 
 		task_keys=list(TASKS.keys())

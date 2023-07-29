@@ -47,6 +47,7 @@ class Utilities:
 	def get_last_date(dt):
 		return dt.replace(day=calendar.monthrange(dt.year, dt.month)[1])
 
+
 	#リスト整頓(空白除去、重複削除)
 	def tidy_list(list):
 		return [s for s in list if s != '']
