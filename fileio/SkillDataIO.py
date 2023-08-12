@@ -50,7 +50,8 @@ class SkillDataOutput():
 		create_env(base,self.data.expr_env)
 		if self.data.pr != "":
 			et.SubElement(base,"pr").text = self.data.pr
-   
+		et.indent(tree,"\t")
+		
 		tree.write(self.filename, encoding="utf-8", xml_declaration=True)
 
 class SkillDataInput():

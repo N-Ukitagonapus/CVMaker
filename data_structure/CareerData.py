@@ -12,7 +12,6 @@ from utils.Utilities import Utilities as util
 class CareerData:
 	#コンストラクタ(のようなもの)
 	def __init__(self):
-		self.uuid = uuid.uuid4()
 		self.flg_over = False																					#終了フラグ
 		self.term_start = util.get_first_date(datetime.date.today())	#期間：から
 		self.term_end = util.get_last_date(datetime.date.today())			#期間：まで
@@ -43,13 +42,13 @@ class CareerData:
 		self.description_gyokai = input.get()
 
 	def set_proj_overview(self,input:ScrolledText):
-		self.description_project_overview = input.get('1.0','end')
+		self.description_project_overview = str.strip(input.get('1.0','end'))
 
 	def set_sys_overview(self,input:ScrolledText):
-		self.description_system_overview = input.get('1.0','end')
+		self.description_system_overview = str.strip(input.get('1.0','end'))
 
 	def set_works(self,input:Text):
-		self.description_work = input.get('1.0','end').split(",")
+		self.description_work = str.strip(input.get('1.0','end')).split(",")
 
 	def set_tasks(self,input:dict):
 		self.tasks = []

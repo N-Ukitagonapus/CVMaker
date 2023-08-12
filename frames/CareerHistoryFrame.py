@@ -8,7 +8,7 @@ from constants.const import ENV_GENRE, ENV_SET, POSITIONS, TASKS
 from data_structure.CareerData import CareerData
 from data_structure.CareerHistoryData import CareerHistoryData
 from data_structure.EnvironmentData import EnvironmentData
-from fileio.CareerHistoryDataIO import CareerHistoryOutValidation
+from fileio.CareerHistoryDataIO import CareerHistoryDataInput, CareerHistoryOutValidation
 from frames.subframe.EnvironmentSubFrame import EnvironmentSubFrame
 from frames.subframe.ScaleDataSubFrame import ScaleDataSubFrame
 from utils.Utilities import Utilities as util
@@ -85,8 +85,6 @@ class CareerHistoryFrame(tk.Frame):
 		#終了フラグ
 		self.flg_bus_end = BooleanVar(value = False)
 		self.chk_bus_end = ttk.Checkbutton(self.first_line,text="業務終了", variable=self.flg_bus_end)
-
-		self.uuid=tk.Label(self.first_line,text=self.get_current().uuid)
 
 		#2行目
 		self.second_line = tk.Frame(self.frame_main)
@@ -191,7 +189,6 @@ class CareerHistoryFrame(tk.Frame):
 		self.label_kara.pack(side=tk.LEFT,padx=5)
 		self.term_end.pack(side=tk.LEFT,padx=5)
 		self.chk_bus_end.pack(side=tk.LEFT,padx=5)
-		self.uuid.pack(side=tk.LEFT,padx=5)
 		self.first_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 
 		#2行目
@@ -257,8 +254,21 @@ class CareerHistoryFrame(tk.Frame):
 			data_total = len(self.data.history_list)
 			self.total_page["text"] = data_total
 			self.curr_page["value"]=[i for i in range(1,data_total+1)]
+		def read_file():
+			try:
+				io = CareerHistoryDataInput()
+				self.data = io.read()
+				update_datanum()
+				self.data_num = 1
+				self.updadte_widget(self.data_num)
+				util.msgbox_showmsg(diag.DIALOG_SUCCESS_READ_CAREERDATA)
+			except Exception as e:
+				print(e)
+				util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)
+			finally:
+				del io
 
-		self.btn_load["command"] = lambda: msg.showinfo("Message", "Load Button Has been pushed.")
+		self.btn_load["command"] = lambda: read_file()
 		self.btn_save["command"] = lambda: CareerHistoryOutValidation().check_input(target,self.data)
 		self.button_prev["command"] = lambda: prev()
 		self.button_next["command"] = lambda: next()
@@ -353,7 +363,6 @@ class CareerHistoryFrame(tk.Frame):
 
 	#フォームに値を設定
 	def set_from_data(self, data:CareerData):
-		self.uuid["text"]=data.uuid
 		self.flg_bus_end.set(data.flg_over)
 		self.term_start.set_date(data.term_start)
 		self.term_end.set_date(data.term_end)
@@ -363,7 +372,7 @@ class CareerHistoryFrame(tk.Frame):
 		self.text_sys_ov.delete("1.0","end")
 		self.text_sys_ov.insert('1.0',(data.description_system_overview))
 		self.text_disc_work.delete("1.0","end")
-		self.text_disc_work.insert('1.0',"\n".join(data.description_work))
+		self.text_disc_work.insert('1.0',",".join(data.description_work))
 		keys=list(TASKS.keys())
 		for i in keys:
 			if TASKS[i] in data.tasks:

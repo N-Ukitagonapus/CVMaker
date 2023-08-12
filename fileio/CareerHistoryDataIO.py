@@ -1,10 +1,15 @@
 from constants.const import ENV_SET, TASKS
+from data_structure.CareerData import CareerData
 from data_structure.EnvironmentData import EnvironmentData
 from data_structure.CareerHistoryData import CareerHistoryData
+from data_structure.ScaleData import ScaleData
+from utils.Utilities import Utilities as util
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 from tkinter import ttk, filedialog as fd
+from constants.message import DialogMessage as diag
 import datetime
+from datetime import datetime as dt
 import xml.etree.ElementTree as et
 import xml.dom.minidom as md
 
@@ -80,12 +85,12 @@ class CareerHistoryOutValidation():
 	def check_input(self,target:tk.LabelFrame,input:CareerHistoryData):
 		self.validation(input)
 		subwindow = tk.Toplevel(target)
-		subwindow.title("開発規模編集")
+		subwindow.title("職務経歴情報チェック")
 		subwindow.geometry("640x480")
 		subwindow.resizable(False,False)
 		subwindow.grab_set()
 		frame_title = tk.Frame(subwindow,borderwidth=5,relief="groove")
-		label_title = tk.Label(frame_title, text="開発規模編集", font=("Meiryo UI",14,"bold"))
+		label_title = tk.Label(frame_title, text="職務経歴情報チェック", font=("Meiryo UI",14,"bold"))
 		label_title.pack(side=tk.TOP,padx=10,pady=5)
 		frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
 
@@ -106,53 +111,199 @@ class CareerHistoryOutValidation():
 		btn_cancel["command"] = lambda: cancel()
 
 		def output(input:CareerHistoryData):
+			try:
+				CareerHistoryDataOutput(input).output()
+			except Exception as e:
+				print(e)
+				util.msgbox_showmsg(diag.DIALOG_OUTPUT_ERROR)
 			subwindow.destroy()
-			del self
 		def cancel():
 			subwindow.destroy()
-			del self
     
 class CareerHistoryDataOutput():
-
 	def __init__(self,data:CareerHistoryData):
 		self.data = data
 		self.filename = fd.asksaveasfilename(
-			title = "職務経歴データ保存",
+			title = "職務経歴情報保存",
 			filetypes = FILE_TYPES,
 			initialdir = INITIAL_DIR,
 			defaultextension = DEFAULT_EXT
     )
 
 	def output(self):
-		def create_list(tgt, list:list, base_title):
-			if len(self.data.qualifications) > 0 :
+		# 値設定
+		def set_value(tgt,tag,value):
+			if value is not None:
+				if value != "":
+					et.SubElement(tgt,tag).text = str(value)
+
+		# 値設定(数値型)
+		def set_int(tgt,tag,value):
+			if value is not None:
+				if value > 0:
+					et.SubElement(tgt,tag).text = str(value)
+
+		# リスト作成
+		def create_list(tgt, base_title, list:list):
+			if len(list) > 0 :
 				inner = et.SubElement(tgt,base_title)
 				for val in list:
-					et.SubElement(inner,"value").text = val
+					et.SubElement(inner, "value").text = val
 
+		# 開発環境作成
 		def create_env(tgt, envs:EnvironmentData):
-			trunk = et.SubElement(tgt,"environments")
-			create_list(trunk,envs.server,"servers")
-			create_list(trunk,envs.os,"os")
-			create_list(trunk,envs.db,"databases")
-			create_list(trunk,envs.lang,"languages")
-			create_list(trunk,envs.fw,"frameworks")
-			create_list(trunk,envs.mw,"middlewares")
-			create_list(trunk,envs.tools,"tools")
-			create_list(trunk,envs.pkg,"packages")
+			trunk = et.SubElement(tgt, "environments")
+			create_list(trunk, "servers",envs.server)
+			create_list(trunk, "os",envs.os)
+			create_list(trunk, "databases",envs.db)
+			create_list(trunk, "languages",envs.lang)
+			create_list(trunk, "frameworks",envs.fw)
+			create_list(trunk, "middlewares",envs.mw)
+			create_list(trunk, "tools",envs.tools)
+			create_list(trunk, "packages",envs.pkg)
 
-		base = et.Element("SkillData")
+		# 開発規模作成
+		def create_scale(tgt, scale:ScaleData):
+			trunk = et.SubElement(tgt, "scale")
+			## 設計
+			set_int(trunk, "des_base", scale.des_base)				#基本設計
+			set_int(trunk, "des_detail", scale.des_detail)			#詳細設計
+			## 製造
+			set_int(trunk, "gamens", scale.gamens)					#画面数
+			set_int(trunk, "batches", scale.batches)				#バッチ数
+			set_int(trunk, "forms", scale.forms)					#帳票数
+			set_value(trunk, "etc1_name", scale.etc1_name)			#その他1：名称
+			set_int(trunk, "etc1_num", scale.etc1_num)				#その他1：数
+			set_value(trunk, "etc2_name", scale.etc2_name)			#その他2：名称
+			set_int(trunk, "etc2_num", scale.etc2_num)				#その他2：数
+			set_int(trunk, "total_steps", scale.total_steps)		#総ステップ
+			## テスト
+			set_int(trunk, "uts", scale.uts)						#単体テスト
+			set_int(trunk, "its", scale.its)						#結合テスト
+			set_int(trunk, "sts", scale.sts)						#総合テスト
+
+		# 経歴作成
+		def create_career(tgt, career:CareerData):
+			trunk = et.SubElement(tgt, "Career")
+			et.SubElement(trunk, "flg_over").text = career.flg_over													#終了フラグ
+			et.SubElement(trunk, "term_start").text = career.term_start.strftime("%Y%m")		#期間：から
+			et.SubElement(trunk, "term_end").text = career.term_end.strftime("%Y%m")				#期間：まで
+			set_value(trunk, "gyokai", career.description_gyokai)														#業界
+			set_value(trunk, "project_gaiyo", career.description_project_overview)					#プロジェクト概要
+			set_value(trunk, "system_gaiyo", career.description_system_overview)						#システム概要
+			create_list(trunk, "work", career.description_work)															#作業概要
+			create_env(trunk, career.environment)																						#開発環境
+			create_list(trunk, "task", career.tasks)																				#作業内容
+			set_value(trunk, "task_etc", career.tasks_etc)																	#作業内容その他
+			create_scale(trunk, career.scale)																								#開発規模
+			set_value(trunk, "position", career.position)																		#職位
+			set_value(trunk, "position_etc", career.position_etc)														#職位その他
+			set_value(trunk, "flg_internal_leader", career.flg_internal_leader)							#自社リーダーフラグ
+			set_value(trunk, "members", career.members)																			#メンバー人数
+			set_value(trunk, "members_internal", career.members_internal)										#自社メンバー人数
+		### ここから本処理 ###
+		base = et.Element("CareerData")
 		tree = et.ElementTree(element=base)
 
-		et.SubElement(base,"shain_num").text = self.data.shain_num
-		et.SubElement(base,"expr_start").text = self.data.expr_start.strftime("%Y%m")
-		et.SubElement(base,"absense_year").text = "0" if self.data.period_absense_year.get() == "" else self.data.period_absense_year.get()
-		et.SubElement(base,"absense_month").text = "0" if self.data.period_absense_month.get() == "" else self.data.period_absense_month.get()
-		if self.data.specialty != "":
-			et.SubElement(base,"specialty").text = self.data.specialty.get()
-		create_list(base,self.data.qualifications,"qualifications")
-		create_env(base,self.data.expr_env)
-		if self.data.pr != "":
-			et.SubElement(base,"pr").text = self.data.pr
-   
+		set_value(base,"shain_num",self.data.shain_num)
+		for career in self.data.history_list:
+			create_career(base, career)
+		et.indent(tree,"\t")
 		tree.write(self.filename, encoding="utf-8", xml_declaration=True)
+
+class CareerHistoryDataInput():
+	def __init__(self):
+		filename = fd.askopenfilename(
+		title = "職務経歴データ読込",
+		filetypes = FILE_TYPES,
+		initialdir = INITIAL_DIR,
+		defaultextension = DEFAULT_EXT
+    )
+		tree = et.parse(filename) 
+
+		# XMLを取得
+		self.root = tree.getroot()
+  
+	def read(self) -> CareerHistoryData:
+		def read_value(tag):
+			return "" if tag is None else tag.text
+
+		def read_int(tag):
+			return 0 if tag is None else util.int_from_str(tag.text)
+
+		def read_list(tag):
+			ret = []
+			for value in tag.iter("value"):
+				ret.append(value.text)
+			return ret
+
+		def read_env(tree) -> EnvironmentData:
+			keys=[
+				("servers","srv"),
+				("os","os"),
+				("databases","db"),
+				("languages","lang"),
+				("frameworks","fw"),
+				("middlewares","mw"),
+				("tools","tools"),
+				("packages","pkg")
+			]
+			dish = ENV_SET
+			for key in keys:
+				subtree = tree.find(key[0])
+				if subtree is not None:
+					for value in subtree.iter("value"):
+						dish[key[1]].append(value.text)
+
+			ret = EnvironmentData()
+			ret.set_values(dish)
+			return ret
+		
+		def read_scale(scale) -> ScaleData:
+			ret = ScaleData()
+			## 設計
+			ret.des_base = read_int(scale.find("des_base"))					#基本設計
+			ret.des_detail = read_int(scale.find("des_detail"))			#詳細設計
+			## 製造
+			ret.gamens = read_int(scale.find("gamens"))							#画面数
+			ret.batches = read_int(scale.find("batches"))						#バッチ数
+			ret.forms = read_int(scale.find("forms"))								#帳票数
+			ret.etc1_name = read_value(scale.find("etc1_name"))			#その他1：名称
+			ret.etc1_num = read_int(scale.find("des_etc1_numbase"))	#その他1：数
+			ret.etc2_name = read_value(scale.find("etc2_name"))			#その他2：名称
+			ret.etc2_num = read_int(scale.find("etc2_num"))					#その他2：数
+			ret.total_steps = read_int(scale.find("total_steps"))		#総ステップ
+			## テスト
+			ret.uts = read_int(scale.find("uts"))										#単体テスト
+			ret.its = read_int(scale.find("its"))										#結合テスト
+			ret.sts = read_int(scale.find("sts"))										#総合テスト
+			return ret
+
+		def read_career(career) -> CareerData:
+			ret = CareerData()
+			ret.flg_over = bool(career.find("flg_over").text)															#終了フラグ
+			ret.term_start = dt.strptime(career.find("term_start").text,"%Y%m")		#期間：から
+			ret.term_end = util.get_last_date(dt.strptime(career.find("term_start").text,"%Y%m"))			#期間：まで
+			ret.description_gyokai = read_value(career.find("gyokai"))										#業界
+			ret.description_project_overview = read_value(career.find("project_gaiyo"))		#プロジェクト概要
+			ret.description_system_overview = read_value(career.find("system_gaiyo"))			#システム概要
+			ret.description_work = read_list(career.find("work"))													#作業概要
+			ret.environment = read_env(career.find("environments"))												#開発環境
+			ret.tasks = read_list(career.find("task"))																		#作業内容
+			ret.tasks_etc = read_value(career.find("tasks_etc"))													#作業内容その他
+			ret.scale = read_scale(career.find("scale"))																	#開発規模
+			ret.position = read_value(career.find("position"))														#職位
+			ret.position_etc = read_value(career.find("position_etc"))										#職位その他
+			ret.flg_internal_leader = bool(career.find("flg_internal_leader").text)				#自社リーダーフラグ
+			ret.members = read_int(career.find("members"))																#メンバー人数
+			ret.members_internal = read_int(career.find("members_internal"))							#自社メンバー人数
+			return ret
+
+		# 返却クラス定義
+		ret = CareerHistoryData()
+		shain_num = self.root.find("shain_num")
+		ret.shain_num = 0 if shain_num is None else util.int_from_str(shain_num.text)
+		ret.history_list = []
+		for career in self.root.iter("Career"):
+			ret.history_list.append(read_career(career))
+		return ret

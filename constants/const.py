@@ -1,4 +1,5 @@
-ENV_SET = {"srv":[] #サーバ
+ENV_SET = {
+  "srv":[] #サーバ
 	,"os" : [] #OS
 	,"db" : [] #DB
 	,"lang" : [] #言語

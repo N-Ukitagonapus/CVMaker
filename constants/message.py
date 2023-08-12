@@ -16,4 +16,5 @@ class DialogMessage:
 	DIALOG_CANT_DELETE = ("error","もう消せませんよ","これ以上経歴データ削除が出来ません。")
 	DIALOG_ASK_FORCE_OUTPUT = ("yesno","強制出力","入力項目にエラーがありますが、強制的に出力してもよろしいですか？")
 	DIALOG_ASK_EDIT_PERSONALDATA = ("yesno","個人基本情報再編集","本当に全項目を再編集しますか？")
-	DIALOG_ASK_DELETE_CAREERDATA = ("yesno", "経歴データ削除","この経歴データを削除してしまってもよろしいですか？")	
+	DIALOG_ASK_DELETE_CAREERDATA = ("yesno", "経歴データ削除","この経歴データを削除してしまってもよろしいですか？")
+	DIALOG_SUCCESS_READ_CAREERDATA = ("info", "職務経歴情報読込成功","職務経歴情報を読み込みました。")		
