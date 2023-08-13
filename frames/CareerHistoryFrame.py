@@ -12,11 +12,10 @@ from fileio.CareerHistoryDataIO import CareerHistoryDataInput, CareerHistoryOutV
 from frames.subframe.EnvironmentSubFrame import EnvironmentSubFrame
 from frames.subframe.ScaleDataSubFrame import ScaleDataSubFrame
 from utils.Utilities import Utilities as util
-from tkinter import messagebox as msg
 from constants.message import DialogMessage as diag
 from utils.Validation import DynamicValidation as dval
 class CareerHistoryFrame(tk.Frame):
-  
+	
 	def __init__(self, target):
 
 		self.data=CareerHistoryData()

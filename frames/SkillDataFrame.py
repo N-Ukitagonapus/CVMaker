@@ -150,7 +150,7 @@ class SkillDataFrame(tk.Frame):
 			"specialty":{"label":"得意分野"},
 			"qualifications":{"label":"取得資格"},
 			"expr_env":{"label":"使用経験(業務外)"},
-			"pr":{"label":"自己PR"},
+			"pr":{"label":"自己PR"}
 		}
   
 		final_validation(self.data)
@@ -226,12 +226,14 @@ class SkillDataFrame(tk.Frame):
 			sval.io_novalidation(input["pr"])
 	
 		def set_value(input):
-			util.setdate_from_read(self.data.expr_start,self.expr_start,input["expr_start"])
+			util.setdate_from_read(self.expr_start,input["expr_start"])
+			self.data.expr_start = self.expr_start.get_date()
 			util.setstr_from_read(self.data.period_absense_year,input["absense_year"])
 			util.setstr_from_read(self.data.period_absense_month,input["absense_month"])
 			util.setstr_from_read(self.data.specialty,input["specialty"])
 			self.data.qualifications = input["qualifications"]["value"]
 			self.data.expr_env.set_values(input["environments"]["value"])
+			self.data.pr = input["pr"]["value"]
 			self.text_pr.delete("1.0","end")
 			self.text_pr.insert('1.0',(input["pr"]["value"]))
 
@@ -307,56 +309,6 @@ class SkillDataFrame(tk.Frame):
 
 		def update():
 			self.data.qualifications = util.tidy_list((text.get('1.0',text.index(tk.END))).split("\n"))
-			subwindow.destroy()
-
-		def cancel():
-			subwindow.destroy()
-
-	#使用経験環境編集
-	def edit_environments(self,target):
-		subwindow = tk.Toplevel(target)
-		subwindow.title("使用経験編集")
-		subwindow.geometry("1000x320")
-		subwindow.resizable(False,False)
-		subwindow.grab_set()
-  
-		frame_title = tk.Frame(subwindow,borderwidth=5,relief="groove")
-		label_title = tk.Label(frame_title, text="使用経験編集", font=("Meiryo UI",14,"bold"))
-		label_title.pack(side=tk.TOP,padx=10,pady=5)
-		frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
-  
-		btn_frame = tk.Frame(subwindow,borderwidth=2,relief="groove")
-		btn_ok = ttk.Button(btn_frame,text="OK")
-		btn_cancel = ttk.Button(btn_frame,text="キャンセル")
-		btn_ok.pack(side=tk.LEFT,padx=10,pady=5)
-		btn_cancel.pack(side=tk.RIGHT,padx=10,pady=5)
-		btn_frame.pack(side=tk.BOTTOM,padx=20,pady=5)
-
-		label_desc = tk.Label(subwindow, text="複数ある場合は改行区切りで入力してください。")
-		label_desc.pack(side=tk.TOP,pady=5)
-
-		frame_edit = tk.Frame(subwindow)
-		envs = list(ENV_GENRE.items())
-		label_envs={}
-		text_envs={}
-		entry_envs=self.data.expr_env.get_values()
-		for i in range(len(envs)):
-			label_envs[envs[i][0]]=tk.Label(frame_edit, text=envs[i][1])
-			text_envs[envs[i][0]]=scrolledtext.ScrolledText(frame_edit,wrap=tk.WORD)
-			text_envs[envs[i][0]].insert('1.0',"\n".join(entry_envs[envs[i][0]]))
-			label_envs[envs[i][0]].grid(row=0,column=i,padx=2,pady=5)
-			text_envs[envs[i][0]].grid(row=1,column=i,padx=2,pady=5)
-			frame_edit.grid_columnconfigure(i, weight=1)
-		frame_edit.grid_rowconfigure(1, weight=1)
-		frame_edit.pack(side=tk.TOP,expand=True,padx=10,pady=5)
-		btn_ok["command"] = lambda: update()
-		btn_cancel["command"] = lambda: cancel()
-
-		def update():
-			env_set = ENV_SET
-			for key in text_envs.keys():
-				env_set[key] = util.tidy_list((text_envs[key].get('1.0',text_envs[key].index(tk.END))).split("\n"))
-			self.data.expr_env.set_values(env_set)
 			subwindow.destroy()
 
 		def cancel():

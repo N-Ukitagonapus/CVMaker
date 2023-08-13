@@ -21,10 +21,9 @@ class Utilities:
 			tgt.set(input["value"][:maxlength])
    
 	#読込値をセット(日付)
-	def setdate_from_read(tgtval, tgtentry:DateEntry, input:dict):
+	def setdate_from_read(tgtentry:DateEntry, input:dict):
 		if input["result"] != VALID_ERR:
 			entered_date = datetime.strptime(input["value"],"%Y%m%d")
-			tgtval = entered_date
 			tgtentry.set_date(entered_date)
 
 	#文字列⇒数値変換(読み取り失敗時は0)
@@ -34,10 +33,10 @@ class Utilities:
 		except ValueError:
 			return 0
  
-	#2日付間の差分(年)を取得
-	def get_year_sub(dt_from, dt_to):
+	#2日付間の差分(年、月)を取得
+	def get_years_sub(dt_from:date, dt_to:date) -> tuple:
 		monthdelta = monthmod(dt_from,dt_to)
-		return monthdelta[0].months//12
+		return monthdelta[0].months // 12, monthdelta[0].months % 12
 
 	#年月の初日を取得
 	def get_first_date(dt):

@@ -15,7 +15,7 @@ class PersonalDataOutput():
 			filetypes = FILE_TYPES,
 			initialdir = INITIAL_DIR,
 			defaultextension = DEFAULT_EXT
-    )
+		)
 
 	def output(self):
 		base = et.Element("PersonalData")

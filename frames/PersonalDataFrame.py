@@ -151,7 +151,6 @@ class PersonalDataFrame(tk.Frame):
 		self.btn_edit["command"] = lambda: self.reactivate_items(target)
 		self.birthday_entry.bind("<FocusOut>",func = birthday_set)
 
-
 	#データ出力
 	def data_confirm(self,target):
 		def final_validation(input_data: PersonalData):
@@ -271,7 +270,8 @@ class PersonalDataFrame(tk.Frame):
 			util.setstr_from_read_cut(self.data.name_last_romaji,input["last_name_romaji"],20)
 			util.setstr_from_read_cut(self.data.name_first_romaji,input["first_name_romaji"],20)
 			util.setstr_from_read(self.data.gender,input["gender"])
-			util.setdate_from_read(self.data.birthday,self.birthday_entry,input["birthday"])
+			util.setdate_from_read(self.birthday_entry,input["birthday"])
+			self.data.birthday = self.birthday_entry.get_date()
 			util.setstr_from_read(self.data.current_address,input["current_address"])
 			util.setstr_from_read(self.data.nearest_station,input["nearest_station"])
 			util.setstr_from_read(self.data.gakureki,input["gakureki"])
@@ -393,7 +393,6 @@ class PersonalDataFrame(tk.Frame):
 			self.text_address["state"] =	 tk.NORMAL if modes["all"].get() or modes["address"].get() else tk.DISABLED
 			self.text_station["state"] =	 tk.NORMAL if modes["all"].get() or modes["address"].get() else tk.DISABLED
 			self.text_academic["state"] =	 tk.NORMAL if modes["all"].get() else tk.DISABLED
-			self.btn_edit["state"] =		 tk.DISABLED
 			subwindow.destroy()
 
 		def cancel():
