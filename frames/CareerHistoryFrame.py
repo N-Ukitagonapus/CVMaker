@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import BooleanVar, IntVar, StringVar, ttk
 from tkcalendar import DateEntry
 from tkinter import scrolledtext
-from constants.const import ENV_GENRE, ENV_SET, POSITIONS, TASKS
+from constants.const import POSITIONS, TASKS
 from data_structure.CareerData import CareerData
 from data_structure.CareerHistoryData import CareerHistoryData
 from data_structure.EnvironmentData import EnvironmentData
@@ -101,11 +101,11 @@ class CareerHistoryFrame(tk.Frame):
   	#フレーム・ラベル定義
 		self.label_proj_ov = tk.Label(self.third_line,text="プロジェクト概要")
 		self.label_sys_ov = tk.Label(self.third_line,text="システム概要") 
-		self.label_disc_work = tk.Label(self.third_line,text="作業概要\n(カンマ区切り)") 
+		self.label_disc_work = tk.Label(self.third_line,text="作業概要") 
 
 		self.text_proj_ov = scrolledtext.ScrolledText(self.third_line,wrap=tk.WORD,width=80,height=3)  
 		self.text_sys_ov = scrolledtext.ScrolledText(self.third_line,wrap=tk.WORD,width=80,height=3)  
-		self.text_disc_work = tk.Text(self.third_line,wrap=tk.WORD,height=2)
+		self.text_disc_work = scrolledtext.ScrolledText(self.third_line,wrap=tk.WORD,width=80,height=3)
 
 		#4行目
 		self.fourth_line = tk.Frame(self.frame_main)
@@ -253,6 +253,15 @@ class CareerHistoryFrame(tk.Frame):
 			data_total = len(self.data.history_list)
 			self.total_page["text"] = data_total
 			self.curr_page["value"]=[i for i in range(1,data_total+1)]
+		def edit_envs():
+			try:
+				env_sub = EnvironmentSubFrame()
+				env_sub.edit_envs(target, "開発環境編集", self.get_current().environment)
+			except Exception as e:
+				print(e)
+				util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)
+			finally:
+				del env_sub
 		def read_file():
 			try:
 				io = CareerHistoryDataInput()
@@ -273,9 +282,8 @@ class CareerHistoryFrame(tk.Frame):
 		self.button_next["command"] = lambda: next()
 		self.button_add["command"] = lambda: add_data()
 		self.button_del["command"] = lambda: del_data()
-		self.btn_env_edit["command"] = lambda:EnvironmentSubFrame().edit_envs(target, "開発環境編集", self.get_current().environment)
+		self.btn_env_edit["command"] = lambda:edit_envs()
 		self.btn_scale_edit["command"] = lambda:ScaleDataSubFrame().edit_scale(target, self.get_current().scale)
-
 
 	#入力コントロール
 	def input_control(self):
@@ -284,8 +292,14 @@ class CareerHistoryFrame(tk.Frame):
 			self.data_num = int(self.page_num.get())
 			self.updadte_widget(self.data_num)
 
-		def set_flg_over(event):
+		def set_flg_over():
 			self.get_current().set_flg_over(self.flg_bus_end)
+			if self.flg_bus_end.get() == True:
+				self.term_end["state"] = tk.NORMAL
+			else :
+				self.get_current().set_term_end(util.get_last_date(datetime.date.today()))
+				self.term_end.set_date(util.get_last_date(datetime.date.today()))
+				self.term_end["state"] = tk.DISABLED
 
 		def set_term_first(event):
 			try:
@@ -335,13 +349,13 @@ class CareerHistoryFrame(tk.Frame):
 			self.get_current().set_flg_internal_leader(self.flg_internal_leader)
   
 		self.page_num.trace('w',set_datanum)
-		self.chk_bus_end.bind("<ButtonPress>",func = set_flg_over)
+		self.chk_bus_end["command"] = lambda:set_flg_over()
 		self.term_start.bind("<FocusOut>",func = set_term_first)
 		self.term_end.bind("<FocusOut>",func = set_term_last)
 		self.text_gyokai.bind("<FocusOut>",func = set_gyokai)
 
-		self.text_proj_ov.bind("<KeyPress>",func = proj_ov_set)
-		self.text_sys_ov.bind("<KeyPress>",func = sys_ov_set)
+		self.text_proj_ov.bind("<FocusOut>",func = proj_ov_set)
+		self.text_sys_ov.bind("<FocusOut>",func = sys_ov_set)
 		self.text_disc_work.bind("<FocusOut>",func = disc_work_set)
 
 		task_keys=list(TASKS.keys())
@@ -364,33 +378,58 @@ class CareerHistoryFrame(tk.Frame):
 	def set_from_data(self, data:CareerData):
 		self.flg_bus_end.set(data.flg_over)
 		self.term_start.set_date(data.term_start)
-		self.term_end.set_date(data.term_end)
+		if data.flg_over:
+			self.term_end["state"] = tk.NORMAL
+			self.term_end.set_date(data.term_end)
+		else :
+			self.term_end.set_date(util.get_last_date(datetime.date.today()))
+			self.term_end["state"] = tk.DISABLED
 		self.str_gyokai.set(data.description_gyokai)
 		self.text_proj_ov.delete("1.0","end")
-		self.text_proj_ov.insert('1.0',(data.description_system_overview))
+		self.text_proj_ov.insert('1.0',(data.description_project_overview))
 		self.text_sys_ov.delete("1.0","end")
 		self.text_sys_ov.insert('1.0',(data.description_system_overview))
 		self.text_disc_work.delete("1.0","end")
-		self.text_disc_work.insert('1.0',",".join(data.description_work))
+		self.text_disc_work.insert('1.0',(data.description_work))
 		keys=list(TASKS.keys())
 		for i in keys:
 			if TASKS[i] in data.tasks:
 				self.flg_tasks[i].set(True)
 			else:
 				self.flg_tasks[i].set(False)
-		self.text_tasks_etc["state"] = tk.NORMAL if self.flg_tasks["ETC"].get() else tk.DISABLED
-		self.str_tasks_etc.set(data.tasks_etc)
+		if self.flg_tasks["ETC"].get():
+			self.text_tasks_etc["state"] = tk.NORMAL
+			self.str_tasks_etc.set(data.tasks_etc)
+		else:
+			self.str_tasks_etc.set(data.tasks_etc)
+			self.text_tasks_etc["state"] = tk.DISABLED
 		self.str_position.set(data.position)
-		self.text_position_etc["state"] = tk.NORMAL if data.position == POSITIONS["その他"] else tk.DISABLED
-		self.str_position_etc.set(data.position_etc)
+		if data.position == POSITIONS["その他"]:
+			self.text_position_etc["state"] = tk.NORMAL 
+			self.str_position_etc.set(data.position_etc)
+		else:
+			self.str_position_etc.set(data.position_etc)
+			tk.DISABLED
 		self.flg_internal_leader.set(data.flg_internal_leader)
 		self.str_members_total.set(str(data.members))
 		self.str_members_internal.set(str(data.members_internal))
 
 	#現在の経歴データ呼出
 	def get_current(self) -> CareerData:
+		"""
+		現在の経歴データ呼出
+		データ番号に応じた経歴データを呼び出す。
+
+		Returns
+		-------
+		CareerData
+				番号に応じた経歴データ
+		"""
 		return self.data.history_list[self.data_num - 1]
 
 	#メインウィンドウへ配置(mainからの呼び出し)
 	def pack(self):
+		"""
+		メインウィンドウへ配置(mainからの呼び出し)
+		"""
 		self.ret.pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=20,pady=5)

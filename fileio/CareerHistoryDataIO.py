@@ -1,3 +1,4 @@
+import copy
 from constants.const import ENV_SET, TASKS
 from data_structure.CareerData import CareerData
 from data_structure.EnvironmentData import EnvironmentData
@@ -143,6 +144,12 @@ class CareerHistoryDataOutput():
 				if value > 0:
 					et.SubElement(tgt,tag).text = str(value)
 
+		def set_bool(tgt,tag,value):
+			if value is not None:
+				if value :
+					et.SubElement(tgt,tag).text = str(value)
+
+
 		# リスト作成
 		def create_list(tgt, base_title, list:list):
 			if len(list) > 0 :
@@ -185,20 +192,20 @@ class CareerHistoryDataOutput():
 		# 経歴作成
 		def create_career(tgt, career:CareerData):
 			trunk = et.SubElement(tgt, "Career")
-			et.SubElement(trunk, "flg_over").text = career.flg_over													#終了フラグ
-			et.SubElement(trunk, "term_start").text = career.term_start.strftime("%Y%m")		#期間：から
-			et.SubElement(trunk, "term_end").text = career.term_end.strftime("%Y%m")				#期間：まで
+			set_bool(trunk, "flg_over", str(career.flg_over))										#終了フラグ
+			set_value(trunk, "term_start", career.term_start.strftime("%Y%m"))		#期間：から
+			set_value(trunk, "term_end", career.term_end.strftime("%Y%m"))				#期間：まで
 			set_value(trunk, "gyokai", career.description_gyokai)														#業界
 			set_value(trunk, "project_gaiyo", career.description_project_overview)					#プロジェクト概要
 			set_value(trunk, "system_gaiyo", career.description_system_overview)						#システム概要
-			create_list(trunk, "work", career.description_work)															#作業概要
+			set_value(trunk, "work", career.description_work)																#作業概要
 			create_env(trunk, career.environment)																						#開発環境
 			create_list(trunk, "task", career.tasks)																				#作業内容
 			set_value(trunk, "task_etc", career.tasks_etc)																	#作業内容その他
 			create_scale(trunk, career.scale)																								#開発規模
 			set_value(trunk, "position", career.position)																		#職位
 			set_value(trunk, "position_etc", career.position_etc)														#職位その他
-			set_value(trunk, "flg_internal_leader", career.flg_internal_leader)							#自社リーダーフラグ
+			set_bool(trunk, "flg_internal_leader", career.flg_internal_leader)							#自社リーダーフラグ
 			set_value(trunk, "members", career.members)																			#メンバー人数
 			set_value(trunk, "members_internal", career.members_internal)										#自社メンバー人数
 		### ここから本処理 ###
@@ -213,23 +220,23 @@ class CareerHistoryDataOutput():
 
 class CareerHistoryDataInput():
 	def __init__(self):
-		filename = fd.askopenfilename(
+		self.filename = fd.askopenfilename(
 		title = "職務経歴データ読込",
 		filetypes = FILE_TYPES,
 		initialdir = INITIAL_DIR,
 		defaultextension = DEFAULT_EXT
     )
-		tree = et.parse(filename) 
 
-		# XMLを取得
-		self.root = tree.getroot()
-  
 	def read(self) -> CareerHistoryData:
+
 		def read_value(tag):
 			return "" if tag is None else tag.text
 
 		def read_int(tag):
 			return 0 if tag is None else util.int_from_str(tag.text)
+
+		def read_bool(tag):
+			return tag is not None 
 
 		def read_list(tag):
 			ret = []
@@ -248,7 +255,7 @@ class CareerHistoryDataInput():
 				("tools","tools"),
 				("packages","pkg")
 			]
-			dish = ENV_SET
+			dish = copy.deepcopy(ENV_SET)
 			for key in keys:
 				subtree = tree.find(key[0])
 				if subtree is not None:
@@ -269,7 +276,7 @@ class CareerHistoryDataInput():
 			ret.batches = read_int(scale.find("batches"))						#バッチ数
 			ret.forms = read_int(scale.find("forms"))								#帳票数
 			ret.etc1_name = read_value(scale.find("etc1_name"))			#その他1：名称
-			ret.etc1_num = read_int(scale.find("des_etc1_numbase"))	#その他1：数
+			ret.etc1_num = read_int(scale.find("etc1_num"))					#その他1：数
 			ret.etc2_name = read_value(scale.find("etc2_name"))			#その他2：名称
 			ret.etc2_num = read_int(scale.find("etc2_num"))					#その他2：数
 			ret.total_steps = read_int(scale.find("total_steps"))		#総ステップ
@@ -281,29 +288,34 @@ class CareerHistoryDataInput():
 
 		def read_career(career) -> CareerData:
 			ret = CareerData()
-			ret.flg_over = bool(career.find("flg_over").text)															#終了フラグ
-			ret.term_start = dt.strptime(career.find("term_start").text,"%Y%m")		#期間：から
-			ret.term_end = util.get_last_date(dt.strptime(career.find("term_start").text,"%Y%m"))			#期間：まで
+			ret.flg_over = read_bool(career.find("flg_over"))															#終了フラグ
+			ret.term_start = dt.strptime(career.find("term_start").text,"%Y%m").date()		#期間：から
+			ret.term_end = util.get_last_date(dt.strptime(career.find("term_end").text,"%Y%m").date())			#期間：まで
 			ret.description_gyokai = read_value(career.find("gyokai"))										#業界
 			ret.description_project_overview = read_value(career.find("project_gaiyo"))		#プロジェクト概要
 			ret.description_system_overview = read_value(career.find("system_gaiyo"))			#システム概要
-			ret.description_work = read_list(career.find("work"))													#作業概要
+			ret.description_work = read_value(career.find("work"))												#作業概要
 			ret.environment = read_env(career.find("environments"))												#開発環境
 			ret.tasks = read_list(career.find("task"))																		#作業内容
-			ret.tasks_etc = read_value(career.find("tasks_etc"))													#作業内容その他
+			ret.tasks_etc = read_value(career.find("task_etc"))														#作業内容その他
 			ret.scale = read_scale(career.find("scale"))																	#開発規模
 			ret.position = read_value(career.find("position"))														#職位
 			ret.position_etc = read_value(career.find("position_etc"))										#職位その他
-			ret.flg_internal_leader = bool(career.find("flg_internal_leader").text)				#自社リーダーフラグ
+			ret.flg_internal_leader = read_bool(career.find("flg_internal_leader"))				#自社リーダーフラグ
 			ret.members = read_int(career.find("members"))																#メンバー人数
 			ret.members_internal = read_int(career.find("members_internal"))							#自社メンバー人数
 			return ret
 
+		## ここから本処理 ##
+		# XMLを取得
+		tree = et.parse(self.filename) 
+		root = tree.getroot()
+
 		# 返却クラス定義
 		ret = CareerHistoryData()
-		shain_num = self.root.find("shain_num")
+		shain_num = root.find("shain_num")
 		ret.shain_num = 0 if shain_num is None else util.int_from_str(shain_num.text)
 		ret.history_list = []
-		for career in self.root.iter("Career"):
+		for career in root.iter("Career"):
 			ret.history_list.append(read_career(career))
 		return ret

@@ -1,9 +1,9 @@
 '''
 開発環境データ
 '''
+import copy
 from constants.const import ENV_SET
-
-
+from utils.Utilities import Utilities as util
 class EnvironmentData:
   #コンストラクタ(のようなもの)
 	def __init__(self):
@@ -27,7 +27,7 @@ class EnvironmentData:
 		self.pkg = entry["pkg"]
 
 	def get_values(self):
-		ret = ENV_SET
+		ret = copy.deepcopy(ENV_SET)
 		ret["srv"] = self.server
 		ret["os"] = self.os
 		ret["db"] = self.db
@@ -37,4 +37,22 @@ class EnvironmentData:
 		ret["tools"] = self.tools
 		ret["pkg"] = self.pkg
 		return ret
-   
+  
+	def extend(self, input):
+		self.server.extend(input.server)
+		self.server = util.tidy_list(self.server)
+		self.os.extend(input.os)
+		self.os = util.tidy_list(self.os)
+		self.db.extend(input.db)
+		self.db = util.tidy_list(self.db)
+		self.lang.extend(input.lang)
+		self.lang = util.tidy_list(self.lang)
+		self.fw.extend(input.fw)
+		self.fw = util.tidy_list(self.fw)
+		self.mw.extend(input.mw)
+		self.mw = util.tidy_list(self.mw)
+		self.tools.extend(input.tools)
+		self.tools = util.tidy_list(self.tools)
+		self.pkg.extend(input.pkg)
+		self.pkg = util.tidy_list(self.pkg)
+		

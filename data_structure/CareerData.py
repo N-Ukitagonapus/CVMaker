@@ -18,7 +18,7 @@ class CareerData:
 		self.description_gyokai = ""																	#業界
 		self.description_project_overview = ""												#プロジェクト概要
 		self.description_system_overview = ""													#システム概要
-		self.description_work = []																		#作業概要
+		self.description_work = ""																		#作業概要
 		self.environment = EnvironmentData()													#開発環境
 		self.tasks = []																								#作業内容
 		self.tasks_etc = ""																						#作業内容その他
@@ -48,7 +48,7 @@ class CareerData:
 		self.description_system_overview = str.strip(input.get('1.0','end'))
 
 	def set_works(self,input:Text):
-		self.description_work = str.strip(input.get('1.0','end')).split(",")
+		self.description_work = str.strip(input.get('1.0','end'))
 
 	def set_tasks(self,input:dict):
 		self.tasks = []

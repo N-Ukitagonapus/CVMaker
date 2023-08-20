@@ -1,6 +1,7 @@
 '''
 開発環境サブウィンドウ
 '''
+import copy
 import tkinter as tk
 from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
@@ -52,9 +53,9 @@ class EnvironmentSubFrame:
 		btn_cancel["command"] = lambda: cancel()
 
 		def update():
-			env_set = ENV_SET
+			env_set = copy.deepcopy(ENV_SET)
 			for key in text_envs.keys():
-				env_set[key] = util.tidy_list((text_envs[key].get('1.0',text_envs[key].index(tk.END))).split("\n"))
+				env_set[key] = util.tidy_list(str.strip(text_envs[key].get('1.0',tk.END)).split("\n"))
 			data.set_values(env_set)
 			subwindow.destroy()
 

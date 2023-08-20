@@ -1,3 +1,4 @@
+import copy
 from constants.const import ENV_SET
 from data_structure.EnvironmentData import EnvironmentData
 from data_structure.SkillData import SkillData
@@ -82,7 +83,7 @@ class SkillDataInput():
 				("tools","tools"),
 				("packages","pkg")
 			]
-			ret = ENV_SET
+			ret = copy.deepcopy(ENV_SET)
 			for key in keys:
 				subtree = tree.find(key[0])
 				for value in subtree.iter("value"):

@@ -39,16 +39,16 @@ class Utilities:
 		return monthdelta[0].months // 12, monthdelta[0].months % 12
 
 	#年月の初日を取得
-	def get_first_date(dt):
+	def get_first_date(dt) -> datetime.date:
 		return date(dt.year, dt.month, 1)
 	
 	#年月の最終日を取得
-	def get_last_date(dt):
+	def get_last_date(dt) -> datetime.date: 
 		return dt.replace(day=calendar.monthrange(dt.year, dt.month)[1])
 
 	#リスト整頓(空白除去、重複削除)
-	def tidy_list(list):
-		return [s for s in list if s != '']
+	def tidy_list(input: list):
+		return list(set([s for s in input if s != '']))
 
 	#必須マーク付き
 	def mark_required(tgt,lbl):
@@ -63,7 +63,7 @@ class Utilities:
 		elif param[0] == "error" :
 			msgbox.showerror(title=param[1], message=param[2])
 		else:
-			msgbox.showerror(title="BIG BONER DOWN THE LANE", message="This is an error message supposed not to be shown.")
+			msgbox.showerror(title="BIG BONER DOWN THE LANE", message="This is an error message supposed NOT to be shown.")
 
 	#汎用クエスチョンダイアログ
 	def msgbox_ask(param: DialogMessage):

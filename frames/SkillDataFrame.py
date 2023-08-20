@@ -15,7 +15,6 @@ from data_structure.SkillData import SkillData
 from utils.Validation import DynamicValidation as dval
 from utils.Validation import StaticValidation as sval
 from constants.message import DialogMessage as diag
-from utils.Utilities import Utilities as util
 
 class SkillDataFrame(tk.Frame):
 	def __init__(self, target):
@@ -308,7 +307,7 @@ class SkillDataFrame(tk.Frame):
 		btn_cancel["command"] = lambda: cancel()
 
 		def update():
-			self.data.qualifications = util.tidy_list((text.get('1.0',text.index(tk.END))).split("\n"))
+			self.data.qualifications = util.tidy_list((str.strip(text.get('1.0',text.index(tk.END)))).split("\n"))
 			subwindow.destroy()
 
 		def cancel():
