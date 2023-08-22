@@ -52,9 +52,17 @@ class CareerHistoryOutValidation():
 			if str.strip(data.description_project_overview) == "":
 				result.append("[警告]システム概要が未入力です。")
 				warn += 1
-			# 作業内容「その他」にチェックがついているのに未入力の場合はエラー
-			if TASKS["ETC"] in data.tasks and str.strip(data.tasks_etc) == "":
-				result.append("[エラー]作業内容の「その他」を入力してください。")
+			# 開発規模の製造その他の名称が未入力の際に本数が入っていたらエラー
+			scl = data.scale
+			if scl.etc1_name == "" and scl.etc1_num > 0:
+				result.append("[エラー]開発規模の「その他(1)」名称が未入力です。")
+				err += 1
+			if scl.etc2_name == "" and scl.etc2_num > 0:
+				result.append("[エラー]職位が「その他(2)」名称が未入力です。")
+				err += 1
+			# 職位が「その他」で未入力の場合はエラー
+			if data.position == "":
+				result.append("[エラー]職位が未選択です。")
 				err += 1
 			# 職位が「その他」で未入力の場合はエラー
 			if data.position == "その他" and str.strip(data.position_etc) == "":
@@ -63,6 +71,18 @@ class CareerHistoryOutValidation():
 			# 総メンバー数　＜　自社メンバー数の場合はエラー。
 			if data.members < data.members_internal:
 				result.append("[エラー]自社メンバー数が総メンバー数よりも多いです。確認してください。")
+				err += 1
+			# 総メンバー数　＜　自社メンバー数の場合はエラー。
+			if data.members == 0:
+				result.append("[エラー]総メンバー数が入力されていません。")
+				err += 1
+			# 作業内容「その他」にチェックがついているのに未入力の場合はエラー
+			if len(data.tasks) == 0:
+				result.append("[警告]作業内容にチェックが入っていません。")
+				warn += 1
+			# 作業内容「その他」にチェックがついているのに未入力の場合はエラー
+			if TASKS["ETC"] in data.tasks and str.strip(data.tasks_etc) == "":
+				result.append("[エラー]作業内容の「その他」を入力してください。")
 				err += 1
 			#エラー総数
 			if err == 0 and warn == 0:

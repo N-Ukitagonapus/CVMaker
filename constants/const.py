@@ -10,7 +10,7 @@ ENV_SET = {
 } 
 
 ENV_GENRE = {
-	"srv":"ｻｰﾊﾞ",
+	"srv":"ｻｰﾊﾞ\n※ｸﾗｳﾄﾞ環境時のみ",
 	"os":"OS",
 	"db":"DB",
 	"lang":"言語",

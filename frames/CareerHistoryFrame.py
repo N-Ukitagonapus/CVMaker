@@ -80,6 +80,7 @@ class CareerHistoryFrame(tk.Frame):
 		##終了年月
 		self.str_term_end = StringVar()
 		self.term_end = DateEntry(self.first_line, day=util.get_last_date(datetime.date.today()).day, locale='ja_JP', date_pattern='yyyy/mm/dd', textvariable=self.str_term_end)
+		self.term_end["state"] = tk.DISABLED
 
 		#終了フラグ
 		self.flg_bus_end = BooleanVar(value = False)
@@ -113,7 +114,7 @@ class CareerHistoryFrame(tk.Frame):
 		self.label_env = tk.Label(self.fourth_line,text="開発環境")
 		self.label_scale = tk.Label(self.fourth_line,text="開発規模")
 		self.label_position = tk.Label(self.fourth_line,text="職位") 
-		self.label_members = tk.Label(self.fourth_line,text="開発メンバ数(自社/総数)") 
+		self.label_members = tk.Label(self.fourth_line,text="開発メンバー数(自社/総数)") 
 		self.label_slash_member = tk.Label(self.fourth_line,text="/")
 
 		#開発環境
