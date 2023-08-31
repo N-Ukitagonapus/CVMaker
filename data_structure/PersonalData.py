@@ -12,7 +12,7 @@ class PersonalData:
 		self.name_last_romaji = StringVar()			#姓-ローマ字
 		self.name_first_romaji = StringVar()		#名-ローマ字
 		self.gender = StringVar()								#性別
-		self.birthday = datetime.date		#誕生日
+		self.birthday = datetime.date.today()		#誕生日
 		self.current_address = StringVar()			#現住所
 		self.nearest_station = StringVar()			#最寄り駅
 		self.gakureki = StringVar()							#最終学歴
