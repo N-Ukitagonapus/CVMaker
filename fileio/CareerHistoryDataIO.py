@@ -308,22 +308,22 @@ class CareerHistoryDataInput():
 
 		def read_career(career) -> CareerData:
 			ret = CareerData()
-			ret.flg_over = read_bool(career.find("flg_over"))															#終了フラグ
-			ret.term_start = dt.strptime(career.find("term_start").text,"%Y%m").date()		#期間：から
-			ret.term_end = util.get_last_date(dt.strptime(career.find("term_end").text,"%Y%m").date())			#期間：まで
-			ret.description_gyokai = read_value(career.find("gyokai"))										#業界
-			ret.description_project_overview = read_value(career.find("project_gaiyo"))		#プロジェクト概要
-			ret.description_system_overview = read_value(career.find("system_gaiyo"))			#システム概要
-			ret.description_work = read_value(career.find("work"))												#作業概要
-			ret.environment = read_env(career.find("environments"))												#開発環境
-			ret.tasks = read_list(career.find("task"))																		#作業内容
-			ret.tasks_etc = read_value(career.find("task_etc"))														#作業内容その他
-			ret.scale = read_scale(career.find("scale"))																	#開発規模
-			ret.position = read_value(career.find("position"))														#職位
-			ret.position_etc = read_value(career.find("position_etc"))										#職位その他
-			ret.flg_internal_leader = read_bool(career.find("flg_internal_leader"))				#自社リーダーフラグ
-			ret.members = read_int(career.find("members"))																#メンバー人数
-			ret.members_internal = read_int(career.find("members_internal"))							#自社メンバー人数
+			ret.flg_over = read_bool(career.find("flg_over"))																						#終了フラグ
+			ret.set_term_start(dt.strptime(career.find("term_start").text,"%Y%m"))											#期間：から
+			ret.set_term_end(util.get_last_date(dt.strptime(career.find("term_end").text,"%Y%m")))			#期間：まで
+			ret.description_gyokai = read_value(career.find("gyokai"))																	#業界
+			ret.description_project_overview = read_value(career.find("project_gaiyo"))									#プロジェクト概要
+			ret.description_system_overview = read_value(career.find("system_gaiyo"))										#システム概要
+			ret.description_work = read_value(career.find("work"))																			#作業概要
+			ret.environment = read_env(career.find("environments"))																			#開発環境
+			ret.tasks = read_list(career.find("task"))																									#作業内容
+			ret.tasks_etc = read_value(career.find("task_etc"))																					#作業内容その他
+			ret.scale = read_scale(career.find("scale"))																								#開発規模
+			ret.position = read_value(career.find("position"))																					#職位
+			ret.position_etc = read_value(career.find("position_etc"))																	#職位その他
+			ret.flg_internal_leader = read_bool(career.find("flg_internal_leader"))											#自社リーダーフラグ
+			ret.members = read_int(career.find("members"))																							#メンバー人数
+			ret.members_internal = read_int(career.find("members_internal"))														#自社メンバー人数
 			return ret
 
 		## ここから本処理 ##

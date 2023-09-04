@@ -1,3 +1,4 @@
+import copy
 import datetime
 import sys, os
 from tkinter import filedialog as fd
@@ -160,7 +161,7 @@ class ExcelOutput():
 		ret.gyokai_keiken = get_gyokaikeiken(skill.expr_start,skill.period_absense_year.get(),skill.period_absense_month.get())
 		ret.qualifications = ",".join(skill.qualifications)
 		ret.tokui_bunya = skill.specialty.get()
-		ret.siyoukeiken = skill.expr_env
+		ret.siyoukeiken = copy.deepcopy(skill.expr_env)
 		ret.pr = skill.pr
 
 		for cdata in career.history_list:

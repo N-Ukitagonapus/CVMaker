@@ -54,6 +54,14 @@ class Utilities:
 	def mark_required(tgt,lbl):
 		tk.Label(tgt, text="(必須)", font=("Meiryo UI",6,"bold"), foreground='red').pack(side=tk.LEFT, after=lbl)
 
+	def get_dateclass(input) -> datetime.date:
+		if type(input) == datetime:
+			return input.date()
+		elif type(input) == datetime.date:
+			return input
+		else:
+			return datetime.date.today()
+ 
 	#汎用メッセージ表示
 	def msgbox_showmsg(param: DialogMessage):
 		if param[0] == "info" :

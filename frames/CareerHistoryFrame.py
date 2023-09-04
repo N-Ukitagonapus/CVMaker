@@ -312,7 +312,7 @@ class CareerHistoryFrame(tk.Frame):
 		def set_term_last(event):
 			try:
 				conv = util.get_last_date(dt.strptime(self.str_term_end.get(),"%Y/%m/%d"))
-				self.get_current().set_term_end(conv.date())
+				self.get_current().set_term_end(conv)
 				self.term_end.set_date(conv)
 			except ValueError:
 				return
@@ -383,7 +383,7 @@ class CareerHistoryFrame(tk.Frame):
 			self.term_end["state"] = tk.NORMAL
 			self.term_end.set_date(data.term_end)
 		else :
-			self.term_end.set_date(util.get_last_date(datetime.date.today()))
+			self.term_end.set_date(data.term_end)
 			self.term_end["state"] = tk.DISABLED
 		self.str_gyokai.set(data.description_gyokai)
 		self.text_proj_ov.delete("1.0","end")

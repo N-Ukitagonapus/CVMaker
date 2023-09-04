@@ -32,11 +32,11 @@ class CareerData:
 	def set_flg_over(self,input:BooleanVar):
 		self.flg_over = input.get()
 
-	def set_term_start(self,input:datetime):
-		self.term_start = input
+	def set_term_start(self,input):
+		self.term_start = util.get_dateclass(input)
   
-	def set_term_end(self,input:datetime):
-		self.term_end = input
+	def set_term_end(self,input):
+		self.term_end = util.get_dateclass(input) if self.flg_over else util.get_dateclass(util.get_last_date(datetime.date.today()))
 
 	def set_gyokai(self,input:StringVar):
 		self.description_gyokai = input.get()
