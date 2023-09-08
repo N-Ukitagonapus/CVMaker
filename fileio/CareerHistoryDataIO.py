@@ -58,7 +58,7 @@ class CareerHistoryOutValidation():
 				result.append("[エラー]開発規模の「その他(1)」名称が未入力です。")
 				err += 1
 			if scl.etc2_name == "" and scl.etc2_num > 0:
-				result.append("[エラー]職位が「その他(2)」名称が未入力です。")
+				result.append("[エラー]開発規模の「その他(2)」名称が未入力です。")
 				err += 1
 			# 職位が「その他」で未入力の場合はエラー
 			if data.position == "":
