@@ -157,6 +157,7 @@ class PersonalDataFrame(tk.Frame):
 		io.confirm(target, self)
 		del io
 
+	#データ読込
 	def data_read(self,target):
 		io = PersonalDataInput(self)
 		io.read(target)

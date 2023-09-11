@@ -18,7 +18,6 @@ DEFAULT_EXT = "xml"
 class PersonalDataOutput():
 
 	def __init__(self, data:PersonalData):
-		pass
 		self.data = data
 
 	def validate(self) -> dict:

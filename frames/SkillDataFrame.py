@@ -126,157 +126,24 @@ class SkillDataFrame(tk.Frame):
 			except ValueError:
 				return
 		self.btn_load["command"] = lambda: self.data_read(target)
-		self.btn_save["command"] = lambda: self.data_confirm(target)
+		self.btn_save["command"] = lambda: self.data_save(target)
 		self.btn_qual_edit["command"] = lambda:self.edit_qualifications(self.ret)
 		self.btn_env_edit["command"]  = lambda:EnvironmentSubFrame().edit_envs(target, "使用経験編集", self.data.expr_env)
 		self.str_start_date.trace('w',expr_start_set)
   
 	#データ出力
-	def data_confirm(self,target):
-		def final_validation(input_data: SkillData):
-			input_data.expr_start=self.expr_start.get_date()
-			input_data.pr=self.text_pr.get('1.0',self.text_pr.index(tk.END))
-			sval.out_date_check(vals["expr_start"],input_data.expr_start)
-			sval.io_novalidation(vals["absense"])
-			sval.out_warn_if_empty(vals["specialty"],input_data.specialty.get())
-			sval.io_novalidation(vals["qualifications"])
-			sval.io_novalidation(vals["expr_env"])
-			sval.out_warn_if_empty(vals["pr"],input_data.pr)
+	def data_save(self,target):
+		io = SkillDataOutput(self.data)
+		io.confirm(target)
+		del io
 
-		vals = {
-			"expr_start":{"label":"業務開始日"},
-			"absense":{"label":"休職期間"},
-			"specialty":{"label":"得意分野"},
-			"qualifications":{"label":"取得資格"},
-			"expr_env":{"label":"使用経験(業務外)"},
-			"pr":{"label":"自己PR"}
-		}
-  
-		final_validation(self.data)
-		total_val = True
-		for val in vals.values():
-			if val["result"] == VALID_ERR:
-				total_val = False
-				break
-
-		subwindow = tk.Toplevel(target)
-		subwindow.title("データ確認")
-		subwindow.geometry("400x330")
-		subwindow.resizable(False,False)
-		subwindow.grab_set()
-
-		frame_button = tk.Frame(subwindow,borderwidth=1,relief=tk.RAISED)
-		frame_button_inner = tk.Frame(frame_button)
-		button_output = ttk.Button(frame_button_inner,width=10)
-		button_output["text"] = "出力" if total_val == True else "強制出力"
-		button_cancel = ttk.Button(frame_button_inner,width=10,text="キャンセル")
-		frame_button.pack(side=tk.BOTTOM,fill=tk.X,padx=10,pady=8)
-		frame_button_inner.pack(pady=5)
-		button_cancel.grid(row=0,column=0,padx=15)
-		button_output.grid(row=0,column=1,padx=15)
-
-		frame_main = tk.LabelFrame(subwindow,relief=tk.RAISED,text = "技術情報 データ出力")
-		frame_main.pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=10,pady=8)
-		frame_main_inner=tk.Frame(frame_main)
-		frame_main_inner.pack(fill=tk.BOTH,padx=5,pady=5)
-
-		frame_name = []
-		frame_result = []
-		results = list(vals.items())
-		for i in range(len(results)):
-			frame_name.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID,bg="white"))
-			frame_result.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID,bg=COLOR[results[i][1]["result"]]))
-			frame_name[i].grid(row=i,column=0,sticky=tk.EW)
-			frame_result[i].grid(row=i,column=1,sticky=tk.EW)
-			tk.Label(frame_name[i],text=results[i][1]["label"],bg="white").pack(side=tk.LEFT,padx=3,pady=3)
-			tk.Label(frame_result[i],text=results[i][1]["msg"],bg=COLOR[results[i][1]["result"]]).pack(side=tk.LEFT,padx=3,pady=3)
-		frame_main_inner.columnconfigure(index=1, weight=1)
-
-		button_output["command"] = lambda: output()
-		button_cancel["command"] = lambda: cancel()
-
-		def output():
-			if total_val == VALID_ERR:
-				if util.msgbox_ask(diag.DIALOG_ASK_FORCE_OUTPUT):
-					do_output()
-			else:
-				do_output()
-
-		def do_output():
-			try:
-				SkillDataOutput(self.data).output()
-			except Exception as e:
-				print(e)
-				util.msgbox_showmsg(diag.DIALOG_OUTPUT_ERROR)
-			subwindow.destroy()
-
-		def cancel():
-			subwindow.destroy()
-
-	#データ入力
+	#データ読込
 	def data_read(self,target):
-		def inputcheck(input:dict):
-			sval.in_date_check(input["expr_start"])
-			sval.in_regex_match(input["absense_year"],"[0-9]*","数字")
-			sval.in_number_between(input["absense_month"],0,11,"0から11の間")
-			sval.io_novalidation(input["specialty"])
-			sval.io_novalidation(input["qualifications"])
-			sval.io_novalidation(input["environments"])
-			sval.io_novalidation(input["pr"])
-	
-		def set_value(input):
-			util.setdate_from_read(self.expr_start,input["expr_start"])
-			self.data.expr_start = self.expr_start.get_date()
-			util.setstr_from_read(self.data.period_absense_year,input["absense_year"])
-			util.setstr_from_read(self.data.period_absense_month,input["absense_month"])
-			util.setstr_from_read(self.data.specialty,input["specialty"])
-			self.data.qualifications = input["qualifications"]["value"]
-			self.data.expr_env.set_values(input["environments"]["value"])
-			self.data.pr = input["pr"]["value"]
-			self.text_pr.delete("1.0","end")
-			self.text_pr.insert('1.0',(input["pr"]["value"]))
+		io = SkillDataInput(self)
+		io.read(target)
+		del io
+		
 
-		#ファイル読み込み結果表示
-		def show_result(input,target):
-			subwindow = tk.Toplevel(target)
-			subwindow.title("ファイル読込結果")
-			subwindow.geometry("500x390")
-			subwindow.resizable(False,False)
-			subwindow.grab_set()
-
-			frame_button = tk.Frame(subwindow,borderwidth=1,relief=tk.RAISED)
-			frame_button_inner = tk.Frame(frame_button)
-			button_ok = ttk.Button(frame_button_inner,width=10,text="OK")
-			frame_button.pack(side=tk.BOTTOM,fill=tk.X,padx=10,pady=8)
-			frame_button_inner.pack(pady=5)
-			button_ok.grid(row=0,column=0,padx=15)
-
-			frame_main = tk.LabelFrame(subwindow,relief=tk.RAISED,text = "技術情報 ファイル読込結果")
-			frame_main.pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=10,pady=8)
-			frame_main_inner=tk.Frame(frame_main)
-			frame_main_inner.pack(fill=tk.BOTH,padx=5,pady=5)
-
-			frame_name = []
-			frame_result = []
-			results = list(input.items())
-			for i in range(len(results)):
-				frame_name.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID,bg="white"))
-				frame_result.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID,bg=COLOR[results[i][1]["result"]]))
-				frame_name[i].grid(row=i,column=0,sticky=tk.EW)
-				frame_result[i].grid(row=i,column=1,sticky=tk.EW)
-				tk.Label(frame_name[i],text=results[i][1]["label"],bg="white").pack(side=tk.LEFT,padx=3,pady=3)
-				tk.Label(frame_result[i],text=results[i][1]["msg"],bg=COLOR[results[i][1]["result"]]).pack(side=tk.LEFT,padx=3,pady=3)
-			frame_main_inner.columnconfigure(index=1, weight=1)
-			button_ok["command"] = lambda: subwindow.destroy()
-
-		try:
-			input = SkillDataInput().read()
-			inputcheck(input)
-			set_value(input)
-			show_result(input, target)
-		except Exception as e:
-			print(e)
-			util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)
 
 	#取得資格編集サブウィンドウ
 	def edit_qualifications(self,target):
