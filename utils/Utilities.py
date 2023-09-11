@@ -57,11 +57,9 @@ class Utilities:
 	def get_dateclass(input) -> datetime.date:
 		if type(input) == datetime:
 			return input.date()
-		elif type(input) == datetime.date:
-			return input
 		else:
-			return datetime.date.today()
- 
+			return input
+
 	#汎用メッセージ表示
 	def msgbox_showmsg(param: DialogMessage):
 		if param[0] == "info" :
