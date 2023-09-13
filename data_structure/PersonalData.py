@@ -1,9 +1,9 @@
-'''
-個人基本情報
-'''
 import datetime
 from tkinter import StringVar
 class PersonalData:
+	"""
+	個人基本情報
+	"""
   #コンストラクタ(のようなもの)
 	def __init__(self):
 		self.shain_num = StringVar()						#社員番号

@@ -5,6 +5,9 @@ import copy
 from constants.const import ENV_SET
 from utils.Utilities import Utilities as util
 class EnvironmentData:
+	"""
+	開発環境データ
+	"""
   #コンストラクタ(のようなもの)
 	def __init__(self):
 		self.server =[] #使用経験(業務外)・サーバ
@@ -17,6 +20,11 @@ class EnvironmentData:
 		self.pkg =[] #使用経験(業務外)・パッケージ
 
 	def set_values(self, entry:dict):
+		"""
+  	値一括設定
+		Args:
+				entry (dict): 入力内容
+		"""
 		self.server = entry["srv"]
 		self.os = entry["os"]
 		self.db = entry["db"]
@@ -27,6 +35,11 @@ class EnvironmentData:
 		self.pkg = entry["pkg"]
 
 	def get_values(self):
+		"""
+		値一括取得
+		Returns:
+				dict : 出力内容(dict形式なので取り出して使用する想定) 
+		"""
 		ret = copy.deepcopy(ENV_SET)
 		ret["srv"] = self.server
 		ret["os"] = self.os
@@ -39,6 +52,12 @@ class EnvironmentData:
 		return ret
   
 	def extend(self, input):
+		"""
+  	データ統合
+
+		Args:
+				input (EnvironmentData): 統合するデータ
+		"""
 		self.server.extend(input.server)
 		self.server = util.tidy_list(self.server)
 		self.os.extend(input.os)

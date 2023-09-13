@@ -1,10 +1,10 @@
-'''
-技術情報
-'''
 import datetime
 from tkinter import StringVar
 from data_structure.EnvironmentData import EnvironmentData
 class SkillData:
+	"""
+	技術情報データ
+	"""
 	#コンストラクタ(のようなもの)
 	def __init__(self):
 		self.shain_num = 0

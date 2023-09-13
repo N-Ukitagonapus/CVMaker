@@ -1,6 +1,3 @@
-'''
-Excel出力データ定義
-'''
 import datetime
 from constants.const import TASKS, POSITIONS
 from data_structure.EnvironmentData import EnvironmentData

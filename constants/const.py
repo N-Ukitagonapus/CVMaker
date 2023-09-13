@@ -1,5 +1,6 @@
+# 環境編集_内容セット
 ENV_SET = {
-  "srv":[] #サーバ
+  "srv": [] #サーバ
 	,"os" : [] #OS
 	,"db" : [] #DB
 	,"lang" : [] #言語
@@ -9,6 +10,7 @@ ENV_SET = {
 	,"pkg":[]#パッケージ
 } 
 
+# 環境編集_タイトル
 ENV_GENRE = {
 	"srv":"ｻｰﾊﾞ\n※ｸﾗｳﾄﾞ環境時のみ",
 	"os":"OS",
@@ -20,6 +22,7 @@ ENV_GENRE = {
 	"pkg":"ﾊﾟｯｹｰｼﾞ"
 }
 
+# 職位
 POSITIONS = {
   "テスター":"TE",
 	"プログラマ":"PG",
@@ -30,6 +33,7 @@ POSITIONS = {
 	"その他":"ETC"
 }
 
+# 作業内容
 TASKS = {
   "SP":"企画",
 	"RD":"要件定義",
@@ -47,10 +51,12 @@ TASKS = {
 	"ETC":"その他"
 }
 
+# チェック結果
 VALID_OK = "OK"
 VALID_WARN = "WARN"
 VALID_ERR = "ERROR"
 
+# チェック結果_表示背景
 COLOR = {
 	VALID_OK:"white",
 	VALID_WARN:"#ffd700",

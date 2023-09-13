@@ -19,14 +19,21 @@ INITIAL_DIR = "./"
 DEFAULT_EXT = "xml"
 BORDER = "-------------------------------------------------"
 
-class CareerHistoryOutValidation():
-
+class CareerHistoryDataOutput():
+	"""
+	職務経歴データ出力クラス
+	"""
   # 初期化
-	def __init__(self):
+	def __init__(self, data:CareerHistoryData):
+		self.data = data
 		self.result_txt = []
 		self.has_pointout = False
-	# データチェック
-	def validation(self,input:CareerHistoryData):
+  
+	def validation(self):
+		"""
+		データチェック
+		"""
+		data = self.data
 		result = []
 		err_total,warn_total = 0, 0
 		i = 1
@@ -103,8 +110,13 @@ class CareerHistoryOutValidation():
 		self.has_pointout = err_total > 0 or warn_total > 0
 
 	#入力チェック画面
-	def check_input(self,target:tk.LabelFrame,input:CareerHistoryData):
-		self.validation(input)
+	def check_input(self,target:tk.LabelFrame):
+		"""
+		入力チェック画面表示
+		Args:
+				target (tk.LabelFrame): 表示元フレーム
+		"""
+		self.validation()
 		subwindow = tk.Toplevel(target)
 		subwindow.title("職務経歴情報チェック")
 		subwindow.geometry("640x480")
@@ -128,57 +140,61 @@ class CareerHistoryOutValidation():
 		text_result["state"]=tk.DISABLED
 		btn_frame = tk.Frame(subwindow,borderwidth=2,relief="groove")
 	
-		btn_ok["command"] = lambda: output(input)
+		btn_ok["command"] = lambda: do_output()
 		btn_cancel["command"] = lambda: cancel()
 
-		def output(input:CareerHistoryData):
+		def do_output():
+			"""
+			出力処理実行
+			"""
 			try:
-				CareerHistoryDataOutput(input).output()
+				self.output()
 			except Exception as e:
 				print(e)
 				util.msgbox_showmsg(diag.DIALOG_OUTPUT_ERROR)
 			subwindow.destroy()
 		def cancel():
+			"""
+			キャンセル
+			"""
 			subwindow.destroy()
     
-class CareerHistoryDataOutput():
-	def __init__(self,data:CareerHistoryData):
-		self.data = data
-		self.filename = fd.asksaveasfilename(
-			title = "職務経歴情報保存",
-			filetypes = FILE_TYPES,
-			initialdir = INITIAL_DIR,
-			defaultextension = DEFAULT_EXT
-    )
-
 	def output(self):
-		# 値設定
+		"""
+  	ファイル出力
+		"""
 		def set_value(tgt,tag,value):
+			"""
+   		値設定
+			Args:
+					tgt (str): 設定先タグ
+					tag (str): タグ名
+					value (str,int,bool): 設定値
+			"""
 			if value is not None:
-				if value != "":
+				if (type(value) == str and value != "") or (type(value) == int and value > 0) or (type(value) == bool and value):
 					et.SubElement(tgt,tag).text = str(value)
 
-		# 値設定(数値型)
-		def set_int(tgt,tag,value):
-			if value is not None:
-				if value > 0:
-					et.SubElement(tgt,tag).text = str(value)
-
-		def set_bool(tgt,tag,value):
-			if value is not None:
-				if value :
-					et.SubElement(tgt,tag).text = str(value)
-
-
-		# リスト作成
 		def create_list(tgt, base_title, list:list):
+			"""
+			リストからのタグ生成
+			Args:
+					tgt (dtr): 設定先タグ
+					base_title (str): 親タグ名
+					list (list): 設定値
+			"""
 			if len(list) > 0 :
 				inner = et.SubElement(tgt,base_title)
 				for val in list:
 					et.SubElement(inner, "value").text = val
 
-		# 開発環境作成
 		def create_env(tgt, envs:EnvironmentData):
+			"""
+			開発環境タグ生成
+			Args:
+					tgt (str): 設定先タグ
+					envs (EnvironmentData): 開発環境データ
+			"""
 			trunk = et.SubElement(tgt, "environments")
 			create_list(trunk, "servers",envs.server)
 			create_list(trunk, "os",envs.os)
@@ -191,28 +207,40 @@ class CareerHistoryDataOutput():
 
 		# 開発規模作成
 		def create_scale(tgt, scale:ScaleData):
+			"""
+			開発規模タグ生成
+			Args:
+					tgt (str): 設定先タグ
+					scale (ScaleData): 開発規模データ
+			"""
 			trunk = et.SubElement(tgt, "scale")
 			## 設計
-			set_int(trunk, "des_base", scale.des_base)				#基本設計
-			set_int(trunk, "des_detail", scale.des_detail)			#詳細設計
+			set_value(trunk, "des_base", scale.des_base)				#基本設計
+			set_value(trunk, "des_detail", scale.des_detail)			#詳細設計
 			## 製造
-			set_int(trunk, "gamens", scale.gamens)					#画面数
-			set_int(trunk, "batches", scale.batches)				#バッチ数
-			set_int(trunk, "forms", scale.forms)					#帳票数
+			set_value(trunk, "gamens", scale.gamens)					#画面数
+			set_value(trunk, "batches", scale.batches)				#バッチ数
+			set_value(trunk, "forms", scale.forms)					#帳票数
 			set_value(trunk, "etc1_name", scale.etc1_name)			#その他1：名称
-			set_int(trunk, "etc1_num", scale.etc1_num)				#その他1：数
+			set_value(trunk, "etc1_num", scale.etc1_num)				#その他1：数
 			set_value(trunk, "etc2_name", scale.etc2_name)			#その他2：名称
-			set_int(trunk, "etc2_num", scale.etc2_num)				#その他2：数
-			set_int(trunk, "total_steps", scale.total_steps)		#総ステップ
+			set_value(trunk, "etc2_num", scale.etc2_num)				#その他2：数
+			set_value(trunk, "total_steps", scale.total_steps)		#総ステップ
 			## テスト
-			set_int(trunk, "uts", scale.uts)						#単体テスト
-			set_int(trunk, "its", scale.its)						#結合テスト
-			set_int(trunk, "sts", scale.sts)						#総合テスト
+			set_value(trunk, "uts", scale.uts)						#単体テスト
+			set_value(trunk, "its", scale.its)						#結合テスト
+			set_value(trunk, "sts", scale.sts)						#総合テスト
 
 		# 経歴作成
 		def create_career(tgt, career:CareerData):
+			"""
+   		職務経歴レコード作成
+			Args:
+					tgt (str): 設定先タグ
+					career (CareerData): 職務経歴レコードデータ
+			"""
 			trunk = et.SubElement(tgt, "Career")
-			set_bool(trunk, "flg_over", str(career.flg_over))										#終了フラグ
+			set_value(trunk, "flg_over", str(career.flg_over))										#終了フラグ
 			set_value(trunk, "term_start", career.term_start.strftime("%Y%m"))		#期間：から
 			set_value(trunk, "term_end", career.term_end.strftime("%Y%m"))				#期間：まで
 			set_value(trunk, "gyokai", career.description_gyokai)														#業界
@@ -225,9 +253,10 @@ class CareerHistoryDataOutput():
 			create_scale(trunk, career.scale)																								#開発規模
 			set_value(trunk, "position", career.position)																		#職位
 			set_value(trunk, "position_etc", career.position_etc)														#職位その他
-			set_bool(trunk, "flg_internal_leader", career.flg_internal_leader)							#自社リーダーフラグ
+			set_value(trunk, "flg_internal_leader", career.flg_internal_leader)							#自社リーダーフラグ
 			set_value(trunk, "members", career.members)																			#メンバー人数
 			set_value(trunk, "members_internal", career.members_internal)										#自社メンバー人数
+   
 		### ここから本処理 ###
 		base = et.Element("CareerData")
 		tree = et.ElementTree(element=base)
@@ -236,9 +265,20 @@ class CareerHistoryDataOutput():
 		for career in self.data.history_list:
 			create_career(base, career)
 		et.indent(tree,"\t")
-		tree.write(self.filename, encoding="utf-8", xml_declaration=True)
+
+		filename = fd.asksaveasfilename(
+			title = "職務経歴情報保存",
+			filetypes = FILE_TYPES,
+			initialdir = INITIAL_DIR,
+			defaultextension = DEFAULT_EXT
+    )
+		if filename != "":
+			tree.write(filename, encoding="utf-8", xml_declaration=True)
 
 class CareerHistoryDataInput():
+	"""
+	職務経歴データ読込クラス
+	"""
 	def __init__(self):
 		self.filename = fd.askopenfilename(
 		title = "職務経歴データ読込",
@@ -250,21 +290,62 @@ class CareerHistoryDataInput():
 	def read(self) -> CareerHistoryData:
 
 		def read_value(tag):
+			"""
+			文字列読込
+			Args:
+					tag (str): 読込元タグ
+
+			Returns:
+					str: 読込結果 
+			"""
 			return "" if tag is None else tag.text
 
 		def read_int(tag):
+			"""
+			数値読込
+			Args:
+					tag (str): 読込元タグ
+
+			Returns:
+					int: 読込結果 
+			"""
 			return 0 if tag is None else util.int_from_str(tag.text)
 
 		def read_bool(tag):
+			"""
+			ブール値読込
+			Args:
+					tag (str): 読込元タグ
+
+			Returns:
+					bool: 読込結果 
+			"""
 			return tag is not None 
 
 		def read_list(tag):
+			"""
+			リスト読込
+			Args:
+					tag (str): 読込元タグ
+
+			Returns:
+					list: 読込結果
+			"""
 			ret = []
 			for value in tag.iter("value"):
 				ret.append(value.text)
 			return ret
 
 		def read_env(tree) -> EnvironmentData:
+			"""
+   		開発環境データ読込
+
+			Args:
+					tree (str): 読込元
+
+			Returns:
+					EnvironmentData: 読込結果
+			"""
 			keys=[
 				("servers","srv"),
 				("os","os"),
@@ -287,6 +368,15 @@ class CareerHistoryDataInput():
 			return ret
 		
 		def read_scale(scale) -> ScaleData:
+			"""
+			開発規模データ読込
+
+			Args:
+					scale (Element): 読込内容
+
+			Returns:
+					ScaleData: 読込結果
+			"""
 			ret = ScaleData()
 			## 設計
 			ret.des_base = read_int(scale.find("des_base"))					#基本設計
@@ -307,6 +397,15 @@ class CareerHistoryDataInput():
 			return ret
 
 		def read_career(career) -> CareerData:
+			"""
+			職務経歴レコードデータ読込
+
+			Args:
+					career (Element): 読込内容
+
+			Returns:
+					CareerData: 読込結果
+			"""
 			ret = CareerData()
 			ret.flg_over = read_bool(career.find("flg_over"))																						#終了フラグ
 			ret.set_term_start(dt.strptime(career.find("term_start").text,"%Y%m"))											#期間：から
@@ -328,14 +427,15 @@ class CareerHistoryDataInput():
 
 		## ここから本処理 ##
 		# XMLを取得
-		tree = et.parse(self.filename) 
-		root = tree.getroot()
+		if self.filename != "" :
+			tree = et.parse(self.filename) 
+			root = tree.getroot()
 
-		# 返却クラス定義
-		ret = CareerHistoryData()
-		shain_num = root.find("shain_num")
-		ret.shain_num = 0 if shain_num is None else util.int_from_str(shain_num.text)
-		ret.history_list = []
-		for career in root.iter("Career"):
-			ret.history_list.append(read_career(career))
-		return ret
+			# 返却クラス定義
+			ret = CareerHistoryData()
+			shain_num = root.find("shain_num")
+			ret.shain_num = 0 if shain_num is None else util.int_from_str(shain_num.text)
+			ret.history_list = []
+			for career in root.iter("Career"):
+				ret.history_list.append(read_career(career))
+			return ret

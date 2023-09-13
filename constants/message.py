@@ -1,5 +1,8 @@
 
 class Message:
+	"""
+  メッセージ定数クラス
+	"""
 	MSG_OK = "OK."
 	MSG_NOVALIDATION = "－"
 	MSG_ERR_EMPTY = "NG：未入力です。"
@@ -10,6 +13,9 @@ class Message:
 	MSG_WARN_LENGTH = "WARN：最大文字数({0}文字)を超えている部位は切り取られます。"
 
 class DialogMessage:
+	"""
+	ダイアログ定数クラス
+	"""
 	DIALOG_TEST = ("info","TEST","【メッセージ未実装】\nこれはテストメッセージです。")
 	DIALOG_EDIT_ERROR = ("error","編集中にエラー発生","編集中にエラーが発生しました。\n詳細はコンソールログを参照してください。")
 	DIALOG_OUTPUT_ERROR = ("error","出力失敗","ファイル出力に失敗しました。\n詳細はコンソールログを参照してください。")

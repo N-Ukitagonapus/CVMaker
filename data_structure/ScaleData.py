@@ -1,7 +1,7 @@
-'''
-開発規模
-'''
 class ScaleData:
+	"""
+	開発規模データ
+	"""
 	def __init__(self):
 		## 設計
 		self.des_base = 0				#基本設計
