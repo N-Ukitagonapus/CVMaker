@@ -1,7 +1,7 @@
 import copy
 import tkinter as tk
 from tkinter import StringVar, ttk
-from constants.const import ENV_SET, VALID_ERR
+from constants.const import ENV_SET, VALID_ERR, VALID_WARN
 from data_structure.EnvironmentData import EnvironmentData
 from data_structure.SkillData import SkillData
 from tkinter import filedialog as fd
@@ -42,7 +42,7 @@ class SkillDataOutput():
 		final_validation(self.data)
 		total_val = True
 		for val in vals.values():
-			if val["result"] == VALID_ERR:
+			if val["result"] in (VALID_ERR, VALID_WARN):
 				total_val = False
 				break
 
@@ -83,7 +83,7 @@ class SkillDataOutput():
 		button_cancel["command"] = lambda: cancel()
 
 		def output():
-			if total_val == VALID_ERR:
+			if total_val == False:
 				if util.msgbox_ask(diag.DIALOG_ASK_FORCE_OUTPUT):
 					do_output()
 			else:

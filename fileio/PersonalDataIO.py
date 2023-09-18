@@ -101,7 +101,7 @@ class PersonalDataOutput():
 		button_cancel["command"] = lambda: cancel()
 
 		def output():
-			if total_val == VALID_ERR:
+			if total_val == False:
 				if util.msgbox_ask(diag.DIALOG_ASK_FORCE_OUTPUT):
 					do_output()
 			else:

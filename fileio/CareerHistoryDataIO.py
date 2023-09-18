@@ -128,7 +128,7 @@ class CareerHistoryDataOutput():
 		frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
 
 		btn_frame = tk.Frame(subwindow,borderwidth=2,relief="groove")
-		btn_ok = ttk.Button(btn_frame,text="OK")
+		btn_ok = ttk.Button(btn_frame,text="強制出力" if self.has_pointout else "出力")
 		btn_cancel = ttk.Button(btn_frame,text="キャンセル")
 		btn_ok.pack(side=tk.LEFT,padx=10,pady=5)
 		btn_cancel.pack(side=tk.RIGHT,padx=10,pady=5)
