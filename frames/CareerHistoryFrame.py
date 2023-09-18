@@ -8,7 +8,7 @@ from constants.const import POSITIONS, TASKS
 from data_structure.CareerData import CareerData
 from data_structure.CareerHistoryData import CareerHistoryData
 from data_structure.EnvironmentData import EnvironmentData
-from fileio.CareerHistoryDataIO import CareerHistoryDataInput, CareerHistoryOutValidation
+from fileio.CareerHistoryDataIO import CareerHistoryDataInput, CareerHistoryDataOutput
 from frames.subframe.EnvironmentSubFrame import EnvironmentSubFrame
 from frames.subframe.ScaleDataSubFrame import ScaleDataSubFrame
 from utils.Utilities import Utilities as util
@@ -263,14 +263,27 @@ class CareerHistoryFrame(tk.Frame):
 				util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)
 			finally:
 				del env_sub
+
 		def read_file():
 			try:
 				io = CareerHistoryDataInput()
-				self.data = io.read()
-				update_datanum()
-				self.data_num = 1
-				self.updadte_widget(self.data_num)
-				util.msgbox_showmsg(diag.DIALOG_SUCCESS_READ_CAREERDATA)
+				read_data = io.read()
+				if read_data is not None :
+					self.data = read_data
+					update_datanum()
+					self.data_num = 1
+					self.updadte_widget(self.data_num)
+					util.msgbox_showmsg(diag.DIALOG_SUCCESS_READ_CAREERDATA)
+			except Exception as e:
+				print(e)
+				util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)
+			finally:
+				del io
+
+		def save_file():
+			try:
+				io = CareerHistoryDataOutput(self.data)
+				io.check_input(target)
 			except Exception as e:
 				print(e)
 				util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)
@@ -278,7 +291,7 @@ class CareerHistoryFrame(tk.Frame):
 				del io
 
 		self.btn_load["command"] = lambda: read_file()
-		self.btn_save["command"] = lambda: CareerHistoryOutValidation().check_input(target,self.data)
+		self.btn_save["command"] = lambda: save_file()
 		self.button_prev["command"] = lambda: prev()
 		self.button_next["command"] = lambda: next()
 		self.button_add["command"] = lambda: add_data()

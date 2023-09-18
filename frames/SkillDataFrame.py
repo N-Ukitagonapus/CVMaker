@@ -118,6 +118,8 @@ class SkillDataFrame(tk.Frame):
   
 	#入力コントロール
 	def input_control(self,target):
+
+
 		def expr_start_set(*args):
 			try:
 				date_conv = util.get_first_date(datetime.strptime(self.str_start_date.get(),"%Y/%m/%d"))
@@ -125,12 +127,15 @@ class SkillDataFrame(tk.Frame):
 				self.data.expr_start=date_conv
 			except ValueError:
 				return
+		def set_pr(event):
+			self.data.pr=self.text_pr.get('1.0',self.text_pr.index(tk.END))
 		self.btn_load["command"] = lambda: self.data_read(target)
 		self.btn_save["command"] = lambda: self.data_save(target)
 		self.btn_qual_edit["command"] = lambda:self.edit_qualifications(self.ret)
 		self.btn_env_edit["command"]  = lambda:EnvironmentSubFrame().edit_envs(target, "使用経験編集", self.data.expr_env)
 		self.str_start_date.trace('w',expr_start_set)
-  
+		self.text_pr.bind("<FocusOut>",func = set_pr)
+	
 	#データ出力
 	def data_save(self,target):
 		io = SkillDataOutput(self.data)

@@ -23,8 +23,6 @@ class SkillDataOutput():
 	#データ出力
 	def confirm(self, target):
 		def final_validation(input_data: SkillData):
-			input_data.expr_start=self.expr_start.get_date()
-			input_data.pr=self.text_pr.get('1.0',self.text_pr.index(tk.END))
 			sval.out_date_check(vals["expr_start"],input_data.expr_start)
 			sval.io_novalidation(vals["absense"])
 			sval.out_warn_if_empty(vals["specialty"],input_data.specialty.get())

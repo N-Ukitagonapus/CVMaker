@@ -33,34 +33,34 @@ class CareerHistoryDataOutput():
 		"""
 		データチェック
 		"""
-		data = self.data
+
 		result = []
 		err_total,warn_total = 0, 0
 		i = 1
 		# 経歴データごとに参照。
-		for data in input.history_list:
+		for history in self.data.history_list:
 			err, warn = 0, 0
 			result.append("【経歴データ：{0}】".format(i))
 			# 業務開始日が今日より未来の場合はエラー
-			if data.term_start > datetime.date.today():
+			if history.term_start > datetime.date.today():
 				result.append("[エラー]業務開始日に未来日付は入力できません。")
 				err += 1
 			# 業務開始日 ＜ 業務終了日の場合はエラー
-			if data.term_start > data.term_end:
+			if history.term_start > history.term_end:
 				result.append("[エラー]業務開始日に業務終了日以降の日付は入力できません。")
 				err += 1
 			# 業界、プロジェクト概要、システム概要は入力推奨(未入力の場合は警告)
-			if str.strip(data.description_gyokai) == "":
+			if str.strip(history.description_gyokai) == "":
 				result.append("[警告]業界が未入力です。")
 				warn += 1
-			if str.strip(data.description_project_overview) == "":
+			if str.strip(history.description_project_overview) == "":
 				result.append("[警告]プロジェクト概要が未入力です。")
 				warn += 1
-			if str.strip(data.description_project_overview) == "":
+			if str.strip(history.description_project_overview) == "":
 				result.append("[警告]システム概要が未入力です。")
 				warn += 1
 			# 開発規模の製造その他の名称が未入力の際に本数が入っていたらエラー
-			scl = data.scale
+			scl = history.scale
 			if scl.etc1_name == "" and scl.etc1_num > 0:
 				result.append("[エラー]開発規模の「その他(1)」名称が未入力です。")
 				err += 1
@@ -68,27 +68,27 @@ class CareerHistoryDataOutput():
 				result.append("[エラー]開発規模の「その他(2)」名称が未入力です。")
 				err += 1
 			# 職位が「その他」で未入力の場合はエラー
-			if data.position == "":
+			if history.position == "":
 				result.append("[エラー]職位が未選択です。")
 				err += 1
 			# 職位が「その他」で未入力の場合はエラー
-			if data.position == "その他" and str.strip(data.position_etc) == "":
+			if history.position == "その他" and str.strip(history.position_etc) == "":
 				result.append("[エラー]職位が「その他」の場合は職位名を入力してください。")
 				err += 1
 			# 総メンバー数　＜　自社メンバー数の場合はエラー。
-			if data.members < data.members_internal:
+			if history.members < history.members_internal:
 				result.append("[エラー]自社メンバー数が総メンバー数よりも多いです。確認してください。")
 				err += 1
 			# 総メンバー数　＜　自社メンバー数の場合はエラー。
-			if data.members == 0:
+			if history.members == 0:
 				result.append("[エラー]総メンバー数が入力されていません。")
 				err += 1
 			# 作業内容「その他」にチェックがついているのに未入力の場合はエラー
-			if len(data.tasks) == 0:
+			if len(history.tasks) == 0:
 				result.append("[警告]作業内容にチェックが入っていません。")
 				warn += 1
 			# 作業内容「その他」にチェックがついているのに未入力の場合はエラー
-			if TASKS["ETC"] in data.tasks and str.strip(data.tasks_etc) == "":
+			if TASKS["ETC"] in history.tasks and str.strip(history.tasks_etc) == "":
 				result.append("[エラー]作業内容の「その他」を入力してください。")
 				err += 1
 			#エラー総数
@@ -427,7 +427,9 @@ class CareerHistoryDataInput():
 
 		## ここから本処理 ##
 		# XMLを取得
-		if self.filename != "" :
+		if self.filename == "" :
+			return None
+		else :
 			tree = et.parse(self.filename) 
 			root = tree.getroot()
 
