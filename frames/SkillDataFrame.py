@@ -118,8 +118,7 @@ class SkillDataFrame(tk.Frame):
   
 	#入力コントロール
 	def input_control(self,target):
-
-
+		
 		def expr_start_set(*args):
 			try:
 				date_conv = util.get_first_date(datetime.strptime(self.str_start_date.get(),"%Y/%m/%d"))
