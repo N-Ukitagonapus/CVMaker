@@ -211,6 +211,7 @@ class ExcelOutput():
 		sheet[SINGLE_CELLS["パッケージ"]].value = ",".join(data.siyoukeiken.pkg)
 		sheet[SINGLE_CELLS["自己PR"]].value = data.pr
 
+		#経歴行書込
 		for i in range (len(data.keireki)):
 			cur = data.keireki[i]
 			row = CAREER_START_ROW + i

@@ -16,11 +16,19 @@ INITIAL_DIR = "./"
 DEFAULT_EXT = "xml"
 
 class PersonalDataOutput():
-
+	"""
+	個人基本情報データ出力クラス
+ 	"""
 	def __init__(self, data:PersonalData):
 		self.data = data
 
 	def validate(self) -> dict:
+		"""
+  	入力チェック
+
+		Returns:
+				dict: チェック結果
+		"""
 		vals = {
 			"shain_num":{"label":"社員番号"},
 			"name_kanji":{"label":"氏名(漢字)"},
@@ -42,6 +50,12 @@ class PersonalDataOutput():
 		return vals
 
 	def rock_items(self, frame, res):
+		"""
+		項目非活性化
+		Args:
+				frame (Tk.Frame): 対象フレーム
+				res (dict): チェック結果
+		"""
 		frame.text_shain_num["state"] = tk.DISABLED if res["shain_num"]["result"] == VALID_OK else tk.NORMAL
 		frame.text_shi_kanji["state"] = tk.DISABLED if res["name_kanji"]["result"] == VALID_OK else tk.NORMAL
 		frame.text_mei_kanji["state"] = tk.DISABLED if res["name_kanji"]["result"] == VALID_OK else tk.NORMAL
@@ -56,7 +70,13 @@ class PersonalDataOutput():
 		frame.btn_edit["state"] = tk.NORMAL
    
 	def confirm(self, target:tk.Frame, cntrl:tk.Frame):
+		"""
+		確認画面表示
 
+		Args:
+				target (tk.Frame): サブウィンドウ表示対象フレーム(=メインフレーム)
+				cntrl (tk.Frame): 操作対象フレーム
+		"""
 		vals = self.validate()
 		total_val = True
 		for val in vals.values():
@@ -101,6 +121,9 @@ class PersonalDataOutput():
 		button_cancel["command"] = lambda: cancel()
 
 		def output():
+			"""
+			出力ボタン押下時動作
+    	"""
 			if total_val == False:
 				if util.msgbox_ask(diag.DIALOG_ASK_FORCE_OUTPUT):
 					do_output()
@@ -109,17 +132,26 @@ class PersonalDataOutput():
 			subwindow.destroy()
 
 		def do_output():
+			"""
+   		出力処理本体
+			"""
 			try:
-				self.output()
+				self.output_file()
 				self.rock_items(cntrl, vals)
 			except Exception as e:
 				print(e)
 				util.msgbox_showmsg(diag.DIALOG_OUTPUT_ERROR)
 
 		def cancel():
+			"""
+   		キャンセル
+			"""
 			subwindow.destroy()
 
-	def output(self):
+	def output_file(self):
+		"""
+  	ファイル出力
+		"""
 		base = et.Element("PersonalData")
 		tree = et.ElementTree(element=base)
 
@@ -154,11 +186,19 @@ class PersonalDataOutput():
 			tree.write(filename, encoding="utf-8", xml_declaration=True)
 
 class PersonalDataInput():
+	"""
+ 	個人基本情報データ読込クラス
+	"""
 	def __init__(self,frame):
 		self.frame = frame
 
 	def read(self, target):
+		"""
+  	ファイル読込
 
+		Args:
+				target (tk.Frame): サブウィンドウ表示元フレーム(=メインフレーム)
+		"""
 		filename = fd.askopenfilename(
 		title = "個人基本情報読込",
 		filetypes = FILE_TYPES,
@@ -229,6 +269,11 @@ class PersonalDataInput():
 		sval.in_is_not_empty(input["gakureki"])
 
 	def set_value(self, input):
+		"""
+		読込値設定
+		Args:
+				input (dict): 読込結果
+		"""
 		data = self.frame.data
 		util.setstr_from_read(data.shain_num,input["shain_num"])
 		util.setstr_from_read_cut(data.name_last_kanji,input["last_name_kanji"],20)
@@ -243,6 +288,12 @@ class PersonalDataInput():
 		util.setstr_from_read(data.gakureki,input["gakureki"])
 
 	def rock_items(self, input):
+		"""
+		項目非活性化
+
+		Args:
+				input (dict): 読込結果
+		"""
 		frame = self.frame
 		frame.text_shain_num["state"] = tk.DISABLED if input["shain_num"]["result"] == VALID_OK else tk.NORMAL
 		frame.text_shi_kanji["state"] = tk.DISABLED if input["last_name_kanji"]["result"] == VALID_OK else tk.NORMAL
@@ -257,8 +308,13 @@ class PersonalDataInput():
 		frame.text_academic["state"] = tk.DISABLED if input["gakureki"]["result"] == VALID_OK else tk.NORMAL
 		frame.btn_edit["state"] = tk.NORMAL
 
-	#ファイル読み込み結果表示
 	def show_result(self, input,target):
+		"""
+		ファイル読込結果表示
+		Args:
+				input (dict): 読込結果
+				target (tk.Frame): サブウィンドウ表示元フレーム(=メインフレーム)
+		"""
 		subwindow = tk.Toplevel(target)
 		subwindow.title("ファイル読込結果")
 		subwindow.geometry("500x390")

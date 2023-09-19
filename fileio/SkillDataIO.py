@@ -16,12 +16,20 @@ FILE_TYPES = [("XMLファイル", ".xml")]
 INITIAL_DIR = "./"
 DEFAULT_EXT = "xml"
 class SkillDataOutput():
-
+	"""
+	技術情報データ出力クラス
+	"""
 	def __init__(self,data:SkillData):
 		self.data = data
   
 	#データ出力
 	def confirm(self, target):
+		"""
+		確認画面表示
+
+		Args:
+				target (tk.Frame): サブウィンドウ表示対象フレーム(=メインフレーム)
+		"""
 		def final_validation(input_data: SkillData):
 			sval.out_date_check(vals["expr_start"],input_data.expr_start)
 			sval.io_novalidation(vals["absense"])
@@ -83,6 +91,9 @@ class SkillDataOutput():
 		button_cancel["command"] = lambda: cancel()
 
 		def output():
+			"""
+			出力ボタン押下時動作
+    	"""
 			if total_val == False:
 				if util.msgbox_ask(diag.DIALOG_ASK_FORCE_OUTPUT):
 					do_output()
@@ -90,23 +101,46 @@ class SkillDataOutput():
 				do_output()
 
 		def do_output():
+			"""
+   		出力処理本体
+			"""
 			try:
-				SkillDataOutput(self.data).output()
+				self.output_file()
 			except Exception as e:
 				print(e)
 				util.msgbox_showmsg(diag.DIALOG_OUTPUT_ERROR)
 			subwindow.destroy()
 
 		def cancel():
+			"""
+   		キャンセル
+			"""
 			subwindow.destroy()
-	def output(self):
+   
+	def output_file(self):
+		"""
+		ファイル出力
+		"""
 		def create_list(tgt, list:list, base_title):
+			"""
+			リストタグ作成
+			Args:
+					tgt (str): 対象タグ
+					list (list): 出力内容リスト
+					base_title (str): 親タグ名
+			"""
 			if len(self.data.qualifications) > 0 :
 				inner = et.SubElement(tgt,base_title)
 				for val in list:
 					et.SubElement(inner,"value").text = val
 
 		def create_env(tgt, envs:EnvironmentData):
+			"""
+   		開発環境タグ作成
+			Args:
+					tgt (str): 対象タグ
+					envs (EnvironmentData): 開発環境データ
+			"""
 			trunk = et.SubElement(tgt,"environments")
 			create_list(trunk,envs.server,"servers")
 			create_list(trunk,envs.os,"os")
@@ -117,6 +151,7 @@ class SkillDataOutput():
 			create_list(trunk,envs.tools,"tools")
 			create_list(trunk,envs.pkg,"packages")
 
+		# ここから処理本体
 		base = et.Element("SkillData")
 		tree = et.ElementTree(element=base)
 
@@ -142,11 +177,18 @@ class SkillDataOutput():
 			tree.write(filename, encoding="utf-8", xml_declaration=True)
 
 class SkillDataInput():
-
+	"""
+	技術情報データ読込クラス
+	"""
 	def __init__(self,frame):
 		self.frame = frame
 
 	def read(self, target):
+		"""
+		読込実行
+		Args:
+				target (tk.Frame): サブウィンドウ表示元フレーム(=メインフレーム)
+		"""
 		filename = fd.askopenfilename(
 		title = "個人基本情報読込",
 		filetypes = FILE_TYPES,
@@ -166,10 +208,26 @@ class SkillDataInput():
     
 	#XML読込
 	def read_file(self, tree) -> dict:
+		"""
+		ファイル読込
+		Args:
+				tree (str): 読込元
+
+		Returns:
+				dict: 読込結果
+		"""
 		# XMLを取得
 		root = tree.getroot()
   
 		def read_env(tree):
+			"""
+			開発環境データ読込
+			Args:
+					tree (str): 読込元
+
+			Returns:
+					EnvironmentData: 開発環境データ
+			"""
 			keys=[
 				("servers","srv"),
 				("os","os"),
@@ -218,8 +276,12 @@ class SkillDataInput():
 		print(vals)
 		return vals
 
-	#データ入力
 	def inputcheck(self, input:dict):
+		"""
+		読込結果チェック
+		Args:
+				input (dict): 読込結果
+		"""
 		sval.in_date_check(input["expr_start"])
 		sval.in_regex_match(input["absense_year"],"[0-9]*","数字")
 		sval.in_number_between(input["absense_month"],0,11,"0から11の間")
@@ -229,6 +291,11 @@ class SkillDataInput():
 		sval.io_novalidation(input["pr"])
 
 	def set_value(self, input):
+		"""
+		読込結果設定
+		Args:
+				input (dict): 読込結果
+		"""
 		frame = self.frame
 		data = frame.data
 		util.setdate_from_read(frame.expr_start,input["expr_start"])
@@ -242,8 +309,14 @@ class SkillDataInput():
 		frame.text_pr.delete("1.0","end")
 		frame.text_pr.insert('1.0',(input["pr"]["value"]))
 
-	#ファイル読み込み結果表示
-	def show_result(self, input,target):
+
+	def show_result(self, input, target):
+		"""
+		読込結果表示
+		Args:
+				input (dict): 入力結果
+				target (tk.Frame): サブウィンドウ表示対象フレーム(=メインフレーム)
+		"""
 		subwindow = tk.Toplevel(target)
 		subwindow.title("ファイル読込結果")
 		subwindow.geometry("500x390")
