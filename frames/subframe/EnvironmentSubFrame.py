@@ -1,6 +1,3 @@
-'''
-開発環境サブウィンドウ
-'''
 import copy
 import tkinter as tk
 from tkinter import ttk
@@ -10,10 +7,20 @@ from utils.Utilities import Utilities as util
 from data_structure.EnvironmentData import EnvironmentData
 
 class EnvironmentSubFrame:
+	"""
+	開発環境サブウィンドウ
+	"""
 	def __init__(self):
 		pass
 
-	def edit_envs(self,target:tk.LabelFrame,title:str,data:EnvironmentData):
+	def edit_envs(self,target:tk.Frame,title:str,data:EnvironmentData):
+		"""
+		開発環境編集サブウィンドウ表示
+		Args:
+				target (tk.Frame): サブウィンドウ表示元フレーム(=メインフレーム)
+				title (str): サブウィンドウタイトル
+				data (EnvironmentData): 開発環境データ
+		"""
 		subwindow = tk.Toplevel(target)
 		subwindow.title(title)
 		subwindow.geometry("1000x320")
@@ -53,6 +60,9 @@ class EnvironmentSubFrame:
 		btn_cancel["command"] = lambda: cancel()
 
 		def update():
+			"""
+   		データ更新
+			"""
 			env_set = copy.deepcopy(ENV_SET)
 			for key in text_envs.keys():
 				env_set[key] = util.tidy_list(str.strip(text_envs[key].get('1.0',tk.END)).split("\n"))
@@ -60,4 +70,7 @@ class EnvironmentSubFrame:
 			subwindow.destroy()
 
 		def cancel():
+			"""
+   		キャンセル
+			"""
 			subwindow.destroy()

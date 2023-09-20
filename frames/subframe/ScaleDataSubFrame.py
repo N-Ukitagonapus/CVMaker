@@ -1,6 +1,3 @@
-'''
-開発規模サブウィンドウ
-'''
 import tkinter as tk
 from tkinter import StringVar, ttk
 
@@ -9,11 +6,20 @@ from utils.Utilities import Utilities as util
 from utils.Validation import DynamicValidation as dval
 
 class ScaleDataSubFrame:
+	"""
+	開発規模編集サブウィンドウ
+	"""
   #初期化
 	def __init__(self):
 		pass
 	#開発規模編集
-	def edit_scale(self,target:tk.LabelFrame,data:ScaleData):
+	def edit_scale(self,target:tk.Frame,data:ScaleData):
+		"""
+		開発規模サブウィンドウ表示
+		Args:
+				target (tk.Frame): サブウィンドウ表示元フレーム(=メインフレーム)
+				data (ScaleData): 開発規模データ
+		"""
 		#入力部品構築
 		def grid_input(frame:tk.LabelFrame,row:int,var:StringVar,tani:str):
 			f_inner = tk.Frame(frame, borderwidth=0)
@@ -129,8 +135,12 @@ class ScaleDataSubFrame:
 		btn_ok["command"] = lambda: update(data)
 		btn_cancel["command"] = lambda: cancel()
 
-		#データ更新
 		def update(data:ScaleData):
+			"""
+			データ更新
+			Args:
+					data (ScaleData): 開発規模データ
+			"""
     	##設計
 			data.des_base=util.int_from_str(val_bds.get())
 			data.des_detail=util.int_from_str(val_dds.get())
@@ -149,6 +159,8 @@ class ScaleDataSubFrame:
 			data.sts=util.int_from_str(val_sts.get())
 			subwindow.destroy()
 
-		#キャンセル
 		def cancel():
+			"""
+   		キャンセル
+			"""
 			subwindow.destroy()
