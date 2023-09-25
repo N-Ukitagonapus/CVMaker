@@ -1,6 +1,3 @@
-'''
-個人基本情報フレーム
-'''
 import datetime
 from tkcalendar import DateEntry
 import tkinter as tk
@@ -17,6 +14,9 @@ from utils.Validation import StaticValidation as sval
 
 from constants.message import DialogMessage as diag
 class PersonalDataFrame(tk.Frame):
+	"""
+ 	個人基本情報フレーム
+	"""
 	def __init__(self, target):
 		self.data=PersonalData()
 
@@ -26,6 +26,11 @@ class PersonalDataFrame(tk.Frame):
 
 	#エリア定義
 	def area_define(self, target):
+		"""
+		エリア定義
+		Args:
+				target (tk.Frame): 設置対象
+		"""
 		#バリデーション定義
 		is_numeric = target.register(dval.is_numeric)
 		length_limit = target.register(dval.length_limit)
@@ -99,8 +104,10 @@ class PersonalDataFrame(tk.Frame):
 		self.text_academic = ttk.Entry(self.fourth_line, width=60,textvariable=self.data.gakureki)
 		#4行目ここまで
 
-	#組み立て
 	def assembly(self):
+		"""
+  	組立
+		"""
 			#1行目
 		self.label_shain_num.pack(side=tk.LEFT)
 		util.mark_required(self.frame_shain_num,self.label_shain_num)
@@ -141,11 +148,18 @@ class PersonalDataFrame(tk.Frame):
 		util.mark_required(self.fourth_line,self.label_academic)
 		self.text_academic.pack(side=tk.LEFT,padx=5)
 		self.fourth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
-
-	#入力コントロール
+  
 	def input_control(self,target):
+		"""
+		入力コントロール
+
+		Args:
+				target (tk.Frame): サブウィンドウ表示元(=メインフレーム)
+		"""
+		#誕生日設定
 		def birthday_set(event):
 			self.data.birthday=self.birthday_entry.get_date()
+   
 		self.btn_load["command"] = lambda: self.data_read(target)
 		self.btn_save["command"] = lambda: self.data_save(target)
 		self.btn_edit["command"] = lambda: self.reactivate_items(target)
@@ -153,18 +167,33 @@ class PersonalDataFrame(tk.Frame):
 
 	#データ出力
 	def data_save(self,target):
+		"""
+		データ出力
+		Args:
+				target (tk.Frame): サブウィンドウ表示元(=メインフレーム)
+		"""
 		io = PersonalDataOutput(self.data)
 		io.confirm(target, self)
 		del io
 
 	#データ読込
 	def data_read(self,target):
+		"""
+		データ読込
+		Args:
+				target (tk.Frame): サブウィンドウ表示元(=メインフレーム)
+		"""
 		io = PersonalDataInput(self)
 		io.read(target)
 		del io
 		
 	#項目再活性
 	def reactivate_items(self,target):
+		"""
+		項目再活性
+		Args:
+				target (tk.Frame): サブウィンドウ表示元(=メインフレーム)
+		"""
 		modes = {
 			"name":BooleanVar(),
 			"address":BooleanVar(),
@@ -201,10 +230,16 @@ class PersonalDataFrame(tk.Frame):
 			chk.pack(anchor=tk.NW,padx=10,pady=5,fill=tk.X,expand="TRUE")
    
 		def switch_state():
+			"""
+   		チェックボックス活性切替
+			"""
 			check_modes["name"]["state"] = tk.DISABLED if modes["all"].get() else tk.NORMAL
 			check_modes["address"]["state"] = tk.DISABLED if modes["all"].get() else tk.NORMAL
    
 		def reactivate():
+			"""
+   		項目再活性
+			"""
 			if modes["all"].get():
 				if util.msgbox_ask(diag.DIALOG_ASK_EDIT_PERSONALDATA):
 					do_reactivate()
@@ -212,6 +247,9 @@ class PersonalDataFrame(tk.Frame):
 				do_reactivate()
 
 		def do_reactivate():
+			"""
+   		再活性実行
+			"""
 			self.text_shain_num["state"] =	 tk.NORMAL if modes["all"].get() else tk.DISABLED
 			self.text_shi_kanji["state"] =	 tk.NORMAL if modes["all"].get() or modes["name"].get() else tk.DISABLED
 			self.text_mei_kanji["state"] =	 tk.NORMAL if modes["all"].get() else tk.DISABLED
@@ -226,12 +264,17 @@ class PersonalDataFrame(tk.Frame):
 			subwindow.destroy()
 
 		def cancel():
+			"""
+   		キャンセル
+			"""
 			subwindow.destroy()
    
 		check_modes["all"]["command"] = lambda:switch_state()
 		button_ok["command"] = lambda:reactivate()
 		button_cancel["command"] = lambda: cancel()
 
-	# フレーム描写
 	def pack(self):
+		"""
+  	フレーム描写
+		"""
 		self.ret.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)

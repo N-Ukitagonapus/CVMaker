@@ -15,7 +15,9 @@ from utils.Utilities import Utilities as util
 from constants.message import DialogMessage as diag
 from utils.Validation import DynamicValidation as dval
 class CareerHistoryFrame(tk.Frame):
-	
+	"""
+	職務経歴情報フレーム
+	"""
 	def __init__(self, target):
 
 		self.data=CareerHistoryData()
@@ -27,7 +29,11 @@ class CareerHistoryFrame(tk.Frame):
 		self.assembly()
 
 	def area_define(self, target):
-		
+		"""
+		エリア定義
+		Args:
+				target (tk.Frame): 設置対象
+		"""
 		#バリデーション定義
 		is_numeric = target.register(dval.is_numeric)
    
@@ -161,9 +167,10 @@ class CareerHistoryFrame(tk.Frame):
 		self.text_tasks_etc = ttk.Entry(self.fifth_line, width=16, state="disabled", textvariable=self.str_tasks_etc) 
 		self.text_tasks_etc.grid(row=1,column=8,padx=5,sticky=tk.W)
 
-	#組み立て
 	def assembly(self):
-
+		"""
+		組み立て
+		"""
 		#トップフレーム
 		self.label_now_yrmth.pack(side=tk.LEFT,padx=5)
 		self.label_genzai.pack(side=tk.LEFT,padx=5)
@@ -227,20 +234,36 @@ class CareerHistoryFrame(tk.Frame):
 		#5行目
 		self.fifth_line.pack(side=tk.TOP,fill=tk.X)
   
-	#ボタンコントロール
 	def button_control(self, target):
+		"""
+		ボタンコントロール
+		Args:
+				target (tk.Frame): サブウィンドウ表示元(=メインフレーム)
+		"""
 		def prev():
+			"""
+			前レコードへ
+			"""
 			if self.data_num > 1:
 				self.data_num -= 1
 				self.page_num.set(self.data_num)
 		def next():
+			"""
+			次レコードへ
+			"""
 			if self.data_num < len(self.data.history_list):
 				self.data_num += 1
 				self.page_num.set(self.data_num)
 		def add_data():
+			"""
+			データ追加
+			"""
 			self.data.history_list.append(CareerData())
 			update_datanum()
 		def del_data():
+			"""
+			データ削除
+			"""
 			if len(self.data.history_list) > 1 :
 				if util.msgbox_ask(diag.DIALOG_ASK_DELETE_CAREERDATA):
 					del self.data.history_list[self.data_num - 1]
@@ -251,10 +274,17 @@ class CareerHistoryFrame(tk.Frame):
 			else:
 				util.msgbox_showmsg(diag.DIALOG_CANT_DELETE)
 		def update_datanum():
+			"""
+			ページ更新
+			"""
 			data_total = len(self.data.history_list)
 			self.total_page["text"] = data_total
 			self.curr_page["value"]=[i for i in range(1,data_total+1)]
+   
 		def edit_envs():
+			"""
+			開発環境サブウィンドウ
+			"""
 			try:
 				env_sub = EnvironmentSubFrame()
 				env_sub.edit_envs(target, "開発環境編集", self.get_current().environment)
@@ -264,7 +294,23 @@ class CareerHistoryFrame(tk.Frame):
 			finally:
 				del env_sub
 
+		def edit_scales():
+			"""
+			開発規模サブウィンドウ
+			"""
+			try:
+				scale_sub =  ScaleDataSubFrame()
+				scale_sub.edit_scale(target, self.get_current().scale)
+			except Exception as e:
+				print(e)
+				util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)
+			finally:
+				del scale_sub
+
 		def read_file():
+			"""
+			ファイル読込
+			"""
 			try:
 				io = CareerHistoryDataInput()
 				read_data = io.read()
@@ -281,6 +327,9 @@ class CareerHistoryFrame(tk.Frame):
 				del io
 
 		def save_file():
+			"""
+			ファイルへ保存
+			"""
 			try:
 				io = CareerHistoryDataOutput(self.data)
 				io.check_input(target)
@@ -296,11 +345,14 @@ class CareerHistoryFrame(tk.Frame):
 		self.button_next["command"] = lambda: next()
 		self.button_add["command"] = lambda: add_data()
 		self.button_del["command"] = lambda: del_data()
-		self.btn_env_edit["command"] = lambda:edit_envs()
-		self.btn_scale_edit["command"] = lambda:ScaleDataSubFrame().edit_scale(target, self.get_current().scale)
+		self.btn_env_edit["command"] = lambda: edit_envs()
+		self.btn_scale_edit["command"] = lambda: edit_scales()
 
 	#入力コントロール
 	def input_control(self):
+		"""
+		入力コントロール
+		"""
    
 		def set_datanum(*args):
 			self.data_num = int(self.page_num.get())
@@ -383,13 +435,19 @@ class CareerHistoryFrame(tk.Frame):
 		self.text_members_total.bind("<FocusOut>",func = set_members_total)
 		self.chk_internal_leader["command"] = lambda:set_internal_leader()
 
-	#画面更新
+
 	def updadte_widget(self,page):
+		"""
+		画面更新
+		"""
 		self.page_num.set(page)
 		self.set_from_data(self.get_current())
 
-	#フォームに値を設定
+
 	def set_from_data(self, data:CareerData):
+		"""
+		フォームに値を設定
+		"""
 		self.flg_bus_end.set(data.flg_over)
 		self.term_start.set_date(data.term_start)
 		if data.flg_over:
@@ -428,7 +486,6 @@ class CareerHistoryFrame(tk.Frame):
 		self.str_members_total.set(str(data.members))
 		self.str_members_internal.set(str(data.members_internal))
 
-	#現在の経歴データ呼出
 	def get_current(self) -> CareerData:
 		"""
 		現在の経歴データ呼出
@@ -441,7 +498,6 @@ class CareerHistoryFrame(tk.Frame):
 		"""
 		return self.data.history_list[self.data_num - 1]
 
-	#メインウィンドウへ配置(mainからの呼び出し)
 	def pack(self):
 		"""
 		メインウィンドウへ配置(mainからの呼び出し)

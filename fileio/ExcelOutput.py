@@ -17,7 +17,7 @@ from data_structure.ExcelOutputData import ExcelOutputData, KeirekiSubData
 from data_structure.PersonalData import PersonalData
 from data_structure.SkillData import SkillData
 
-from utils.Utilities import Utilities as util
+from utils.Utilities import Utilities as util, resource_path
 
 FILE_TYPES = [("EXCELファイル", ".xlsx")]
 INITIAL_DIR = "./"
@@ -69,15 +69,7 @@ LIST_CELLS = {
 	"体制":("BW{0}","BW{0}:CC{0}"),
 }
 
-def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
-    try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
 
-    return os.path.join(base_path, relative_path)
 
 class ExcelOutput():
 	"""

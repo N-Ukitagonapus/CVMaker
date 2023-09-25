@@ -17,6 +17,9 @@ from utils.Validation import StaticValidation as sval
 from constants.message import DialogMessage as diag
 
 class SkillDataFrame(tk.Frame):
+	"""
+ 	技術情報フレーム
+	"""
 	def __init__(self, target):
 		self.data = SkillData()
 		self.area_define(target)
@@ -25,6 +28,11 @@ class SkillDataFrame(tk.Frame):
   
 	#エリア定義
 	def area_define(self, target):
+		"""
+		エリア定義
+		Args:
+				target (tk.Frame): 設置対象
+		"""
 		#バリデーション定義
 		is_numeric = target.register(dval.is_numeric)
 
@@ -83,8 +91,10 @@ class SkillDataFrame(tk.Frame):
 		#自己PR
 		self.text_pr = scrolledtext.ScrolledText(self.fourth_line,wrap=tk.WORD,width=80,height=5)  
 
-	#組み立て
 	def assembly(self):
+		"""
+  	組立
+		"""
 		#1行目
 		self.label_expr.pack(side=tk.LEFT)
 		util.mark_required(self.first_line,self.label_expr)
@@ -118,7 +128,14 @@ class SkillDataFrame(tk.Frame):
   
 	#入力コントロール
 	def input_control(self,target):
-		
+		"""
+		入力コントロール
+
+		Args:
+				target (tk.Frame): サブウィンドウ表示元(=メインフレーム)
+		"""
+
+		# 業界経験開始日
 		def expr_start_set(*args):
 			try:
 				date_conv = util.get_first_date(datetime.strptime(self.str_start_date.get(),"%Y/%m/%d"))
@@ -126,31 +143,61 @@ class SkillDataFrame(tk.Frame):
 				self.data.expr_start=date_conv
 			except ValueError:
 				return
+
+		def edit_envs():
+			"""
+			開発環境サブウィンドウ
+			"""
+			try:
+				env_sub = EnvironmentSubFrame()
+				env_sub.edit_envs(target, "使用経験編集", self.get_current().environment)
+			except Exception as e:
+				print(e)
+				util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)
+			finally:
+				del env_sub
+  
+		# 自己PR
 		def set_pr(event):
 			self.data.pr=self.text_pr.get('1.0',self.text_pr.index(tk.END))
 		self.btn_load["command"] = lambda: self.data_read(target)
 		self.btn_save["command"] = lambda: self.data_save(target)
 		self.btn_qual_edit["command"] = lambda:self.edit_qualifications(self.ret)
-		self.btn_env_edit["command"]  = lambda:EnvironmentSubFrame().edit_envs(target, "使用経験編集", self.data.expr_env)
+		self.btn_env_edit["command"]  = lambda:edit_envs()
 		self.str_start_date.trace('w',expr_start_set)
 		self.text_pr.bind("<FocusOut>",func = set_pr)
 	
-	#データ出力
 	def data_save(self,target):
+		"""
+		データ出力
+
+		Args:
+				target (tk.Frame): サブウィンドウ表示元(=メインフレーム)
+		"""
 		io = SkillDataOutput(self.data)
 		io.confirm(target)
 		del io
 
-	#データ読込
+
+
 	def data_read(self,target):
+		"""
+		データ読込
+
+		Args:
+				target (tk.Frame): サブウィンドウ表示元(=メインフレーム)
+		"""
 		io = SkillDataInput(self)
 		io.read(target)
 		del io
 		
-
-
-	#取得資格編集サブウィンドウ
 	def edit_qualifications(self,target):
+		"""
+		取得資格サブウィンドウ表示
+
+		Args:
+				target (tk.Frame): サブウィンドウ表示元(=メインフレーム)
+		"""
 		subwindow = tk.Toplevel(target)
 		subwindow.title("資格情報編集")
 		subwindow.geometry("320x320")
