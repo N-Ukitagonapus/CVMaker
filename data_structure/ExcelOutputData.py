@@ -1,5 +1,5 @@
 import datetime
-from constants.const import TASKS, POSITIONS
+from constants.const import TASKS, POSITIONS, TASKS_MERGE
 from data_structure.EnvironmentData import EnvironmentData
 from data_structure.ScaleData import ScaleData
 from utils.Utilities import Utilities as util
@@ -27,13 +27,12 @@ class ExcelOutputData:
 
 class KeirekiSubData:
 	"""
-	EXCEL出力データ経歴サブクラス
+	EXCEL出力データ経歴サブクラス(基底)
 	"""
 	def __init__(self):
 		self.text_kikan = ""
 		self.text_gyomu = ""
 		self.text_kankyo = ""
-		self.text_work_kbn = ""
 		self.text_sagyokibo = ""
 		self.text_shokui = ""
 		self.text_taisei = ""
@@ -114,22 +113,6 @@ class KeirekiSubData:
 		if len(env.pkg) > 0:
 			self.text_kankyo += "【PKG】{0}\n".format(",".join(env.pkg))
 
-	def set_work_kbn(self, works:list, etc:str):
-		"""
-		作業区分列に設定するテキストを編集する。
-
-		Parameters
-		----------
-		works : list
-				作業区分
-		etc : str
-				その他
-		"""
-		self.text_work_kbn = "\n".join([s for s in works if s != TASKS["ETC"]])
-		if etc != "":
-			self.text_work_kbn += "\n" if self.text_work_kbn != "" else ""
-			self.text_work_kbn += etc
-
 	def set_sagyo_kibo(self, scale:ScaleData):
 		"""
 		作業規模列に設定するテキストを編集する。
@@ -179,9 +162,12 @@ class KeirekiSubData:
 		leader_flg : bool
 				自社リーダーフラグ
 		"""
-		self.text_shokui = etc if (shokui == "その他" and etc != "") else POSITIONS[shokui]
-		if leader_flg:
-			self.text_shokui += "\n自社リーダー"
+		try:
+			self.text_shokui = etc if (shokui == "その他" and etc != "") else POSITIONS[shokui]
+			if leader_flg:
+				self.text_shokui += "\n自社リーダー"
+		except Exception as e:
+			self.text_shokui = ""
 
 	def set_taisei(self, total:int, jisha:int):
 		"""
@@ -197,3 +183,50 @@ class KeirekiSubData:
 		self.text_taisei = "{0}名".format(total)
 		if jisha > 0:
 			self.text_taisei += "\n（自社メンバー{0}名）".format(jisha)
+
+
+class KeirekiSubDataTypeA(KeirekiSubData) :
+	"""
+	EXCEL出力データ経歴サブクラス(Aタイプ)
+	"""
+	def __init__(self):
+		super().__init__
+		self.text_work_kbn = ""
+	
+	def set_work_kbn(self, works:list, etc:str):
+		"""
+		作業区分列に設定するテキストを編集する。
+
+		Parameters
+		----------
+		works : list
+				作業区分
+		etc : str
+				その他
+		"""
+		self.text_work_kbn = "\n".join([TASKS[s] for s in works if s != "ETC"])
+		if etc != "":
+			self.text_work_kbn += "\n" if self.text_work_kbn != "" else ""
+			self.text_work_kbn += etc
+    
+class KeirekiSubDataTypeB(KeirekiSubData) :
+	"""
+	EXCEL出力データ経歴サブクラス(Bタイプ)
+	"""
+	def __init__(self):
+		super().__init__
+		self.list_work_kbn = []
+
+	def set_work_kbn(self, works:list):
+		"""
+		作業区分群のフラグを設定する。
+
+		Parameters
+		----------
+		works : list
+				作業区分
+		"""
+		keys = TASKS_MERGE.keys()
+		for key in keys:
+			matching = set(works) & set(TASKS_MERGE[key])
+			self.list_work_kbn.append(len(matching) > 0)

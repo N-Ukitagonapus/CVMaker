@@ -160,12 +160,12 @@ class CareerHistoryFrame(tk.Frame):
 		for i in range(len(task_keys)):
 			self.flg_tasks[task_keys[i]] = BooleanVar(value = False)
 			self.chk_tasks[task_keys[i]] = ttk.Checkbutton(self.fifth_line,text=TASKS[task_keys[i]],variable=self.flg_tasks[task_keys[i]])
-			self.chk_tasks[task_keys[i]].grid(row=i//7,column=(i%7)+1,padx=5,sticky=tk.W)
+			self.chk_tasks[task_keys[i]].grid(row=i//10,column=(i%10)+1,padx=5,sticky=tk.W)
 
 		#作業内容その他
 		self.str_tasks_etc = StringVar()
 		self.text_tasks_etc = ttk.Entry(self.fifth_line, width=16, state="disabled", textvariable=self.str_tasks_etc) 
-		self.text_tasks_etc.grid(row=1,column=8,padx=5,sticky=tk.W)
+		self.text_tasks_etc.grid(row=1,column=(len(task_keys)%10)+1,padx=5,sticky=tk.W)
 
 	def assembly(self):
 		"""
@@ -465,7 +465,7 @@ class CareerHistoryFrame(tk.Frame):
 		self.text_disc_work.insert('1.0',(data.description_work))
 		keys=list(TASKS.keys())
 		for i in keys:
-			if TASKS[i] in data.tasks:
+			if i in data.tasks:
 				self.flg_tasks[i].set(True)
 			else:
 				self.flg_tasks[i].set(False)

@@ -88,7 +88,7 @@ class CareerHistoryDataOutput():
 				result.append("[警告]作業内容にチェックが入っていません。")
 				warn += 1
 			# 作業内容「その他」にチェックがついているのに未入力の場合はエラー
-			if TASKS["ETC"] in history.tasks and str.strip(history.tasks_etc) == "":
+			if "ETC" in history.tasks and str.strip(history.tasks_etc) == "":
 				result.append("[エラー]作業内容の「その他」を入力してください。")
 				err += 1
 			#エラー総数

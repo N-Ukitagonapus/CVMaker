@@ -43,10 +43,15 @@ class Application(tk.Frame):
 		self.frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=10)
 
 		#Exportボタン
-		self.frame_bottombutton = tk.Frame(self.master,borderwidth=5,relief="groove")
-		self.button_export = ttk.Button(self.frame_bottombutton,width=15,text="Excel書出")
-		self.button_export.pack(side=tk.RIGHT,padx=10,pady=5)
+		self.frame_bottombutton = tk.Frame(self.master,borderwidth=5,relief=tk.GROOVE)
 		self.frame_bottombutton.pack(side=tk.BOTTOM,fill=tk.X,padx=20,pady=10)
+		self.buttom_buttonfield = tk.Frame(self.frame_bottombutton)
+		self.buttom_buttonfield.pack(side=tk.RIGHT)
+  
+		self.button_export_a = ttk.Button(self.buttom_buttonfield,width=20,text="Excel出力(Aタイプ)")
+		self.button_export_a.pack(side=tk.LEFT,padx=10,pady=5)
+		self.button_export_b = ttk.Button(self.buttom_buttonfield,width=20,text="Excel出力(Bタイプ)")
+		self.button_export_b.pack(side=tk.LEFT,padx=10,pady=5)
 
 		self.frame_personal = PersonalDataFrame(self.master)
 		self.frame_personal.pack()
@@ -58,7 +63,8 @@ class Application(tk.Frame):
 		self.frame_history.pack()
 
 		self.frame_personal.data.shain_num.trace('w',self.sync_shain_num)
-		self.button_export["command"] = lambda: self.export_excel()
+		self.button_export_a["command"] = lambda: self.export_excel("A")
+		self.button_export_b["command"] = lambda: self.export_excel("B")
 
 	def sync_shain_num(self, *args):
 		"""
@@ -72,11 +78,14 @@ class Application(tk.Frame):
 				self.frame_history.data.shain_num = var
 
 
-	def export_excel(self):
+	def export_excel(self,mode:str):
 		"""
-			EXCEL書き出し：現在の登録内容でExcelファイルを書き出す。
+  	EXCEL書き出し：現在の登録内容でExcelファイルを書き出す。
+
+		Args:
+				mode (str): 出力モード(A,B)
 		"""
-		out = ExcelOutput()
+		out = ExcelOutput(mode)
 		try:
 			out.export(self.frame_personal.data, self.frame_skill.data, self.frame_history.data)
 			util.msgbox_showmsg(diag.DIALOG_SUCCESS_OUTPUT_EXCEL)

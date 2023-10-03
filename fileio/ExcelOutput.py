@@ -13,7 +13,7 @@ from monthdelta import monthmod
 from data_structure.CareerData import CareerData 
 
 from data_structure.CareerHistoryData import CareerHistoryData
-from data_structure.ExcelOutputData import ExcelOutputData, KeirekiSubData
+from data_structure.ExcelOutputData import ExcelOutputData, KeirekiSubData, KeirekiSubDataTypeA, KeirekiSubDataTypeB
 from data_structure.PersonalData import PersonalData
 from data_structure.SkillData import SkillData
 
@@ -23,7 +23,7 @@ FILE_TYPES = [("EXCELファイル", ".xlsx")]
 INITIAL_DIR = "./"
 DEFAULT_EXT = "xlsx"
 SHEET_NAME = "技術経歴書"
-CAREER_START_ROW = 34
+CAREER_START_ROW = {"A":34, "B":35}
 PRINT_AREA = "A1:CD{0}"
 BOX = Border(
 	top=Side(style='thin', color='000000'),
@@ -55,7 +55,7 @@ SINGLE_CELLS = {
 	"パッケージ":"O22",
 	"自己PR":"D25"
 }
-# 経歴セル
+# 経歴セル Aタイプ
 # 0:書き込みセル
 # 1:結合セル
 LIST_CELLS = {
@@ -63,21 +63,25 @@ LIST_CELLS = {
 	"期間":("D{0}","D{0}:L{0}"),
 	"業務内容":("M{0}","M{0}:AG{0}"),
 	"開発環境":("AH{0}","AH{0}:AW{0}"),
-	"作業区分":("AX{0}","AX{0}:BE{0}"),
+	"作業区分A":("AX{0}","AX{0}:BE{0}"),
+	"作業区分B":[("AX{0}","AX{0}:AX{0}"),("AY{0}","AY{0}:AY{0}"),("AZ{0}","AZ{0}:AZ{0}"),("BA{0}","BA{0}:BA{0}"),("BB{0}","BB{0}:BB{0}"),("BC{0}","BC{0}:BC{0}"),("BD{0}","BD{0}:BD{0}"),("BE{0}","BE{0}:BE{0}")],
 	"作業規模":("BF{0}","BF{0}:BP{0}"),
 	"職位":("BQ{0}","BQ{0}:BV{0}"),
 	"体制":("BW{0}","BW{0}:CC{0}"),
 }
 
-
-
 class ExcelOutput():
 	"""
 	EXCEL出力クラス
 	"""
-	def __init__(self):
-		# 初期化でテンプレートを読み込んでおく
-		self.wb = pyxl.load_workbook(resource_path("template/ExcelTemplate.xlsx"))
+	def __init__(self, mode:str):
+		"""
+		EXCEL出力クラス
+		Args:
+				mode (str): 出力テンプレートモード
+		"""
+		self.mode = mode
+		self.wb = pyxl.load_workbook(resource_path("template/ExcelTemplate_{0}.xlsx".format(self.mode)))
 
 	def export(self, personal:PersonalData, skill:SkillData, career:CareerHistoryData):
 		"""
@@ -131,16 +135,22 @@ class ExcelOutput():
 		# 経歴作成
 		def create_keireki(cdata:CareerData):
 			ret = KeirekiSubData()
+			if self.mode == "A":
+				ret = KeirekiSubDataTypeA()
+				ret.set_work_kbn(cdata.tasks, cdata.tasks_etc)	# 作業区分
+			elif self.mode == "B":
+				ret = KeirekiSubDataTypeB()
+				ret.set_work_kbn(cdata.tasks)										# 作業区分
 			ret.set_kikan(cdata.term_start, cdata.term_end)																	# 作業期間
 			ret.set_gyomu(cdata.description_gyokai, cdata.description_project_overview,
-		 								cdata.description_system_overview, cdata.description_work)				# 業務内容
+										cdata.description_system_overview, cdata.description_work)				# 業務内容
 			ret.set_kankyo(cdata.environment)																								# 開発環境
-			ret.set_work_kbn(cdata.tasks, cdata.tasks_etc)																	# 作業区分
 			ret.set_sagyo_kibo(cdata.scale)																									# 作業規模
 			ret.set_shokui(cdata.position, cdata.position_etc, cdata.flg_internal_leader)		# 職位
 			ret.set_taisei(cdata.members, cdata.members_internal)														# 体制
 			return ret
-			
+
+
 		ret = ExcelOutputData()
 		ret.number = personal.shain_num.get()
 		ret.fullname = personal.name_last_kanji.get() + personal.name_first_kanji.get()
@@ -173,6 +183,15 @@ class ExcelOutput():
 		"""
 
 		def prepare_cells(sheet, cell_define, row, text, style):
+			"""
+			セル書込
+			Args:
+					sheet (Worksheet): シート
+					cell_define (dict[str, Any]): セル定義
+					row (int): 行番号
+					text (int): テキスト
+					style (_type_): セルの書式設定
+			"""
 			cell_start = cell_define[0].format(row)
 			cells_merge = cell_define[1].format(row)
 			for cell in sheet[cells_merge][0]:
@@ -204,20 +223,24 @@ class ExcelOutput():
 		sheet[SINGLE_CELLS["自己PR"]].value = data.pr
 
 		#経歴行書込
+		row = CAREER_START_ROW[self.mode]
 		for i in range (len(data.keireki)):
 			cur = data.keireki[i]
-			row = CAREER_START_ROW + i
 			sheet.row_dimensions[row].height = 250
 			prepare_cells(sheet, LIST_CELLS["No"], row, str(i+1), STYLE_NUM)
 			prepare_cells(sheet, LIST_CELLS["期間"], row, cur.text_kikan, STYLE_KEIREKI)
 			prepare_cells(sheet, LIST_CELLS["業務内容"], row, cur.text_gyomu, STYLE_KEIREKI)
 			prepare_cells(sheet, LIST_CELLS["開発環境"], row, cur.text_kankyo, STYLE_KEIREKI)
-			prepare_cells(sheet, LIST_CELLS["作業区分"], row, cur.text_work_kbn, STYLE_KEIREKI)
 			prepare_cells(sheet, LIST_CELLS["作業規模"], row, cur.text_sagyokibo, STYLE_KEIREKI)
 			prepare_cells(sheet, LIST_CELLS["職位"], row, cur.text_shokui, STYLE_KEIREKI)
 			prepare_cells(sheet, LIST_CELLS["体制"], row, cur.text_taisei, STYLE_KEIREKI)
-
+			if self.mode == "A":
+				prepare_cells(sheet, LIST_CELLS["作業区分A"], row, cur.text_work_kbn, STYLE_KEIREKI)
+			elif self.mode == "B":
+				for i in range(len(LIST_CELLS["作業区分B"])):
+					prepare_cells(sheet, LIST_CELLS["作業区分B"][i], row, "●" if cur.list_work_kbn[i] else "", STYLE_KEIREKI)
 			sheet.print_area = PRINT_AREA.format(row+1)
+			row += 1
 
 	def save(self, filename):
 		exportfile = fd.asksaveasfilename(

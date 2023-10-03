@@ -95,7 +95,7 @@ class CareerData:
 		task_keys=list(TASKS.keys())
 		for i in range(len(task_keys)):
 			if input[task_keys[i]].get():
-				self.tasks.append(TASKS[task_keys[i]])
+				self.tasks.append(task_keys[i])
 
 	def set_tasks_etc(self,input:StringVar):
 		"""
