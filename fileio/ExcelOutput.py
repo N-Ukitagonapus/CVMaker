@@ -1,6 +1,5 @@
 import copy
 import datetime
-import sys, os
 from tkinter import filedialog as fd
 import jaconv
 
@@ -33,6 +32,7 @@ BOX = Border(
 )
 STYLE_NUM = (Font(size = 11) ,Alignment(horizontal="center",vertical="center",wrapText=True))
 STYLE_KEIREKI = (Font(size = 9) , Alignment(horizontal="left",vertical="top",wrapText=True))
+STYLE_MARK = (Font(size = 9) , Alignment(horizontal="left",vertical="center",wrapText=True))
 
 #単項セル
 SINGLE_CELLS = {
@@ -58,16 +58,27 @@ SINGLE_CELLS = {
 # 経歴セル Aタイプ
 # 0:書き込みセル
 # 1:結合セル
-LIST_CELLS = {
-	"No":("B{0}","B{0}:C{0}"),
-	"期間":("D{0}","D{0}:L{0}"),
-	"業務内容":("M{0}","M{0}:AG{0}"),
-	"開発環境":("AH{0}","AH{0}:AW{0}"),
-	"作業区分A":("AX{0}","AX{0}:BE{0}"),
-	"作業区分B":[("AX{0}","AX{0}:AX{0}"),("AY{0}","AY{0}:AY{0}"),("AZ{0}","AZ{0}:AZ{0}"),("BA{0}","BA{0}:BA{0}"),("BB{0}","BB{0}:BB{0}"),("BC{0}","BC{0}:BC{0}"),("BD{0}","BD{0}:BD{0}"),("BE{0}","BE{0}:BE{0}")],
-	"作業規模":("BF{0}","BF{0}:BP{0}"),
-	"職位":("BQ{0}","BQ{0}:BV{0}"),
-	"体制":("BW{0}","BW{0}:CC{0}"),
+LIST_CELLS ={
+  "A":{
+		"No":("B{0}","B{0}:C{0}"),
+		"期間":("D{0}","D{0}:L{0}"),
+		"業務内容":("M{0}","M{0}:AG{0}"),
+		"開発環境":("AH{0}","AH{0}:AW{0}"),
+		"作業区分":("AX{0}","AX{0}:BE{0}"),
+		"作業規模":("BF{0}","BF{0}:BP{0}"),
+		"職位":("BQ{0}","BQ{0}:BV{0}"),
+		"体制":("BW{0}","BW{0}:CC{0}")
+	},
+  "B":{
+		"No":("B{0}","B{0}:C{0}"),
+		"期間":("D{0}","D{0}:L{0}"),
+		"業務内容":("M{0}","M{0}:AG{0}"),
+		"開発環境":("AH{0}","AH{0}:AT{0}"),
+		"作業区分":[("AU{0}","AU{0}:AU{0}"),("AV{0}","AV{0}:AV{0}"),("AW{0}","AW{0}:AW{0}"),("AX{0}","AX{0}:AX{0}"),("AY{0}","AY{0}:AY{0}"),("AZ{0}","AZ{0}:AZ{0}"),("BA{0}","BA{0}:BA{0}"),("BB{0}","BB{0}:BB{0}"),("BC{0}","BC{0}:BC{0}"),("BD{0}","BD{0}:BD{0}")],
+		"作業規模":("BE{0}","BE{0}:BP{0}"),
+		"職位":("BQ{0}","BQ{0}:BV{0}"),
+		"体制":("BW{0}","BW{0}:CC{0}")
+	}
 }
 
 class ExcelOutput():
@@ -156,7 +167,7 @@ class ExcelOutput():
 		ret.fullname = personal.name_last_kanji.get() + personal.name_first_kanji.get()
 		ret.name_initial = get_initial(personal.name_last_romaji.get(),personal.name_first_romaji.get())
 		ret.gender = personal.gender.get()
-		ret.age = "{0}歳".format(util.get_years_sub(personal.birthday,datetime.date.today())[0])
+		ret.age = "{0}歳".format(util.get_years_sub(personal.birthday,util.get_first_date(datetime.date.today()))[0])
 		ret.moyori_station = personal.nearest_station.get()
 		ret.address = personal.current_address.get()
 		ret.gakureki = personal.gakureki.get()
@@ -223,22 +234,23 @@ class ExcelOutput():
 		sheet[SINGLE_CELLS["自己PR"]].value = data.pr
 
 		#経歴行書込
+		cell_list = LIST_CELLS[self.mode]
 		row = CAREER_START_ROW[self.mode]
 		for i in range (len(data.keireki)):
 			cur = data.keireki[i]
-			sheet.row_dimensions[row].height = 250
-			prepare_cells(sheet, LIST_CELLS["No"], row, str(i+1), STYLE_NUM)
-			prepare_cells(sheet, LIST_CELLS["期間"], row, cur.text_kikan, STYLE_KEIREKI)
-			prepare_cells(sheet, LIST_CELLS["業務内容"], row, cur.text_gyomu, STYLE_KEIREKI)
-			prepare_cells(sheet, LIST_CELLS["開発環境"], row, cur.text_kankyo, STYLE_KEIREKI)
-			prepare_cells(sheet, LIST_CELLS["作業規模"], row, cur.text_sagyokibo, STYLE_KEIREKI)
-			prepare_cells(sheet, LIST_CELLS["職位"], row, cur.text_shokui, STYLE_KEIREKI)
-			prepare_cells(sheet, LIST_CELLS["体制"], row, cur.text_taisei, STYLE_KEIREKI)
+			sheet.row_dimensions[row].height = 180
+			prepare_cells(sheet, cell_list["No"], row, str(i+1), STYLE_NUM)
+			prepare_cells(sheet, cell_list["期間"], row, cur.text_kikan, STYLE_KEIREKI)
+			prepare_cells(sheet, cell_list["業務内容"], row, cur.text_gyomu, STYLE_KEIREKI)
+			prepare_cells(sheet, cell_list["開発環境"], row, cur.text_kankyo, STYLE_KEIREKI)
+			prepare_cells(sheet, cell_list["作業規模"], row, cur.text_sagyokibo, STYLE_KEIREKI)
+			prepare_cells(sheet, cell_list["職位"], row, cur.text_shokui, STYLE_KEIREKI)
+			prepare_cells(sheet, cell_list["体制"], row, cur.text_taisei, STYLE_KEIREKI)
 			if self.mode == "A":
-				prepare_cells(sheet, LIST_CELLS["作業区分A"], row, cur.text_work_kbn, STYLE_KEIREKI)
+				prepare_cells(sheet, cell_list["作業区分"], row, cur.text_work_kbn, STYLE_KEIREKI)
 			elif self.mode == "B":
-				for i in range(len(LIST_CELLS["作業区分B"])):
-					prepare_cells(sheet, LIST_CELLS["作業区分B"][i], row, "●" if cur.list_work_kbn[i] else "", STYLE_KEIREKI)
+				for i in range(len(cell_list["作業区分"])):
+					prepare_cells(sheet, cell_list["作業区分"][i], row, "●" if cur.list_work_kbn[i] else "", STYLE_MARK)
 			sheet.print_area = PRINT_AREA.format(row+1)
 			row += 1
 

@@ -57,7 +57,9 @@ TASKS_MERGE = {
 	"BD" :["AD", "BD"],	#基本
 	"DD" :["DD", "PD"],	#詳細
 	"PG" :["PG"],	#実装
-	"TE" :["UT","IT","ST","OT/UAT"],	#試験
+	"UT" :["UT"],	#UT
+ 	"IT" :["IT"],	#IT
+  "ST" :["ST","OT/UAT"],	#ST
 	"OP" :["MG","OP/MA"],	#運用
 	"SU" :["SU"],	#サポート
 	"ETC":["ETC"]	#その他

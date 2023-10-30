@@ -248,7 +248,6 @@ class PersonalDataInput():
 				vals[key]["value"] = text.text
 			else:
 				vals[key]["value"] = None
-		print(vals)
 		return vals
 
 	def inputcheck(self, input:dict):

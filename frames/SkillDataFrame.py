@@ -6,14 +6,11 @@ import tkinter as tk
 from tkinter import StringVar, ttk
 from tkinter import scrolledtext
 from tkcalendar import DateEntry
-from constants.const import COLOR, ENV_GENRE, ENV_SET, VALID_ERR, VALID_OK
 from fileio.SkillDataIO import SkillDataInput, SkillDataOutput
 from frames.subframe.EnvironmentSubFrame import EnvironmentSubFrame
 from utils.Utilities import Utilities as util
-from tkinter import messagebox as msg
 from data_structure.SkillData import SkillData
 from utils.Validation import DynamicValidation as dval
-from utils.Validation import StaticValidation as sval
 from constants.message import DialogMessage as diag
 
 class SkillDataFrame(tk.Frame):
@@ -150,7 +147,7 @@ class SkillDataFrame(tk.Frame):
 			"""
 			try:
 				env_sub = EnvironmentSubFrame()
-				env_sub.edit_envs(target, "使用経験編集", self.get_current().environment)
+				env_sub.edit_envs(target, "使用経験編集", self.data.expr_env)
 			except Exception as e:
 				print(e)
 				util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)

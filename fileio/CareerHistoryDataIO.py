@@ -1,5 +1,5 @@
 import copy
-from constants.const import ENV_SET, TASKS
+from constants.const import ENV_SET
 from data_structure.CareerData import CareerData
 from data_structure.EnvironmentData import EnvironmentData
 from data_structure.CareerHistoryData import CareerHistoryData
@@ -12,7 +12,6 @@ from constants.message import DialogMessage as diag
 import datetime
 from datetime import datetime as dt
 import xml.etree.ElementTree as et
-import xml.dom.minidom as md
 
 FILE_TYPES = [("XMLファイル", ".xml")]
 INITIAL_DIR = "./"

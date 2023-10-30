@@ -7,7 +7,6 @@ from tkinter import scrolledtext
 from constants.const import POSITIONS, TASKS
 from data_structure.CareerData import CareerData
 from data_structure.CareerHistoryData import CareerHistoryData
-from data_structure.EnvironmentData import EnvironmentData
 from fileio.CareerHistoryDataIO import CareerHistoryDataInput, CareerHistoryDataOutput
 from frames.subframe.EnvironmentSubFrame import EnvironmentSubFrame
 from frames.subframe.ScaleDataSubFrame import ScaleDataSubFrame

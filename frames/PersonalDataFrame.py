@@ -1,8 +1,6 @@
-import datetime
 from tkcalendar import DateEntry
 import tkinter as tk
 from tkinter import  BooleanVar, ttk
-from constants.const import COLOR, VALID_ERR, VALID_OK
 
 from data_structure.PersonalData import PersonalData
 
@@ -10,7 +8,6 @@ from fileio.PersonalDataIO import PersonalDataInput, PersonalDataOutput
 
 from utils.Utilities import Utilities as util
 from utils.Validation import DynamicValidation as dval
-from utils.Validation import StaticValidation as sval
 
 from constants.message import DialogMessage as diag
 class PersonalDataFrame(tk.Frame):

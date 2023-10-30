@@ -1,6 +1,6 @@
 import copy
 import tkinter as tk
-from tkinter import StringVar, ttk
+from tkinter import  ttk
 from constants.const import ENV_SET, VALID_ERR, VALID_WARN
 from data_structure.EnvironmentData import EnvironmentData
 from data_structure.SkillData import SkillData
@@ -9,7 +9,7 @@ import xml.etree.ElementTree as et
 from utils.Utilities import Utilities as util
 from utils.Validation import StaticValidation as sval
 
-from constants.const import COLOR, VALID_ERR, VALID_OK
+from constants.const import COLOR, VALID_ERR
 from constants.message import DialogMessage as diag
 
 FILE_TYPES = [("XMLファイル", ".xml")]
@@ -39,7 +39,7 @@ class SkillDataOutput():
 			sval.out_warn_if_empty(vals["pr"],input_data.pr)
 
 		vals = {
-			"expr_start":{"label":"業務開始日"},
+			"expr_start":{"label":"業界経験開始年月"},
 			"absense":{"label":"休職期間"},
 			"specialty":{"label":"得意分野"},
 			"qualifications":{"label":"取得資格"},
@@ -273,7 +273,6 @@ class SkillDataInput():
 		vals["environments"]={"label":"使用経験(業務外)"}
 		vals["environments"]["value"] = read_env(root.find("environments"))
 
-		print(vals)
 		return vals
 
 	def inputcheck(self, input:dict):
