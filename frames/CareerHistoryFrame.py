@@ -219,11 +219,13 @@ class CareerHistoryFrame(tk.Frame):
 		self.label_scale.pack(side=tk.LEFT,padx=5)
 		self.btn_scale_edit.pack(side=tk.LEFT,padx=5)
 
-		self.label_position.pack(side=tk.LEFT,padx=5)  
+		self.label_position.pack(side=tk.LEFT,padx=5)
+		util.mark_required(self.fourth_line,self.label_position)
 		self.select_position.pack(side=tk.LEFT,padx=5)
 		self.text_position_etc.pack(side=tk.LEFT,padx=5)
 
 		self.label_members.pack(side=tk.LEFT,padx=5)
+		util.mark_required(self.fourth_line,self.label_members)
 		self.text_members_internal.pack(side=tk.LEFT,padx=5)
 		self.label_slash_member.pack(side=tk.LEFT,padx=5)
 		self.text_members_total.pack(side=tk.LEFT,padx=5)

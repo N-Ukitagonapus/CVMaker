@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 from fileio.ExcelOutput import ExcelOutput
+from constants.const import icon
 from utils.Validation import DynamicValidation as dval
 from frames.PersonalDataFrame import PersonalDataFrame
 from frames.SkillDataFrame import SkillDataFrame
@@ -99,4 +100,5 @@ if __name__ == "__main__":
 	root = tk.Tk()
 	root.resizable(False,False)
 	app = Application(master = root)
+	app.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(data=icon))
 	app.mainloop()
