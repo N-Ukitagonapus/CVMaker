@@ -95,7 +95,7 @@ class CareerHistoryFrame(tk.Frame):
 		self.second_line = tk.Frame(self.frame_main)
   
   	#フレーム・ラベル定義
-		self.label_gyokai = tk.Label(self.second_line,text="業界")
+		self.label_gyokai = tk.Label(self.second_line,text="業種")
     
 		#業務期間
 		self.str_gyokai = StringVar()
