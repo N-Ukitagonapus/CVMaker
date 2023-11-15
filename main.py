@@ -10,7 +10,7 @@ from frames.CareerHistoryFrame import CareerHistoryFrame
 from utils.Utilities import Utilities as util, resource_path
 from constants.message import DialogMessage as diag
 
-VERSION = 1.00
+VERSION = 1.01
 class Application(tk.Frame):
 	global icon
 	def __init__(self, master = None):
@@ -41,10 +41,20 @@ class Application(tk.Frame):
 		# 作者
 		tk.Label(self.frame_title, text="Created by N.Ukita", font=("Meiryo UI",10,"italic")).pack(anchor=tk.SE,padx=5,pady=5)
 
-		self.frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=10)
+		self.frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
 
+		#スクロール部分
+		self.scroll_area = tk.Canvas(self.master, width = 1180, height = 800)
+		self.scrollbar = tk.Scrollbar(self.scroll_area, orient=tk.VERTICAL, command=self.scroll_area.yview)
+		self.scroll_area.configure(scrollregion=(0, 0, 1180, 800))
+		self.scroll_area.configure(yscrollcommand=self.scrollbar.set)
+		self.scroll_area.pack(expand=True, fill=tk.BOTH)
+		self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+		self.scroll_frame = tk.Frame(self.scroll_area)
+		self.scroll_area.create_window((0, 0), window=self.scroll_frame, anchor="nw", width=1180, height=800)
+  
 		#Exportボタン
-		self.frame_bottombutton = tk.Frame(self.master,borderwidth=5,relief=tk.GROOVE)
+		self.frame_bottombutton = tk.Frame(self.scroll_frame,borderwidth=5,relief=tk.GROOVE)
 		self.frame_bottombutton.pack(side=tk.BOTTOM,fill=tk.X,padx=20,pady=10)
 		self.buttom_buttonfield = tk.Frame(self.frame_bottombutton)
 		self.buttom_buttonfield.pack(side=tk.RIGHT)
@@ -54,13 +64,13 @@ class Application(tk.Frame):
 		self.button_export_b = ttk.Button(self.buttom_buttonfield,width=20,text="Excel出力(Bタイプ)")
 		self.button_export_b.pack(side=tk.LEFT,padx=10,pady=5)
 
-		self.frame_personal = PersonalDataFrame(self.master)
+		self.frame_personal = PersonalDataFrame(self.scroll_frame)
 		self.frame_personal.pack()
 
-		self.frame_skill = SkillDataFrame(self.master)
+		self.frame_skill = SkillDataFrame(self.scroll_frame)
 		self.frame_skill.pack()
 
-		self.frame_history = CareerHistoryFrame(self.master)
+		self.frame_history = CareerHistoryFrame(self.scroll_frame)
 		self.frame_history.pack()
 
 		self.frame_personal.data.shain_num.trace('w',self.sync_shain_num)
@@ -98,7 +108,7 @@ class Application(tk.Frame):
 
 if __name__ == "__main__":
 	root = tk.Tk()
-	root.resizable(False,False)
+	root.resizable(False,True)
 	app = Application(master = root)
 	app.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(data=icon))
 	app.mainloop()

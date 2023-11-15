@@ -182,10 +182,9 @@ class CareerHistoryDataOutput():
 					base_title (str): 親タグ名
 					list (list): 設定値
 			"""
-			if len(list) > 0 :
-				inner = et.SubElement(tgt,base_title)
-				for val in list:
-					et.SubElement(inner, "value").text = val
+			inner = et.SubElement(tgt,base_title)
+			for val in list:
+				et.SubElement(inner, "value").text = val
 
 		def create_env(tgt, envs:EnvironmentData):
 			"""
