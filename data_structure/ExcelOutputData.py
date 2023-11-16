@@ -51,7 +51,7 @@ class KeirekiSubData:
 		self.text_kikan = "{0}\n～\n{1}\n".format(term_start.strftime("%Y年%m月"), term_end.strftime("%Y年%m月"))
 		self.text_kikan += "\n"
 		monthdelta = util.get_years_sub(term_start, (term_end + td(days = 1)))
-		self.text_kikan += "（{0}ヶ月）".format(monthdelta[1]) if monthdelta[0] == 0 else "（{0}年{1}ヶ月）".format(monthdelta[0],monthdelta[1]) 
+		self.text_kikan += "（{0}ヶ月）".format(monthdelta[1]) if monthdelta[0] == 0 else "（{0}年）".format(monthdelta[0],monthdelta[1]) if monthdelta[1] == 0 else "（{0}年{1}ヶ月）".format(monthdelta[0],monthdelta[1])
 
 	def set_gyomu(self, gyokai:str, proj_gaiyo:str, sys_gaiyo:str, sagyo:str):
 		"""

@@ -141,7 +141,7 @@ class ExcelOutput():
 		def get_gyokaikeiken(start, absense_year, absense_month):
 			periods = monthmod(start, datetime.date.today())[0].months
 			periods -= ((0 if absense_year == "" else int(absense_year)) * 12) + (0 if absense_month == "" else int(absense_month))
-			return "{0}ヶ月".format(periods) if periods < 12 else "{0}年{1}ヶ月".format(periods // 12, periods % 12)
+			return "{0}ヶ月".format(periods) if periods < 12 else "{0}年".format(periods // 12) if periods % 12 == 0 else "{0}年{1}ヶ月".format(periods // 12, periods % 12)
 
 		# 経歴作成
 		def create_keireki(cdata:CareerData):
