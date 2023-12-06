@@ -1,6 +1,8 @@
 import copy
 import datetime
-from tkinter import filedialog as fd
+from functools import partial
+import tkinter as tk
+from tkinter import StringVar, ttk, filedialog as fd
 import jaconv
 
 import openpyxl as pyxl
@@ -9,14 +11,29 @@ from openpyxl.styles.fonts import Font
 from openpyxl.styles import Alignment
 
 from monthdelta import monthmod
-from data_structure.CareerData import CareerData 
 
+from data_structure.CareerData import CareerData 
 from data_structure.CareerHistoryData import CareerHistoryData
 from data_structure.ExcelOutputData import ExcelOutputData, KeirekiSubData, KeirekiSubDataTypeA, KeirekiSubDataTypeB
 from data_structure.PersonalData import PersonalData
 from data_structure.SkillData import SkillData
 
 from utils.Utilities import Utilities as util, resource_path
+from constants.message import DialogMessage as diag
+
+#####################################
+###　定数
+#####################################
+
+RADIO_MODE_NAME ={
+	"MASKING":("マスキング:","名前はイニシャルでマスキングされます。\n(更新作業の場合はこのモードを選択)"),
+	"FULLNAME":("フルネーム:","名前をフルネームで設定します。\n(採用時の再提出の場合はこのモードを選択)")
+}
+
+RADIO_MODE_EXCEL = {
+	"A":("Aタイプ:","作業区分はすべて列挙されます。"),
+	"B":("Bタイプ:","作業区分はマーク表示されます。")
+}
 
 FILE_TYPES = [("EXCELファイル", ".xlsx")]
 INITIAL_DIR = "./"
@@ -81,20 +98,92 @@ LIST_CELLS ={
 	}
 }
 
+####################################
+###　定数ここまで
+####################################
 class ExcelOutput():
 	"""
 	EXCEL出力クラス
 	"""
-	def __init__(self, mode:str):
+	def __init__(self, personal:PersonalData, skill:SkillData, career:CareerHistoryData):
 		"""
 		EXCEL出力クラス
 		Args:
 				mode (str): 出力テンプレートモード
 		"""
-		self.mode = mode
-		self.wb = pyxl.load_workbook(resource_path("template/ExcelTemplate_{0}.xlsx".format(self.mode)))
+		self.personal = personal
+		self.skill = skill
+		self.career = career
+		self.mode_name = None
+		self.mode_excel = None
+	
+	def subframe_modeselect(self, tgt):
+		"""
+		出力モード選択画面
 
-	def export(self, personal:PersonalData, skill:SkillData, career:CareerHistoryData):
+		Args:
+				tgt (tk.Frame): 表示元
+		"""
+
+		subwindow = tk.Toplevel(tgt)
+		subwindow.title("項目再活性")
+		subwindow.geometry("300x320")
+		subwindow.resizable(False,False)
+		subwindow.grab_set()
+
+		frame_button = tk.Frame(subwindow,borderwidth=1,relief=tk.RAISED)
+		frame_button_inner = tk.Frame(frame_button)
+		button_ok = ttk.Button(frame_button_inner,width=10,text="OK")
+		button_cancel = ttk.Button(frame_button_inner,width=10,text="キャンセル")
+		frame_button.pack(side=tk.BOTTOM,fill=tk.X,padx=5,pady=5)
+		frame_button_inner.pack(pady=5)
+		button_cancel.grid(row=0,column=0,padx=15)
+		button_ok.grid(row=0,column=1,padx=15)
+
+		frame_name = tk.LabelFrame(subwindow,relief=tk.RAISED,text = "名前設定モード")
+		frame_name.pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=5,pady=5)
+		frame_name_inner=tk.Frame(frame_name)
+		frame_name_inner.pack(fill=tk.BOTH,padx=2,pady=2)
+		mode_name = StringVar()
+		for i in RADIO_MODE_NAME.keys():
+			ttk.Radiobutton(frame_name_inner,text=RADIO_MODE_NAME[i][0],value=i,variable=mode_name).pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=2,pady=2)
+			tk.Label(frame_name_inner,justify="left",text=RADIO_MODE_NAME[i][1]).pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=2,pady=2)
+
+		frame_excel = tk.LabelFrame(subwindow,relief=tk.RAISED,text = "EXCELスタイル設定モード")
+		frame_excel.pack(side=tk.TOP,fill=tk.X,padx=5,pady=5)
+		frame_excel_inner=tk.Frame(frame_excel)
+		frame_excel_inner.pack(side=tk.TOP,fill=tk.X,padx=2,pady=2)
+		mode_excel = StringVar()
+		for i in RADIO_MODE_EXCEL.keys():
+			ttk.Radiobutton(frame_excel_inner,text=RADIO_MODE_EXCEL[i],value=i,variable=mode_excel).pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=2,pady=2)
+
+		button_ok["command"] = lambda: do_output()
+		button_cancel["command"] = lambda: cancel()
+
+		def do_output():
+			"""
+			出力処理実行
+			"""
+			if mode_name.get() == "" or mode_excel.get() == "":
+					util.msgbox_showmsg(diag.DIALOG_UNSELECT_ERROR)
+			else:
+				self.mode_name = mode_name.get()
+				self.mode_excel = mode_excel.get()
+				try:
+					self.export()
+					util.msgbox_showmsg(diag.DIALOG_SUCCESS_OUTPUT_EXCEL)
+				except Exception as e:
+					print(e)
+					util.msgbox_showmsg(diag.DIALOG_OUTPUT_ERROR)
+				finally:
+					subwindow.destroy()
+		def cancel():
+			"""
+			キャンセル
+			"""
+			subwindow.destroy()
+
+	def export(self):
 		"""
 		EXCELファイルエクスポート
 
@@ -107,7 +196,8 @@ class ExcelOutput():
 		career : CareerHistoryData
 				職務経歴情報
 		"""
-		out_data = self.create_excel_data(personal, skill, career)
+		self.wb = pyxl.load_workbook(resource_path("template/ExcelTemplate_{0}.xlsx".format(self.mode_excel)))
+		out_data = self.create_excel_data(self.personal, self.skill, self.career)
 		self.write_excel(out_data)
 		filename = "{0}_{1}技術経歴書_{2}".format(datetime.date.today().strftime("%Y%m"),out_data.number,out_data.fullname)
 		self.save(filename)
@@ -146,10 +236,10 @@ class ExcelOutput():
 		# 経歴作成
 		def create_keireki(cdata:CareerData):
 			ret = KeirekiSubData()
-			if self.mode == "A":
+			if self.mode_excel == "A":
 				ret = KeirekiSubDataTypeA()
 				ret.set_work_kbn(cdata.tasks, cdata.tasks_etc)	# 作業区分
-			elif self.mode == "B":
+			elif self.mode_excel == "B":
 				ret = KeirekiSubDataTypeB()
 				ret.set_work_kbn(cdata.tasks)										# 作業区分
 			ret.set_kikan(cdata.term_start, cdata.term_end)																	# 作業期間
@@ -214,7 +304,7 @@ class ExcelOutput():
 
 		sheet = self.wb[SHEET_NAME]
 		#単項セル書込
-		sheet[SINGLE_CELLS["氏名"]].value = data.name_initial
+		sheet[SINGLE_CELLS["氏名"]].value = data.name_initial  if self.mode_name == "MASKING" else data.fullname
 		sheet[SINGLE_CELLS["性別"]].value = data.gender
 		sheet[SINGLE_CELLS["年齢"]].value = data.age
 		sheet[SINGLE_CELLS["自宅最寄駅"]].value = data.moyori_station
@@ -234,8 +324,8 @@ class ExcelOutput():
 		sheet[SINGLE_CELLS["自己PR"]].value = data.pr
 
 		#経歴行書込
-		cell_list = LIST_CELLS[self.mode]
-		row = CAREER_START_ROW[self.mode]
+		cell_list = LIST_CELLS[self.mode_excel]
+		row = CAREER_START_ROW[self.mode_excel]
 		for i in range (len(data.keireki)):
 			cur = data.keireki[i]
 			sheet.row_dimensions[row].height = 180
@@ -246,9 +336,9 @@ class ExcelOutput():
 			prepare_cells(sheet, cell_list["作業規模"], row, cur.text_sagyokibo, STYLE_KEIREKI)
 			prepare_cells(sheet, cell_list["職位"], row, cur.text_shokui, STYLE_KEIREKI)
 			prepare_cells(sheet, cell_list["体制"], row, cur.text_taisei, STYLE_KEIREKI)
-			if self.mode == "A":
+			if self.mode_excel == "A":
 				prepare_cells(sheet, cell_list["作業区分"], row, cur.text_work_kbn, STYLE_KEIREKI)
-			elif self.mode == "B":
+			elif self.mode_excel == "B":
 				for i in range(len(cell_list["作業区分"])):
 					prepare_cells(sheet, cell_list["作業区分"][i], row, "●" if cur.list_work_kbn[i] else "", STYLE_MARK)
 			sheet.print_area = PRINT_AREA.format(row+1)

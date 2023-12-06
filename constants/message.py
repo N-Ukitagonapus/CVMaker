@@ -21,6 +21,7 @@ class DialogMessage:
 	DIALOG_OUTPUT_ERROR = ("error","出力失敗","ファイル出力に失敗しました。\n詳細はコンソールログを参照してください。")
 	DIALOG_INPUT_ERROR = ("error","読込失敗","ファイル読込に失敗しました。\n詳細はコンソールログを参照してください。")
 	DIALOG_CANT_DELETE = ("error","もう消せませんよ","これ以上経歴データ削除が出来ません。")
+	DIALOG_UNSELECT_ERROR = ("error","未選択項目あり","未選択の項目があります。\n確認してください。")
 	DIALOG_ASK_FORCE_OUTPUT = ("yesno","強制出力","入力項目にエラーもしくは警告がありますが、強制的に出力してもよろしいですか？")
 	DIALOG_ASK_EDIT_PERSONALDATA = ("yesno","個人基本情報再編集","本当に全項目を再編集しますか？")
 	DIALOG_ASK_DELETE_CAREERDATA = ("yesno", "経歴データ削除","この経歴データを削除してしまってもよろしいですか？")

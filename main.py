@@ -8,9 +8,8 @@ from frames.PersonalDataFrame import PersonalDataFrame
 from frames.SkillDataFrame import SkillDataFrame
 from frames.CareerHistoryFrame import CareerHistoryFrame
 from utils.Utilities import Utilities as util, resource_path
-from constants.message import DialogMessage as diag
 
-VERSION = 1.01
+VERSION = 1.02
 class Application(tk.Frame):
 	global icon
 	def __init__(self, master = None):
@@ -59,9 +58,7 @@ class Application(tk.Frame):
 		self.buttom_buttonfield = tk.Frame(self.frame_bottombutton)
 		self.buttom_buttonfield.pack(side=tk.RIGHT)
   
-		self.button_export_a = ttk.Button(self.buttom_buttonfield,width=20,text="Excel出力(Aタイプ)")
-		self.button_export_a.pack(side=tk.LEFT,padx=10,pady=5)
-		self.button_export_b = ttk.Button(self.buttom_buttonfield,width=20,text="Excel出力(Bタイプ)")
+		self.button_export_b = ttk.Button(self.buttom_buttonfield,width=20,text="Excel出力")
 		self.button_export_b.pack(side=tk.LEFT,padx=10,pady=5)
 
 		self.frame_personal = PersonalDataFrame(self.scroll_frame)
@@ -74,8 +71,7 @@ class Application(tk.Frame):
 		self.frame_history.pack()
 
 		self.frame_personal.data.shain_num.trace('w',self.sync_shain_num)
-		self.button_export_a["command"] = lambda: self.export_excel("A")
-		self.button_export_b["command"] = lambda: self.export_excel("B")
+		self.button_export_b["command"] = lambda: self.export_excel()
 
 	def sync_shain_num(self, *args):
 		"""
@@ -89,22 +85,14 @@ class Application(tk.Frame):
 				self.frame_history.data.shain_num = var
 
 
-	def export_excel(self,mode:str):
+	def export_excel(self):
 		"""
   	EXCEL書き出し：現在の登録内容でExcelファイルを書き出す。
 
-		Args:
-				mode (str): 出力モード(A,B)
 		"""
-		out = ExcelOutput(mode)
-		try:
-			out.export(self.frame_personal.data, self.frame_skill.data, self.frame_history.data)
-			util.msgbox_showmsg(diag.DIALOG_SUCCESS_OUTPUT_EXCEL)
-		except Exception as e:
-			print(e)
-			util.msgbox_showmsg(diag.DIALOG_OUTPUT_ERROR)
-		finally:
-			del out
+		out = ExcelOutput(self.frame_personal.data, self.frame_skill.data, self.frame_history.data)
+		out.subframe_modeselect(self.master)
+		del out
 
 if __name__ == "__main__":
 	root = tk.Tk()
