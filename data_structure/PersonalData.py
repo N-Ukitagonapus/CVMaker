@@ -6,7 +6,6 @@ class PersonalData:
 	"""
   #コンストラクタ(のようなもの)
 	def __init__(self):
-		self.shain_num = StringVar()						#社員番号
 		self.name_last_kanji = StringVar()			#姓-漢字
 		self.name_first_kanji = StringVar()			#名-漢字
 		self.name_last_romaji = StringVar()			#姓-ローマ字

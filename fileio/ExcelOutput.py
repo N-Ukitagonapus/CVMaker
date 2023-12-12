@@ -199,7 +199,7 @@ class ExcelOutput():
 		self.wb = pyxl.load_workbook(resource_path("template/ExcelTemplate_{0}.xlsx".format(self.mode_excel)))
 		out_data = self.create_excel_data(self.personal, self.skill, self.career)
 		self.write_excel(out_data)
-		filename = "{0}_{1}技術経歴書_{2}".format(datetime.date.today().strftime("%Y%m"),out_data.number,out_data.fullname)
+		filename = "{0}_技術経歴書_{1}".format(datetime.date.today().strftime("%Y%m"),out_data.fullname)
 		self.save(filename)
 
 
@@ -253,7 +253,6 @@ class ExcelOutput():
 
 
 		ret = ExcelOutputData()
-		ret.number = personal.shain_num.get()
 		ret.fullname = personal.name_last_kanji.get() + personal.name_first_kanji.get()
 		ret.name_initial = get_initial(personal.name_last_romaji.get(),personal.name_first_romaji.get())
 		ret.gender = personal.gender.get()

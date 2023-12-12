@@ -10,7 +10,6 @@ class ExcelOutputData:
 	EXCEL出力データ本クラス
 	"""
 	def __init__(self):
-		self.number = ""											#社員番号
 		self.fullname = ""										#氏名フルネーム
 		self.name_initial = ""								#氏名イニシャル
 		self.gender = ""											#性別

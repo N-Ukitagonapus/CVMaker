@@ -35,14 +35,6 @@ class PersonalDataFrame(tk.Frame):
 		self.ret=tk.LabelFrame(target,relief=tk.RAISED,text = "個人基本情報")
 		#1行目
 		self.first_line=tk.Frame(self.ret)
-		##フレーム・ラベル定義
-		self.frame_shain_num = tk.Frame(self.first_line)
-		self.label_shain_num = tk.Label(self.frame_shain_num,text="社員番号")
-		##社員番号
-		self.text_shain_num = ttk.Entry(self.frame_shain_num, width=5,
-				  textvariable=self.data.shain_num,
-				  validatecommand =(is_numeric, '%P', 3),
-					validate='all')
 		##編集ボタン
 		self.btn_edit = ttk.Button(self.first_line,width=5,text="編集",state=tk.DISABLED)
 		##読込ボタン
@@ -105,11 +97,7 @@ class PersonalDataFrame(tk.Frame):
 		"""
   	組立
 		"""
-			#1行目
-		self.label_shain_num.pack(side=tk.LEFT)
-		util.mark_required(self.frame_shain_num,self.label_shain_num)
-		self.text_shain_num.pack(side=tk.LEFT,padx=10)
-		self.frame_shain_num.pack(side=tk.LEFT)
+		#1行目
 		self.btn_edit.pack(side=tk.RIGHT,padx=10)
 		self.btn_save.pack(side=tk.RIGHT,padx=10)
 		self.btn_load.pack(side=tk.RIGHT,padx=10)
@@ -247,7 +235,6 @@ class PersonalDataFrame(tk.Frame):
 			"""
    		再活性実行
 			"""
-			self.text_shain_num["state"] =	 tk.NORMAL if modes["all"].get() else tk.DISABLED
 			self.text_shi_kanji["state"] =	 tk.NORMAL if modes["all"].get() or modes["name"].get() else tk.DISABLED
 			self.text_mei_kanji["state"] =	 tk.NORMAL if modes["all"].get() else tk.DISABLED
 			self.text_shi_romaji["state"] =	 tk.NORMAL if modes["all"].get() or modes["name"].get() else tk.DISABLED
