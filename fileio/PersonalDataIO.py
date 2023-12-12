@@ -30,7 +30,6 @@ class PersonalDataOutput():
 				dict: チェック結果
 		"""
 		vals = {
-			"shain_num":{"label":"社員番号"},
 			"name_kanji":{"label":"氏名(漢字)"},
 			"name_romaji":{"label":"氏名(ローマ字)"},
 			"gender":{"label":"性別"},
@@ -39,7 +38,6 @@ class PersonalDataOutput():
 			"station":{"label":"最寄り駅"},
 			"gakureki":{"label":"最終学歴"}
 			}
-		sval.out_regex_match(vals["shain_num"], r"[0-9]{3}","数字3桁", self.data.shain_num.get())
 		sval.out_is_not_empty(vals["name_kanji"], self.data.name_last_kanji.get(), self.data.name_first_kanji.get())
 		sval.out_regex_match(vals["name_romaji"], r"^[a-zA-Z]+$", "英字各15桁以内", self.data.name_last_romaji.get(), self.data.name_first_romaji.get())
 		sval.out_is_not_empty(vals["gender"], self.data.gender.get())
@@ -56,7 +54,6 @@ class PersonalDataOutput():
 				frame (Tk.Frame): 対象フレーム
 				res (dict): チェック結果
 		"""
-		frame.text_shain_num["state"] = tk.DISABLED if res["shain_num"]["result"] == VALID_OK else tk.NORMAL
 		frame.text_shi_kanji["state"] = tk.DISABLED if res["name_kanji"]["result"] == VALID_OK else tk.NORMAL
 		frame.text_mei_kanji["state"] = tk.DISABLED if res["name_kanji"]["result"] == VALID_OK else tk.NORMAL
 		frame.text_shi_romaji["state"] = tk.DISABLED if res["name_romaji"]["result"] == VALID_OK else tk.NORMAL
@@ -155,8 +152,6 @@ class PersonalDataOutput():
 		base = et.Element("PersonalData")
 		tree = et.ElementTree(element=base)
 
-		if self.data.shain_num.get() != "":
-			et.SubElement(base,"shain_num").text = self.data.shain_num.get()
 		if self.data.name_last_kanji.get() != "":
 			et.SubElement(base,"last_name_kanji").text = self.data.name_last_kanji.get()
 		if self.data.name_first_kanji.get() != "":
@@ -230,7 +225,6 @@ class PersonalDataInput():
 		self.root = tree.getroot()
    
 		vals = {
-			"shain_num":{"label":"社員番号"},
 			"last_name_kanji":{"label":"氏(漢字)"},
 			"first_name_kanji":{"label":"名(漢字)"},
 			"last_name_romaji":{"label":"氏(ローマ字)"},
@@ -256,7 +250,6 @@ class PersonalDataInput():
 		Args:
 				input (dict): XML解析結果
 		"""
-		sval.in_regex_match(input["shain_num"],"[0-9]{3}","数字3桁")
 		sval.in_maxlength_check(input["last_name_kanji"],20)
 		sval.in_maxlength_check(input["first_name_kanji"],20)
 		sval.in_regex_and_length(input["last_name_romaji"],20,"[a-zA-Z]*","英字")
@@ -274,7 +267,6 @@ class PersonalDataInput():
 				input (dict): 読込結果
 		"""
 		data = self.frame.data
-		util.setstr_from_read(data.shain_num,input["shain_num"])
 		util.setstr_from_read_cut(data.name_last_kanji,input["last_name_kanji"],20)
 		util.setstr_from_read_cut(data.name_first_kanji,input["first_name_kanji"],20)
 		util.setstr_from_read_cut(data.name_last_romaji,input["last_name_romaji"],20)
@@ -294,7 +286,6 @@ class PersonalDataInput():
 				input (dict): 読込結果
 		"""
 		frame = self.frame
-		frame.text_shain_num["state"] = tk.DISABLED if input["shain_num"]["result"] == VALID_OK else tk.NORMAL
 		frame.text_shi_kanji["state"] = tk.DISABLED if input["last_name_kanji"]["result"] == VALID_OK else tk.NORMAL
 		frame.text_mei_kanji["state"] = tk.DISABLED if input["first_name_kanji"]["result"] == VALID_OK else tk.NORMAL
 		frame.text_shi_romaji["state"] = tk.DISABLED if input["last_name_romaji"]["result"] == VALID_OK else tk.NORMAL

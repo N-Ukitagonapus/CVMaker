@@ -9,7 +9,7 @@ from frames.SkillDataFrame import SkillDataFrame
 from frames.CareerHistoryFrame import CareerHistoryFrame
 from utils.Utilities import Utilities as util, resource_path
 
-VERSION = 1.02
+VERSION = 1.05
 class Application(tk.Frame):
 	global icon
 	def __init__(self, master = None):
@@ -70,20 +70,7 @@ class Application(tk.Frame):
 		self.frame_history = CareerHistoryFrame(self.scroll_frame)
 		self.frame_history.pack()
 
-		self.frame_personal.data.shain_num.trace('w',self.sync_shain_num)
 		self.button_export_b["command"] = lambda: self.export_excel()
-
-	def sync_shain_num(self, *args):
-		"""
-		社員番号更新イベント
-		"""
-		tgt = self.frame_personal.data.shain_num
-		if args[0] == tgt._name:
-			var = tgt.get()
-			if dval.is_numeric(var,3):
-				self.frame_skill.data.shain_num = var
-				self.frame_history.data.shain_num = var
-
 
 	def export_excel(self):
 		"""

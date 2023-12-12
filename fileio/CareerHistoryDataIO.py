@@ -259,7 +259,6 @@ class CareerHistoryDataOutput():
 		base = et.Element("CareerData")
 		tree = et.ElementTree(element=base)
 
-		set_value(base,"shain_num",self.data.shain_num)
 		for career in self.data.history_list:
 			create_career(base, career)
 		et.indent(tree,"\t")
@@ -433,8 +432,6 @@ class CareerHistoryDataInput():
 
 			# 返却クラス定義
 			ret = CareerHistoryData()
-			shain_num = root.find("shain_num")
-			ret.shain_num = 0 if shain_num is None else util.int_from_str(shain_num.text)
 			ret.history_list = []
 			for career in root.iter("Career"):
 				ret.history_list.append(read_career(career))
