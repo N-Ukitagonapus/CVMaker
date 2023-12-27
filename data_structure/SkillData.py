@@ -7,6 +7,8 @@ class SkillData:
 	"""
 	#コンストラクタ(のようなもの)
 	def __init__(self):
+		self.last_name_kanji = "" #氏(キー)
+		self.first_name_kanji = "" #名(キー)
 		self.specialty = StringVar() #得意分野
 		self.expr_start = datetime.date.today() #業界開始年月
 		self.period_absense_year = StringVar()

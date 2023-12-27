@@ -184,6 +184,9 @@ class SkillDataFrame(tk.Frame):
 		Args:
 				target (tk.Frame): サブウィンドウ表示元(=メインフレーム)
 		"""
+		if self.data.first_name_kanji == "" and self.data.last_name_kanji == "":
+			util.msgbox_showmsg(diag.DIALOG_ERROR_NO_PERSONAL_DATA)
+			return
 		io = SkillDataInput(self)
 		io.read(target)
 		del io

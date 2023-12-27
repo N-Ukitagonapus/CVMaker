@@ -29,7 +29,6 @@ class PersonalDataFrame(tk.Frame):
 				target (tk.Frame): 設置対象
 		"""
 		#バリデーション定義
-		is_numeric = target.register(dval.is_numeric)
 		length_limit = target.register(dval.length_limit)
   
 		self.ret=tk.LabelFrame(target,relief=tk.RAISED,text = "個人基本情報")

@@ -27,3 +27,6 @@ class DialogMessage:
 	DIALOG_ASK_DELETE_CAREERDATA = ("yesno", "経歴データ削除","この経歴データを削除してしまってもよろしいですか？")
 	DIALOG_SUCCESS_READ_CAREERDATA = ("info", "職務経歴情報読込成功","職務経歴情報を読み込みました。")
 	DIALOG_SUCCESS_OUTPUT_EXCEL = ("info", "EXCELエクスポート","EXCELファイルを書き出しました。\n※指摘事項が残っている場合は手動で修正してください。")
+	DIALOG_ERROR_NO_PERSONAL_DATA = ("error", "個人基本情報未読込","個人基本情報の読込を行ってください。")
+	DIALOG_WARN_KEYINVALID = ("yesno", "キー不一致","読込ファイル内のキーが個人基本情報と一致していません。\nそれでも読み込みますか？")
+	DIALOG_ERROR_KEYINVALID = ("error", "キー不一致","読込ファイル内のキーが個人基本情報と一致していないため、読み込みできません。")

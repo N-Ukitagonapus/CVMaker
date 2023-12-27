@@ -312,7 +312,11 @@ class CareerHistoryFrame(tk.Frame):
 			"""
 			ファイル読込
 			"""
+			if self.data.first_name_kanji == "" and self.data.last_name_kanji == "":
+				util.msgbox_showmsg(diag.DIALOG_ERROR_NO_PERSONAL_DATA)
+				return
 			try:
+      
 				io = CareerHistoryDataInput()
 				read_data = io.read()
 				if read_data is not None :

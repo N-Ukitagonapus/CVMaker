@@ -8,6 +8,7 @@ from frames.PersonalDataFrame import PersonalDataFrame
 from frames.SkillDataFrame import SkillDataFrame
 from frames.CareerHistoryFrame import CareerHistoryFrame
 from utils.Utilities import Utilities as util, resource_path
+from constants.message import DialogMessage as diag
 
 VERSION = 1.05
 class Application(tk.Frame):
@@ -70,7 +71,26 @@ class Application(tk.Frame):
 		self.frame_history = CareerHistoryFrame(self.scroll_frame)
 		self.frame_history.pack()
 
+		self.frame_personal.data.name_last_kanji.trace_add('w',self.sync_shi)
+		self.frame_personal.data.name_first_kanji.trace_add('w',self.sync_mei)
 		self.button_export_b["command"] = lambda: self.export_excel()
+
+	def sync_shi(self, *args):
+		"""
+		名前更新イベント
+		"""
+		var_out = self.frame_personal.data.name_last_kanji.get()
+		self.frame_skill.data.last_name_kanji = var_out
+		self.frame_history.data.last_name_kanji = var_out
+
+	def sync_mei(self, *args):
+		"""
+		名前更新イベント
+		"""
+		var_out = self.frame_personal.data.name_first_kanji.get()
+		self.frame_skill.data.first_name_kanji = var_out
+		self.frame_history.data.first_name_kanji = var_out
+
 
 	def export_excel(self):
 		"""

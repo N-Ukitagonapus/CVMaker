@@ -4,5 +4,7 @@ class CareerHistoryData:
 	職務経歴情報データ
 	"""
 	def __init__(self):
+		self.last_name_kanji = "" #氏(キー)
+		self.first_name_kanji = "" #名(キー)
 		self.history_list=[]
 		self.history_list.append(CareerData())

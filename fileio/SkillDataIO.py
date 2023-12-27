@@ -197,7 +197,7 @@ class SkillDataInput():
 
 		if filename != "":
 			try:
-				input = self.read_file(et.parse(filename)) 
+				input = self.read_file(et.parse(filename))
 				self.inputcheck(input)
 				self.set_value(input)
 				self.show_result(input, target)
