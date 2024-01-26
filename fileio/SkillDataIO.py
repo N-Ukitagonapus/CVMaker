@@ -154,7 +154,8 @@ class SkillDataOutput():
 		# ここから処理本体
 		base = et.Element("SkillData")
 		tree = et.ElementTree(element=base)
-
+		et.SubElement(base,"last_name").text = self.data.last_name_kanji
+		et.SubElement(base,"first_name").text = self.data.first_name_kanji
 		et.SubElement(base,"expr_start").text = self.data.expr_start.strftime("%Y%m")
 		et.SubElement(base,"absense_year").text = "0" if self.data.period_absense_year.get() == "" else self.data.period_absense_year.get()
 		et.SubElement(base,"absense_month").text = "0" if self.data.period_absense_month.get() == "" else self.data.period_absense_month.get()
@@ -198,9 +199,10 @@ class SkillDataInput():
 		if filename != "":
 			try:
 				input = self.read_file(et.parse(filename))
-				self.inputcheck(input)
-				self.set_value(input)
-				self.show_result(input, target)
+				if self.keycheck(input,self.frame.data) :
+					self.inputcheck(input)
+					self.set_value(input)
+					self.show_result(input, target)
 			except Exception as e:
 				print(e)
 				util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)
@@ -246,6 +248,8 @@ class SkillDataInput():
 
 		#単体項目を取得
 		vals = {
+			"last_name":{"label":"KEY"},
+			"first_name":{"label":"KEY"},
 			"expr_start":{"label":"業界開始年月"},
 			"absense_year":{"label":"休職期間(年)"},
 			"absense_month":{"label":"休職期間(月)"},
@@ -273,6 +277,18 @@ class SkillDataInput():
 		vals["environments"]["value"] = read_env(root.find("environments"))
 
 		return vals
+
+	def keycheck(self, input:dict, data: SkillData) -> bool:
+		"""
+		キー項目チェック
+		Args:
+				input (dict): 読込結果
+				data (SkillData): 技術情報データ
+		"""
+		if input["last_name"]["value"] == data.last_name_kanji and input["first_name"]["value"] == data.first_name_kanji:
+			return True
+		else:
+			return util.msgbox_ask(diag.DIALOG_WARN_KEYINVALID)
 
 	def inputcheck(self, input:dict):
 		"""
@@ -336,12 +352,15 @@ class SkillDataInput():
 		frame_name = []
 		frame_result = []
 		results = list(input.items())
+		rownum = 0
 		for i in range(len(results)):
-			frame_name.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID,bg="white"))
-			frame_result.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID,bg=COLOR[results[i][1]["result"]]))
-			frame_name[i].grid(row=i,column=0,sticky=tk.EW)
-			frame_result[i].grid(row=i,column=1,sticky=tk.EW)
-			tk.Label(frame_name[i],text=results[i][1]["label"],bg="white").pack(side=tk.LEFT,padx=3,pady=3)
-			tk.Label(frame_result[i],text=results[i][1]["msg"],bg=COLOR[results[i][1]["result"]]).pack(side=tk.LEFT,padx=3,pady=3)
+			if results[i][1]["label"] != "KEY" :
+				frame_name.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID,bg="white"))
+				frame_result.append(tk.Frame(frame_main_inner,borderwidth=1,relief=tk.SOLID,bg=COLOR[results[i][1]["result"]]))
+				frame_name[rownum].grid(row=rownum,column=0,sticky=tk.EW)
+				frame_result[rownum].grid(row=rownum,column=1,sticky=tk.EW)
+				tk.Label(frame_name[rownum],text=results[i][1]["label"],bg="white").pack(side=tk.LEFT,padx=3,pady=3)
+				tk.Label(frame_result[rownum],text=results[i][1]["msg"],bg=COLOR[results[i][1]["result"]]).pack(side=tk.LEFT,padx=3,pady=3)
+				rownum += 1
 		frame_main_inner.columnconfigure(index=1, weight=1)
 		button_ok["command"] = lambda: subwindow.destroy()

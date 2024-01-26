@@ -317,7 +317,7 @@ class CareerHistoryDataInput():
 			Returns:
 					bool: 読込結果 
 			"""
-			return tag is not None 
+			return False if tag is None else tag.text == "True"
 
 		def read_list(tag):
 			"""

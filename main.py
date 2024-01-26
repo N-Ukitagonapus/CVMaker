@@ -71,8 +71,8 @@ class Application(tk.Frame):
 		self.frame_history = CareerHistoryFrame(self.scroll_frame)
 		self.frame_history.pack()
 
-		self.frame_personal.data.name_last_kanji.trace_add('w',self.sync_shi)
-		self.frame_personal.data.name_first_kanji.trace_add('w',self.sync_mei)
+		self.frame_personal.data.name_last_kanji.trace_add('write',self.sync_shi)
+		self.frame_personal.data.name_first_kanji.trace_add('write',self.sync_mei)
 		self.button_export_b["command"] = lambda: self.export_excel()
 
 	def sync_shi(self, *args):
