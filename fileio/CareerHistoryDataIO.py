@@ -1,4 +1,4 @@
-import copy
+import copy, base64
 from constants.const import ENV_SET
 from data_structure.CareerData import CareerData
 from data_structure.EnvironmentData import EnvironmentData
@@ -258,7 +258,9 @@ class CareerHistoryDataOutput():
 		### ここから本処理 ###
 		base = et.Element("CareerData")
 		tree = et.ElementTree(element=base)
-
+  
+		et.SubElement(base,"key").text = util.encode_key(self.data.last_name_kanji + self.data.first_name_kanji)
+  
 		for career in self.data.history_list:
 			create_career(base, career)
 		et.indent(tree,"\t")
@@ -284,7 +286,19 @@ class CareerHistoryDataInput():
 		defaultextension = DEFAULT_EXT
     )
 
-	def read(self) -> CareerHistoryData:
+	def read(self,personal_key:str) -> CareerHistoryData:
+
+		def keycheck(key, name: str) -> bool:
+			"""
+			キー項目チェック
+			Args:
+					input (dict): 読込結果
+					data (SkillData): 技術情報データ
+			"""
+			if key is not None and util.decode_key(key.text) == name:
+				return True
+			else:
+				return util.msgbox_ask(diag.DIALOG_WARN_KEYINVALID)
 
 		def read_value(tag):
 			"""
@@ -429,10 +443,12 @@ class CareerHistoryDataInput():
 		else :
 			tree = et.parse(self.filename) 
 			root = tree.getroot()
-
-			# 返却クラス定義
-			ret = CareerHistoryData()
-			ret.history_list = []
-			for career in root.iter("Career"):
-				ret.history_list.append(read_career(career))
-			return ret
+			if keycheck(root.find("key"), personal_key):
+				# 返却クラス定義
+				ret = CareerHistoryData()
+				ret.history_list = []
+				for career in root.iter("Career"):
+					ret.history_list.append(read_career(career))
+				return ret
+			else :
+				return None

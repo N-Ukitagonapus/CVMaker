@@ -1,7 +1,9 @@
+import base64
 import calendar
 from datetime import datetime, date
 import os
 import sys
+import editdistance as ed
 from monthdelta import monthmod 
 import tkinter as tk
 from tkinter import StringVar, messagebox as msgbox
@@ -153,6 +155,68 @@ class Utilities:
 			return input.date()
 		else:
 			return input
+
+	@staticmethod
+	def encode_key(input:str):
+		"""
+		キーをエンコード
+
+		Args:
+				input (str): エンコード元
+
+		Returns:
+				str: エンコード結果
+		"""
+		return base64.b64encode(input.encode()).decode()
+
+	@staticmethod
+	def decode_key(input:str):
+		"""
+		キーをデコード
+
+		Args:
+				input (str): デコード元
+
+		Returns:
+				str: デコード結果
+		"""
+		return base64.b64decode(input).decode()
+
+	@staticmethod
+	def check_valiant(words) -> dict:
+		"""
+  	リスト表記ゆれチェック
+
+		Args:
+				words (list): チェック対象 
+		Returns:
+				dict: チェック結果
+		"""
+		def geteval(str1, str2) -> tuple:
+			num = ed.eval(str1, str2) / len(str1)
+			return(num, num <= 0.25)
+
+		def add_alert(dict:dict, num1:str, num2:str):
+			for key in dict.keys():
+				if num1 in dict[key] and num2 in dict[key]:
+					return
+			if num1 not in dict.keys():
+				dict[num1] = []
+			dict[num1].append(num2)
+
+		dict = {}
+		h = 1
+		words.sort()
+		for i in range(len(words)):
+			for j in range(h,len(words)):
+				ruiji = geteval(words[i],words[j])
+				if ruiji[1]:
+					add_alert(dict, words[i], words[j])
+				print("{0} || {1} : {2} [{3}]".format(words[i],words[j],ruiji[0],"！" if ruiji[1] else "　"))
+			h += 1
+
+		return dict
+
 
 	#汎用メッセージ表示
 	@staticmethod

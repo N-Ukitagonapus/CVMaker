@@ -318,7 +318,7 @@ class CareerHistoryFrame(tk.Frame):
 			try:
       
 				io = CareerHistoryDataInput()
-				read_data = io.read()
+				read_data = io.read(self.data.last_name_kanji+self.data.first_name_kanji)
 				if read_data is not None :
 					self.data = read_data
 					update_datanum()

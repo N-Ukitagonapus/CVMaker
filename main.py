@@ -10,7 +10,7 @@ from frames.CareerHistoryFrame import CareerHistoryFrame
 from utils.Utilities import Utilities as util, resource_path
 from constants.message import DialogMessage as diag
 
-VERSION = 1.05
+VERSION = 1.10
 class Application(tk.Frame):
 	global icon
 	def __init__(self, master = None):

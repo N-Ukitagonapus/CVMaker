@@ -154,8 +154,7 @@ class SkillDataOutput():
 		# ここから処理本体
 		base = et.Element("SkillData")
 		tree = et.ElementTree(element=base)
-		et.SubElement(base,"last_name").text = self.data.last_name_kanji
-		et.SubElement(base,"first_name").text = self.data.first_name_kanji
+		et.SubElement(base,"key").text = util.encode_key(self.data.last_name_kanji + self.data.first_name_kanji)
 		et.SubElement(base,"expr_start").text = self.data.expr_start.strftime("%Y%m")
 		et.SubElement(base,"absense_year").text = "0" if self.data.period_absense_year.get() == "" else self.data.period_absense_year.get()
 		et.SubElement(base,"absense_month").text = "0" if self.data.period_absense_month.get() == "" else self.data.period_absense_month.get()
@@ -248,8 +247,7 @@ class SkillDataInput():
 
 		#単体項目を取得
 		vals = {
-			"last_name":{"label":"KEY"},
-			"first_name":{"label":"KEY"},
+			"key":{"label":"KEY"},
 			"expr_start":{"label":"業界開始年月"},
 			"absense_year":{"label":"休職期間(年)"},
 			"absense_month":{"label":"休職期間(月)"},
@@ -285,7 +283,7 @@ class SkillDataInput():
 				input (dict): 読込結果
 				data (SkillData): 技術情報データ
 		"""
-		if input["last_name"]["value"] == data.last_name_kanji and input["first_name"]["value"] == data.first_name_kanji:
+		if util.decode_key(input["key"]["value"]) == data.last_name_kanji + data.first_name_kanji:
 			return True
 		else:
 			return util.msgbox_ask(diag.DIALOG_WARN_KEYINVALID)
