@@ -1,15 +1,16 @@
 import copy
 import tkinter as tk
 from tkinter import  ttk
-from constants.const import ENV_SET, VALID_ERR, VALID_WARN
+from constants.const import COLOR, ENV_GENRE, ENV_SET, VALID_ERR, VALID_OK, VALID_WARN
 from data_structure.EnvironmentData import EnvironmentData
 from data_structure.SkillData import SkillData
+from frames.subframe.ValiantWarningSubFrame import ValiantWarningSubFrame as f_warning
 from tkinter import filedialog as fd
 import xml.etree.ElementTree as et
 from utils.Utilities import Utilities as util
 from utils.Validation import StaticValidation as sval
 
-from constants.const import COLOR, VALID_ERR
+from constants.message import Message as msg
 from constants.message import DialogMessage as diag
 
 FILE_TYPES = [("XMLファイル", ".xml")]
@@ -24,6 +25,20 @@ class SkillDataOutput():
   
 	#データ出力
 	def confirm(self, target):
+
+		def check_env_variants(result:dict, envs:dict) -> dict:
+			ret = {}
+			for key in ENV_SET.keys():
+				check_res = util.check_valiant(envs[key])
+				if len(check_res) > 0:
+					yureterumono = []
+					for base in check_res.keys():
+						yureterumono.append(" | ".join([base]+ check_res[base]))
+					ret[ENV_GENRE[key]] = yureterumono
+
+			result["result"] = VALID_OK if len(ret) == 0 else VALID_WARN
+			result["msg"] = msg.MSG_OK if len(ret) == 0 else msg.MSG_WARN_VARIANT
+			return ret
 		"""
 		確認画面表示
 
@@ -48,6 +63,8 @@ class SkillDataOutput():
 		}
   
 		final_validation(self.data)
+		env_variants = check_env_variants(vals["expr_env"],self.data.expr_env.get_values())
+		has_variants_warn = len(env_variants) > 0
 		total_val = True
 		for val in vals.values():
 			if val["result"] in (VALID_ERR, VALID_WARN):
@@ -56,7 +73,7 @@ class SkillDataOutput():
 
 		subwindow = tk.Toplevel(target)
 		subwindow.title("データ確認")
-		subwindow.geometry("400x330")
+		subwindow.geometry("500x330" if has_variants_warn else "400x330")
 		subwindow.resizable(False,False)
 		subwindow.grab_set()
 
@@ -89,6 +106,9 @@ class SkillDataOutput():
 
 		button_output["command"] = lambda: output()
 		button_cancel["command"] = lambda: cancel()
+
+		if has_variants_warn:
+			f_warning.warn(subwindow, env_variants)
 
 		def output():
 			"""

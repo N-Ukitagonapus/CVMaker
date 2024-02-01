@@ -192,30 +192,31 @@ class Utilities:
 		Returns:
 				dict: チェック結果
 		"""
+  
 		def geteval(str1, str2) -> tuple:
 			num = ed.eval(str1, str2) / len(str1)
 			return(num, num <= 0.25)
 
-		def add_alert(dict:dict, num1:str, num2:str):
-			for key in dict.keys():
-				if num1 in dict[key] and num2 in dict[key]:
+		def add_alert(result:dict, num1:str, num2:str):
+			for key in result.keys():
+				if num1 in result[key] and num2 in result[key]:
 					return
-			if num1 not in dict.keys():
-				dict[num1] = []
-			dict[num1].append(num2)
+			if num1 not in result.keys():
+				result[num1] = []
+			result[num1].append(num2)
 
-		dict = {}
+		ret = {}
 		h = 1
 		words.sort()
 		for i in range(len(words)):
 			for j in range(h,len(words)):
 				ruiji = geteval(words[i],words[j])
 				if ruiji[1]:
-					add_alert(dict, words[i], words[j])
+					add_alert(ret, words[i], words[j])
 				print("{0} || {1} : {2} [{3}]".format(words[i],words[j],ruiji[0],"！" if ruiji[1] else "　"))
 			h += 1
 
-		return dict
+		return ret
 
 
 	#汎用メッセージ表示
