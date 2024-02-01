@@ -11,6 +11,7 @@ class Message:
 	MSG_DATEFORMAT_FAILURE = "NG：日付変換に失敗しました。"
 	MSG_WARN_EMPTY = "WARN：未入力です。"
 	MSG_WARN_LENGTH = "WARN：最大文字数({0}文字)を超えている部位は切り取られます。"
+	MSG_WARN_VARIANT = "WARN：表記ゆれがあります。個別ウィンドウを確認してください。"
 
 class DialogMessage:
 	"""

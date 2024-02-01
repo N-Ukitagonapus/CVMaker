@@ -34,7 +34,7 @@ class EnvironmentData:
 		self.tools = entry["tools"]
 		self.pkg = entry["pkg"]
 
-	def get_values(self):
+	def get_values(self) -> dict:
 		"""
 		値一括取得
 		Returns:
