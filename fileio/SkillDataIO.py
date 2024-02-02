@@ -110,6 +110,9 @@ class SkillDataOutput():
 		if has_variants_warn:
 			f_warning.warn(subwindow, env_variants)
 
+		if has_variants_warn:
+			f_warning.warn(subwindow, env_variants)
+
 		def output():
 			"""
 			出力ボタン押下時動作
