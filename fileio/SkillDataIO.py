@@ -1,10 +1,10 @@
 import copy
 import tkinter as tk
 from tkinter import  ttk
+from tkinter.scrolledtext import ScrolledText
 from constants.const import COLOR, ENV_GENRE, ENV_SET, VALID_ERR, VALID_OK, VALID_WARN
 from data_structure.EnvironmentData import EnvironmentData
 from data_structure.SkillData import SkillData
-from frames.subframe.ValiantWarningSubFrame import ValiantWarningSubFrame as f_warning
 from tkinter import filedialog as fd
 import xml.etree.ElementTree as et
 from utils.Utilities import Utilities as util
@@ -25,6 +25,31 @@ class SkillDataOutput():
   
 	#データ出力
 	def confirm(self, target):
+		"""
+		確認画面表示
+
+		Args:
+				target (tk.Frame): サブウィンドウ表示対象フレーム(=メインフレーム)
+		"""
+		def warn(target, result):
+			def create_text(input:dict)->list:
+				ret = []
+				for key in input.keys():
+					ret.append("【{0}】".format(key))
+					ret += input[key]
+				return ret
+			dlg = tk.Toplevel(target)
+			dlg.title("表記ゆれ警告")   # ウィンドウタイトル
+			dlg.geometry("320x240")    # ウィンドウサイズ(幅x高さ)
+			frame_title = tk.Frame(dlg,borderwidth=5,relief="groove")
+			label_title = tk.Label(frame_title, text="表記ゆれ警告", font=("Meiryo UI",14,"bold"))
+			label_title.pack(side=tk.TOP,padx=10,pady=5)
+			frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
+
+			text_result=ScrolledText(dlg,wrap=tk.WORD)
+			text_result.pack(side=tk.TOP,expand=True,padx=10,pady=5)
+			text_result.insert('1.0',"\n".join(create_text(result)))
+			text_result["state"]=tk.DISABLED
 
 		def check_env_variants(result:dict, envs:dict) -> dict:
 			ret = {}
@@ -39,12 +64,6 @@ class SkillDataOutput():
 			result["result"] = VALID_OK if len(ret) == 0 else VALID_WARN
 			result["msg"] = msg.MSG_OK if len(ret) == 0 else msg.MSG_WARN_VARIANT
 			return ret
-		"""
-		確認画面表示
-
-		Args:
-				target (tk.Frame): サブウィンドウ表示対象フレーム(=メインフレーム)
-		"""
 		def final_validation(input_data: SkillData):
 			sval.out_date_check(vals["expr_start"],input_data.expr_start)
 			sval.io_novalidation(vals["absense"])
@@ -108,10 +127,7 @@ class SkillDataOutput():
 		button_cancel["command"] = lambda: cancel()
 
 		if has_variants_warn:
-			f_warning.warn(subwindow, env_variants)
-
-		if has_variants_warn:
-			f_warning.warn(subwindow, env_variants)
+			warn(subwindow, env_variants)
 
 		def output():
 			"""
@@ -262,10 +278,12 @@ class SkillDataInput():
 				("packages","pkg")
 			]
 			ret = copy.deepcopy(ENV_SET)
-			for key in keys:
-				subtree = tree.find(key[0])
-				for value in subtree.iter("value"):
-					ret[key[1]].append(value.text)
+			if tree is not None :
+				for key in keys:
+					subtree = tree.find(key[0])
+					if subtree is not None:
+						for value in subtree.iter("value"):
+							ret[key[1]].append(value.text)
 			return ret
 
 		#単体項目を取得
@@ -289,8 +307,9 @@ class SkillDataInput():
 		vals["qualifications"]={"label":"資格情報"}
 		list_qual=[]
 		sikaku = root.find("qualifications")
-		for value in sikaku.iter("value"):
-			list_qual.append(value.text)
+		if sikaku is not None:
+			for value in sikaku.iter("value"):
+				list_qual.append(value.text)
 		vals["qualifications"]["value"] = list_qual
 
 		#使用経験環境を取得
