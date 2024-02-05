@@ -167,7 +167,7 @@ class Utilities:
 		Returns:
 				str: エンコード結果
 		"""
-		return base64.b64encode(input.encode()).decode()
+		return base64.b64encode(input.encode()).decode() if input is not None else ""
 
 	@staticmethod
 	def decode_key(input:str):
@@ -180,7 +180,7 @@ class Utilities:
 		Returns:
 				str: デコード結果
 		"""
-		return base64.b64decode(input).decode()
+		return base64.b64decode(input).decode() if input is not None else ""
 
 	@staticmethod
 	def check_valiant(words) -> dict:

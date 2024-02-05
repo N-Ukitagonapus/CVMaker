@@ -318,7 +318,7 @@ class CareerHistoryDataInput():
 		defaultextension = DEFAULT_EXT
     )
 
-	def read(self,personal_key:str) -> CareerHistoryData:
+	def read(self, last_name:str, first_name:str) -> CareerHistoryData:
 
 		def keycheck(key, name: str) -> bool:
 			"""
@@ -375,7 +375,7 @@ class CareerHistoryDataInput():
 					list: 読込結果
 			"""
 			ret = []
-			if tag is None:
+			if tag is not None:
 				for value in tag.iter("value"):
 					ret.append(value.text)
 			return ret
@@ -476,9 +476,11 @@ class CareerHistoryDataInput():
 		else :
 			tree = et.parse(self.filename) 
 			root = tree.getroot()
-			if keycheck(root.find("key"), personal_key):
+			if keycheck(root.find("key"), last_name + first_name):
 				# 返却クラス定義
 				ret = CareerHistoryData()
+				ret.last_name_kanji = last_name
+				ret.first_name_kanji = first_name
 				ret.history_list = []
 				for career in root.iter("Career"):
 					ret.history_list.append(read_career(career))
