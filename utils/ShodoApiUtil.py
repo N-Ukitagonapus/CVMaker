@@ -2,7 +2,7 @@ import time
 import requests,json
 from datetime import datetime as dt
 
-from data_structure.ShodoPreference import ShodoPreference
+from data_structure.ShodoSetting import ShodoSetting
 
 URL = {
   "usage":"https://api.shodo.ink/@{0}/{1}/usage/",
@@ -13,7 +13,7 @@ STATUS_OK = 200
 
 class ShodoApi:
   @staticmethod
-  def check_availablity(pref:ShodoPreference):
+  def check_availablity(pref:ShodoSetting) -> str:
     response = requests.get(URL["usage"].format(pref.user_id, pref.project_name), headers=ShodoApi.__get_header(pref.token))
     if response.status_code == STATUS_OK:
       limit = int(json.loads(response.text)["monthly_amount"])
@@ -21,14 +21,14 @@ class ShodoApi:
         if usage_list["year"] == dt.now().year and usage_list["month"] == dt.now().month: 
           usage = usage_list["amount"]
           ret = usage <= limit
-          print("本年月度利用状況\n現在の利用文字数：{0}\n制限文字数：{1}\n結果：{2}".format(usage, limit, "OK" if ret else "NG"))
           pref.flg_able = ret
-          return
-      print("本年月度の利用状況が見つかりません。")
+          return ("現在の利用文字数/制限文字数：{0}/{1}　結果：{2}".format(usage, limit, "OK" if ret else "NG"))
       pref.flg_able = False
+      return("本年月度の利用状況が見つかりません。")
     else:
-      print("[ERROR] ShodoApiで問題が発生しました。エラーコード:{0}".format(response.status_code))
       pref.flg_able = False
+      return("[ERROR] ShodoApiで問題が発生しました。エラーコード:{0}".format(response.status_code))
+      
   @staticmethod
   def lint_request(pref, *text):
     if len(text) == 0:
@@ -44,7 +44,7 @@ class ShodoApi:
     return ShodoApi.__get_result(lint_id)
   
   @staticmethod
-  def __lint_request_single(pref:ShodoPreference, text) -> int:
+  def __lint_request_single(pref:ShodoSetting, text) -> int:
     response = requests.post(URL["request"].format(pref.user_id, pref.project_name), json={"body": text}, headers=ShodoApi.__get_header(pref.token))
     if response.status_code == STATUS_OK:
       return json.loads(response.text)["lint_id"]
@@ -52,7 +52,7 @@ class ShodoApi:
       raise ShodoApiRequestError(response.status_code)
     
   @staticmethod
-  def __lint_request_multi(pref:ShodoPreference, texts:list) -> int:
+  def __lint_request_multi(pref:ShodoSetting, texts:list) -> int:
     response = requests.post(URL["request"].format(pref.user_id, pref.project_name), json={"bulk_body": texts}, headers=ShodoApi.__get_header(pref.token))
     if response.status_code == STATUS_OK:
       return json.loads(response.text)["lint_id"]
@@ -60,7 +60,7 @@ class ShodoApi:
       raise ShodoApiRequestError(response.status_code)
     
   @staticmethod
-  def __get_result(pref:ShodoPreference, lint_id):
+  def __get_result(pref:ShodoSetting, lint_id):
     for i in range(1,10):
       response = requests.get(URL["result"].format(pref.user_id, pref.project_name, lint_id), headers=ShodoApi.__get_header(pref.token))
       if response.status_code == STATUS_OK:

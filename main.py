@@ -1,13 +1,17 @@
+import configparser as copa
 import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
+from data_structure.ShodoSetting import ShodoSetting
 from fileio.ExcelOutput import ExcelOutput
-from constants.const import icon
+from constants.const import FILE, icon
+from frames.subframe.ShodoSettingSubFrame import ShodoSettingSubFrame
 from utils.Validation import DynamicValidation as dval
 from frames.PersonalDataFrame import PersonalDataFrame
 from frames.SkillDataFrame import SkillDataFrame
 from frames.CareerHistoryFrame import CareerHistoryFrame
 from utils.Utilities import Utilities as util, resource_path
+from utils.ShodoApiUtil import ShodoApi as shodoapi
 from constants.message import DialogMessage as diag
 
 VERSION = 1.10
@@ -20,7 +24,21 @@ class Application(tk.Frame):
 		self.master.title("K.S.A.M")
 		self.master.geometry("1200x900")
 
+		self.get_shodo_setting()
 		self.create_widgets()
+
+	def get_shodo_setting(self):
+		self.shodo = ShodoSetting()
+		try:
+			conf = copa.ConfigParser()
+			conf.read(FILE["SHODO_SETTING"])
+			user_id = util.decode_key(conf.get("ShodoSetting","UserId"))
+			project_name = util.decode_key(conf.get("ShodoSetting","Project"))
+			token = util.decode_key(conf.get("ShodoSetting","Token"))
+			self.shodo.set_preference(user_id, project_name, token)
+			shodoapi.check_availablity(self.shodo)
+		except Exception as err:
+			pass
 
 	def create_widgets(self):
 		"""
@@ -59,8 +77,11 @@ class Application(tk.Frame):
 		self.buttom_buttonfield = tk.Frame(self.frame_bottombutton)
 		self.buttom_buttonfield.pack(side=tk.RIGHT)
   
-		self.button_export_b = ttk.Button(self.buttom_buttonfield,width=20,text="Excel出力")
-		self.button_export_b.pack(side=tk.LEFT,padx=10,pady=5)
+		self.button_export = ttk.Button(self.buttom_buttonfield,width=20,text="Excel出力")
+		self.button_export.pack(side=tk.RIGHT,padx=10,pady=5)
+
+		self.button_shodo = ttk.Button(self.buttom_buttonfield,width=20,text="Shodo設定")
+		self.button_shodo.pack(side=tk.LEFT,padx=10,pady=5)
 
 		self.frame_personal = PersonalDataFrame(self.scroll_frame)
 		self.frame_personal.pack()
@@ -73,7 +94,8 @@ class Application(tk.Frame):
 
 		self.frame_personal.data.name_last_kanji.trace_add('write',self.sync_shi)
 		self.frame_personal.data.name_first_kanji.trace_add('write',self.sync_mei)
-		self.button_export_b["command"] = lambda: self.export_excel()
+		self.button_export["command"] = lambda: self.export_excel()
+		self.button_shodo["command"] = lambda: ShodoSettingSubFrame.show_setting(self.master, self.shodo)
 
 	def sync_shi(self, *args):
 		"""
