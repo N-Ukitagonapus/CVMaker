@@ -318,7 +318,7 @@ class CareerHistoryFrame(tk.Frame):
 			try:
       
 				io = CareerHistoryDataInput()
-				read_data = io.read(self.data.last_name_kanji+self.data.first_name_kanji)
+				read_data = io.read(self.data.last_name_kanji,self.data.first_name_kanji)
 				if read_data is not None :
 					self.data = read_data
 					update_datanum()
@@ -340,7 +340,7 @@ class CareerHistoryFrame(tk.Frame):
 				io.check_input(target)
 			except Exception as e:
 				print(e)
-				util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)
+				util.msgbox_showmsg(diag.DIALOG_OUTPUT_ERROR)
 			finally:
 				del io
 

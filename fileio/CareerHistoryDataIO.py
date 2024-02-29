@@ -1,5 +1,5 @@
 import copy, base64
-from constants.const import ENV_SET
+from constants.const import ENV_GENRE, ENV_SET
 from data_structure.CareerData import CareerData
 from data_structure.EnvironmentData import EnvironmentData
 from data_structure.CareerHistoryData import CareerHistoryData
@@ -33,7 +33,27 @@ class CareerHistoryDataOutput():
 		データチェック
 		"""
 
+		def check_env_variants(envs:EnvironmentData) -> dict:
+			def add_list(result:dict, check_list:list, key_name:str):
+				check_res = util.check_valiant(check_list)
+				if len(check_res) > 0:
+					check_result = []
+					for base in check_res.keys():
+						check_result.append(" | ".join([base]+ check_res[base]))
+					result[key_name] = check_result
+			ret = {}
+			add_list(ret,envs.server,"サーバ：")
+			add_list(ret,envs.os,"OS：")
+			add_list(ret,envs.db,"DB：")
+			add_list(ret,envs.lang,"言語：")
+			add_list(ret,envs.fw,"フレームワーク：")
+			add_list(ret,envs.mw,"ミドルウェア：")
+			add_list(ret,envs.tools,"ツール：")
+			add_list(ret,envs.pkg,"パッケージ：")
+			return ret
+		
 		result = []
+		env_variants = EnvironmentData()
 		err_total,warn_total = 0, 0
 		i = 1
 		# 経歴データごとに参照。
@@ -99,12 +119,24 @@ class CareerHistoryDataOutput():
 			warn_total += warn 
 			i += 1
 			result.append(BORDER)
+			env_variants.extend(history.environment)
+		result.append("【開発環境表記ゆれ】")
+		variants = check_env_variants(env_variants)
+		if len(variants) == 0:
+			result.append("表記ゆれなし")
+		else:
+			for key in variants.keys():
+				result.append("【{0}】".format(key))
+				result += variants[key]
+				warn_total += 1
+
 		# 指摘総数出力
 		result.append("【指摘総数】")
 		if err_total == 0 and warn_total == 0:
 			result.append("指摘なし")
 		else:
 			result.append("エラー：{0}　警告：{1}".format(err_total if err_total > 0 else "なし", warn_total if warn_total > 0 else "なし"))
+			
 		self.result_txt = result
 		self.has_pointout = err_total > 0 or warn_total > 0
 
@@ -286,7 +318,7 @@ class CareerHistoryDataInput():
 		defaultextension = DEFAULT_EXT
     )
 
-	def read(self,personal_key:str) -> CareerHistoryData:
+	def read(self, last_name:str, first_name:str) -> CareerHistoryData:
 
 		def keycheck(key, name: str) -> bool:
 			"""
@@ -343,8 +375,9 @@ class CareerHistoryDataInput():
 					list: 読込結果
 			"""
 			ret = []
-			for value in tag.iter("value"):
-				ret.append(value.text)
+			if tag is not None:
+				for value in tag.iter("value"):
+					ret.append(value.text)
 			return ret
 
 		def read_env(tree) -> EnvironmentData:
@@ -368,12 +401,12 @@ class CareerHistoryDataInput():
 				("packages","pkg")
 			]
 			dish = copy.deepcopy(ENV_SET)
-			for key in keys:
-				subtree = tree.find(key[0])
-				if subtree is not None:
-					for value in subtree.iter("value"):
-						dish[key[1]].append(value.text)
-
+			if tree is not None:
+				for key in keys:
+					subtree = tree.find(key[0])
+					if subtree is not None:
+						for value in subtree.iter("value"):
+							dish[key[1]].append(value.text)
 			ret = EnvironmentData()
 			ret.set_values(dish)
 			return ret
@@ -443,9 +476,11 @@ class CareerHistoryDataInput():
 		else :
 			tree = et.parse(self.filename) 
 			root = tree.getroot()
-			if keycheck(root.find("key"), personal_key):
+			if keycheck(root.find("key"), last_name + first_name):
 				# 返却クラス定義
 				ret = CareerHistoryData()
+				ret.last_name_kanji = last_name
+				ret.first_name_kanji = first_name
 				ret.history_list = []
 				for career in root.iter("Career"):
 					ret.history_list.append(read_career(career))
