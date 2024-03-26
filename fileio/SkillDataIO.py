@@ -4,9 +4,11 @@ from tkinter import  ttk
 from tkinter.scrolledtext import ScrolledText
 from constants.const import COLOR, ENV_GENRE, ENV_SET, VALID_ERR, VALID_OK, VALID_WARN
 from data_structure.EnvironmentData import EnvironmentData
+from data_structure.ShodoSetting import ShodoSetting
 from data_structure.SkillData import SkillData
 from tkinter import filedialog as fd
 import xml.etree.ElementTree as et
+from utils.ShodoApiUtil import ShodoApi, ShodoApiError, ShodoApiRequestError
 from utils.Utilities import Utilities as util
 from utils.Validation import StaticValidation as sval
 
@@ -20,8 +22,9 @@ class SkillDataOutput():
 	"""
 	技術情報データ出力クラス
 	"""
-	def __init__(self,data:SkillData):
+	def __init__(self,data:SkillData, shodo: ShodoSetting):
 		self.data = data
+		self.shodo = shodo
   
 	#データ出力
 	def confirm(self, target):
@@ -31,7 +34,7 @@ class SkillDataOutput():
 		Args:
 				target (tk.Frame): サブウィンドウ表示対象フレーム(=メインフレーム)
 		"""
-		def warn(target, result):
+		def warn_variants(target, result):
 			def create_text(input:dict)->list:
 				ret = []
 				for key in input.keys():
@@ -51,6 +54,20 @@ class SkillDataOutput():
 			text_result.insert('1.0',"\n".join(create_text(result)))
 			text_result["state"]=tk.DISABLED
 
+		def warn_kousei(target, result):
+			dlg = tk.Toplevel(target)
+			dlg.title("文章校正指摘")   # ウィンドウタイトル
+			dlg.geometry("600x300")    # ウィンドウサイズ(幅x高さ)
+			frame_title = tk.Frame(dlg,borderwidth=5,relief="groove")
+			label_title = tk.Label(frame_title, text="文章校正指摘", font=("Meiryo UI",14,"bold"))
+			label_title.pack(side=tk.TOP,padx=10,pady=5)
+			frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
+
+			text_result=ScrolledText(dlg,wrap=tk.WORD)
+			text_result.pack(side=tk.TOP,expand=True,padx=10,pady=5)
+			text_result.insert('1.0',"\n".join(result))
+			text_result["state"]=tk.DISABLED
+
 		def check_env_variants(result:dict, envs:dict) -> dict:
 			ret = {}
 			for key in ENV_SET.keys():
@@ -64,13 +81,34 @@ class SkillDataOutput():
 			result["result"] = VALID_OK if len(ret) == 0 else VALID_WARN
 			result["msg"] = msg.MSG_OK if len(ret) == 0 else msg.MSG_WARN_VARIANT
 			return ret
+
+		def check_pr(result:dict, text:str) -> list:
+			ret=[]
+			if self.shodo.is_active() :
+				try:
+					ret = util.shodo_check_single(self.shodo, text)
+					result["result"] = VALID_OK if len(ret) == 0 else VALID_WARN
+					result["msg"] = msg.MSG_OK if len(ret) == 0 else msg.MSG_WARN_EMEND
+				except ShodoApiError :
+					result["result"] = VALID_WARN
+					result["msg"] = msg.MSG_WARN_EMPTY
+				except ShodoApiRequestError as err:
+					print(err)
+					util.msgbox_showmsg(diag.DIALOG_ERROR_SHODO)
+					self.shodo.deactivate()
+					result["result"] = VALID_OK
+					result["msg"] = msg.MSG_NOVALIDATION
+			else :
+				result["result"] = VALID_OK if len(text) > 0 else VALID_WARN
+				result["msg"] = msg.MSG_OK if len(text) > 0 else msg.MSG_WARN_EMPTY
+			return ret
+ 
 		def final_validation(input_data: SkillData):
 			sval.out_date_check(vals["expr_start"],input_data.expr_start)
 			sval.io_novalidation(vals["absense"])
 			sval.out_warn_if_empty(vals["specialty"],input_data.specialty.get())
 			sval.io_novalidation(vals["qualifications"])
 			sval.io_novalidation(vals["expr_env"])
-			sval.out_warn_if_empty(vals["pr"],input_data.pr)
 
 		vals = {
 			"expr_start":{"label":"業界経験開始年月"},
@@ -83,16 +121,17 @@ class SkillDataOutput():
   
 		final_validation(self.data)
 		env_variants = check_env_variants(vals["expr_env"],self.data.expr_env.get_values())
+		pr_kousei = check_pr(vals["pr"],self.data.pr)
 		has_variants_warn = len(env_variants) > 0
 		total_val = True
 		for val in vals.values():
 			if val["result"] in (VALID_ERR, VALID_WARN):
 				total_val = False
 				break
-
+  
 		subwindow = tk.Toplevel(target)
 		subwindow.title("データ確認")
-		subwindow.geometry("500x330" if has_variants_warn else "400x330")
+		subwindow.geometry("500x330" if has_variants_warn else "500x330")
 		subwindow.resizable(False,False)
 		subwindow.grab_set()
 
@@ -127,8 +166,11 @@ class SkillDataOutput():
 		button_cancel["command"] = lambda: cancel()
 
 		if has_variants_warn:
-			warn(subwindow, env_variants)
-
+			warn_variants(subwindow, env_variants)
+   
+		if len(pr_kousei) > 0:
+			warn_kousei(subwindow, pr_kousei)
+   
 		def output():
 			"""
 			出力ボタン押下時動作

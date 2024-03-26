@@ -11,6 +11,8 @@ from tkcalendar import DateEntry
 from constants.const import VALID_ERR
 
 from constants.message import DialogMessage
+from data_structure.ShodoSetting import ShodoSetting
+from utils.ShodoApiUtil import ShodoApi
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -218,6 +220,16 @@ class Utilities:
 
 		return ret
 
+	@staticmethod
+	def shodo_check_single(pref:ShodoSetting, text:str) -> list:
+		ret = []
+		res = ShodoApi.lint_request(pref, text)
+		for siteki in res :
+			if siteki["operation"] is None:
+				ret.append("{0}行目・{1}文字目：{2}".format((siteki["from"]["line"])+1, (siteki["from"]["ch"])+1, siteki["message"]))
+			else :
+				ret.append("{0}行目・{1}文字目：{2} ({3} ⇒ {4})".format((siteki["from"]["line"])+1, (siteki["from"]["ch"])+1, siteki["message"], siteki["before"], siteki["after"]))
+		return ret
 
 	#汎用メッセージ表示
 	@staticmethod

@@ -12,6 +12,7 @@ class Message:
 	MSG_WARN_EMPTY = "WARN：未入力です。"
 	MSG_WARN_LENGTH = "WARN：最大文字数({0}文字)を超えている部位は切り取られます。"
 	MSG_WARN_VARIANT = "WARN：表記ゆれがあります。個別ウィンドウを確認してください。"
+	MSG_WARN_EMEND = "WARN：指摘があります。個別ウィンドウを確認してください。"
 
 class DialogMessage:
 	"""
@@ -31,3 +32,4 @@ class DialogMessage:
 	DIALOG_ERROR_NO_PERSONAL_DATA = ("error", "個人基本情報未読込","個人基本情報の読込を行ってください。")
 	DIALOG_WARN_KEYINVALID = ("yesno", "キー不一致","読込ファイル内のキーが個人基本情報と一致していません。\nそれでも読み込みますか？")
 	DIALOG_ERROR_KEYINVALID = ("error", "キー不一致","読込ファイル内のキーが個人基本情報と一致していないため、読み込みできません。")
+	DIALOG_ERROR_SHODO = ("error", "SHODOリクエストエラー","SHODOによる文章校正リクエストでエラーが発生しました。一時的に設定をOFFにします。")

@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import StringVar, ttk
+from tkinter import BooleanVar, StringVar, ttk
 from constants.const import FILE
 from data_structure.ShodoSetting import ShodoSetting
 from utils.ShodoApiUtil import ShodoApi
@@ -17,6 +17,7 @@ class ShodoSettingSubFrame:
 
 		txt_user_id, txt_project, txt_token = StringVar(), StringVar(), StringVar()
 		txt_status, txt_result = StringVar(), StringVar()
+		checkbox_use = BooleanVar()
 
 		txt_user_id.set(setting.user_id)
 		txt_project.set(setting.project_name)
@@ -55,10 +56,12 @@ class ShodoSettingSubFrame:
 		frame_command.pack(side=tk.BOTTOM,fill=tk.X,padx=20,pady=3)
 		subframe_button = tk.Frame(frame_command)
 		subframe_button.pack(side=tk.TOP)
+		chk_use = ttk.Checkbutton(subframe_button, text="文章校正を使用する", variable = checkbox_use, state=tk.NORMAL if setting.flg_able else tk.DISABLED)
 		btn_nosave = ttk.Button(subframe_button, width=15,text="保存せずに閉じる")
 		btn_save = ttk.Button(subframe_button, width=15,text="保存して閉じる")
-		btn_nosave.pack(side=tk.LEFT)
-		btn_save.pack(side=tk.RIGHT)
+		chk_use.pack(side=tk.LEFT,padx=2)
+		btn_nosave.pack(side=tk.LEFT,padx=2)
+		btn_save.pack(side=tk.RIGHT,padx=2)
 
 		button_check["command"] = lambda: check_usage()
 		btn_nosave["command"] = lambda: close_nosave()
@@ -69,12 +72,14 @@ class ShodoSettingSubFrame:
 			result = ShodoApi.check_availablity(setting)
 			txt_status.set("OK" if setting.flg_able else "NG")
 			txt_result.set(result)
-
+			chk_use["state"] = tk.NORMAL if setting.flg_able else tk.DISABLED
+   
 		def close_nosave():
 			dlg.destroy()
 
 		def close_save():
 			setting.set_preference(txt_user_id.get(), txt_project.get(), txt_token.get())
+			setting.use = checkbox_use.get()
 			ShodoApi.check_availablity(setting)
 			conf = copa.ConfigParser()
 			conf.add_section('ShodoSetting')

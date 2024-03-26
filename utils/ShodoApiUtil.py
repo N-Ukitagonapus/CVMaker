@@ -34,14 +34,14 @@ class ShodoApi:
     if len(text) == 0:
       raise ShodoApiError("入力パラメータがありません。処理を中止します。")
     elif len(text) == 1:
-      lint_id = ShodoApi.__lint_request_single(pref, text)
+      lint_id = ShodoApi.__lint_request_single(pref, text[0])
     else:
       texts = []
       for input in text:
         texts.append(input)
       lint_id = ShodoApi.__lint_request_multi(pref, texts)
 
-    return ShodoApi.__get_result(lint_id)
+    return ShodoApi.__get_result(pref, lint_id)
   
   @staticmethod
   def __lint_request_single(pref:ShodoSetting, text) -> int:
@@ -66,7 +66,7 @@ class ShodoApi:
       if response.status_code == STATUS_OK:
         texts = json.loads(response.text)
         if texts["status"] == "done":
-          return texts
+          return texts["messages"]
       else:
         raise ShodoApiRequestError(response.status_code)
       time.sleep(1)

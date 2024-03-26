@@ -17,8 +17,9 @@ class SkillDataFrame(tk.Frame):
 	"""
  	技術情報フレーム
 	"""
-	def __init__(self, target):
+	def __init__(self, target, shodo):
 		self.data = SkillData()
+		self.shodo = shodo
 		self.area_define(target)
 		self.input_control(target)
 		self.assembly()
@@ -171,7 +172,7 @@ class SkillDataFrame(tk.Frame):
 		Args:
 				target (tk.Frame): サブウィンドウ表示元(=メインフレーム)
 		"""
-		io = SkillDataOutput(self.data)
+		io = SkillDataOutput(self.data, self.shodo)
 		io.confirm(target)
 		del io
 

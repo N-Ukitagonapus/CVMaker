@@ -17,11 +17,12 @@ class CareerHistoryFrame(tk.Frame):
 	"""
 	職務経歴情報フレーム
 	"""
-	def __init__(self, target):
+	def __init__(self, target, shodo):
 
 		self.data=CareerHistoryData()
 		self.data_num=1
-
+		self.shodo = shodo
+  
 		self.area_define(target)
 		self.button_control(target)
 		self.input_control()

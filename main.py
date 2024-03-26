@@ -28,6 +28,9 @@ class Application(tk.Frame):
 		self.create_widgets()
 
 	def get_shodo_setting(self):
+		"""
+		SHODO設定
+		"""
 		self.shodo = ShodoSetting()
 		try:
 			conf = copa.ConfigParser()
@@ -86,10 +89,10 @@ class Application(tk.Frame):
 		self.frame_personal = PersonalDataFrame(self.scroll_frame)
 		self.frame_personal.pack()
 
-		self.frame_skill = SkillDataFrame(self.scroll_frame)
+		self.frame_skill = SkillDataFrame(self.scroll_frame, self.shodo)
 		self.frame_skill.pack()
 
-		self.frame_history = CareerHistoryFrame(self.scroll_frame)
+		self.frame_history = CareerHistoryFrame(self.scroll_frame, self.shodo)
 		self.frame_history.pack()
 
 		self.frame_personal.data.name_last_kanji.trace_add('write',self.sync_shi)
