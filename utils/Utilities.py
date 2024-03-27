@@ -221,14 +221,13 @@ class Utilities:
 		return ret
 
 	@staticmethod
-	def shodo_check_single(pref:ShodoSetting, text:str) -> list:
+	def parse_shodo_response(response:list) -> list:
 		ret = []
-		res = ShodoApi.lint_request(pref, text)
-		for siteki in res :
+		for siteki in response :
 			if siteki["operation"] is None:
-				ret.append("{0}行目・{1}文字目：{2}".format((siteki["from"]["line"])+1, (siteki["from"]["ch"])+1, siteki["message"]))
+				ret.append("・{0}行目/{1}文字目：{2}".format((siteki["from"]["line"])+1, (siteki["from"]["ch"])+1, siteki["message"]))
 			else :
-				ret.append("{0}行目・{1}文字目：{2} ({3} ⇒ {4})".format((siteki["from"]["line"])+1, (siteki["from"]["ch"])+1, siteki["message"], siteki["before"], siteki["after"]))
+				ret.append("・{0}行目/{1}文字目：{2} ({3} ⇒ {4})".format((siteki["from"]["line"])+1, (siteki["from"]["ch"])+1, siteki["message"], siteki["before"], siteki["after"]))
 		return ret
 
 	#汎用メッセージ表示

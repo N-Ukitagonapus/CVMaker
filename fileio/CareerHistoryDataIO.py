@@ -4,6 +4,7 @@ from data_structure.CareerData import CareerData
 from data_structure.EnvironmentData import EnvironmentData
 from data_structure.CareerHistoryData import CareerHistoryData
 from data_structure.ScaleData import ScaleData
+from data_structure.ShodoSetting import ShodoSetting
 from utils.Utilities import Utilities as util
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
@@ -28,7 +29,7 @@ class CareerHistoryDataOutput():
 		self.result_txt = []
 		self.has_pointout = False
   
-	def validation(self):
+	def validation(self, shodo:ShodoSetting):
 		"""
 		データチェック
 		"""
@@ -141,13 +142,13 @@ class CareerHistoryDataOutput():
 		self.has_pointout = err_total > 0 or warn_total > 0
 
 	#入力チェック画面
-	def check_input(self,target:tk.LabelFrame):
+	def check_input(self,target:tk.LabelFrame, shodo:ShodoSetting):
 		"""
 		入力チェック画面表示
 		Args:
 				target (tk.LabelFrame): 表示元フレーム
 		"""
-		self.validation()
+		self.validation(shodo)
 		subwindow = tk.Toplevel(target)
 		subwindow.title("職務経歴情報チェック")
 		subwindow.geometry("640x480")

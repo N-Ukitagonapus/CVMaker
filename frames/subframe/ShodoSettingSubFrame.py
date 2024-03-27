@@ -56,6 +56,7 @@ class ShodoSettingSubFrame:
 		frame_command.pack(side=tk.BOTTOM,fill=tk.X,padx=20,pady=3)
 		subframe_button = tk.Frame(frame_command)
 		subframe_button.pack(side=tk.TOP)
+		checkbox_use.set(setting.use)
 		chk_use = ttk.Checkbutton(subframe_button, text="文章校正を使用する", variable = checkbox_use, state=tk.NORMAL if setting.flg_able else tk.DISABLED)
 		btn_nosave = ttk.Button(subframe_button, width=15,text="保存せずに閉じる")
 		btn_save = ttk.Button(subframe_button, width=15,text="保存して閉じる")
@@ -79,7 +80,7 @@ class ShodoSettingSubFrame:
 
 		def close_save():
 			setting.set_preference(txt_user_id.get(), txt_project.get(), txt_token.get())
-			setting.use = checkbox_use.get()
+
 			ShodoApi.check_availablity(setting)
 			conf = copa.ConfigParser()
 			conf.add_section('ShodoSetting')
@@ -88,4 +89,5 @@ class ShodoSettingSubFrame:
 			conf.set("ShodoSetting","Token",util.encode_key(txt_token.get()))
 			with open(FILE["SHODO_SETTING"], 'w') as configfile:
 				conf.write(configfile)
+			setting.use = checkbox_use.get()
 			dlg.destroy()

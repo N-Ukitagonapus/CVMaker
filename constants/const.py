@@ -70,11 +70,17 @@ VALID_OK = "OK"
 VALID_WARN = "WARN"
 VALID_ERR = "ERROR"
 
+#色
+STATUS_GREEN = "GREEN"
+STATUS_RED = "RED"
+
 # チェック結果_表示背景
 COLOR = {
 	VALID_OK:"white",
 	VALID_WARN:"#ffd700",
-	VALID_ERR:"#ff6347"
+	VALID_ERR:"#ff6347",
+	STATUS_GREEN:"#00ff7f",
+	STATUS_RED:"#ff6347"
 }
 
 #

@@ -86,7 +86,8 @@ class SkillDataOutput():
 			ret=[]
 			if self.shodo.is_active() :
 				try:
-					ret = util.shodo_check_single(self.shodo, text)
+					res = ShodoApi.lint_request(self.shodo, text)
+					ret = util.parse_shodo_response(res)
 					result["result"] = VALID_OK if len(ret) == 0 else VALID_WARN
 					result["msg"] = msg.MSG_OK if len(ret) == 0 else msg.MSG_WARN_EMEND
 				except ShodoApiError :
@@ -100,7 +101,7 @@ class SkillDataOutput():
 					result["msg"] = msg.MSG_NOVALIDATION
 			else :
 				result["result"] = VALID_OK if len(text) > 0 else VALID_WARN
-				result["msg"] = msg.MSG_OK if len(text) > 0 else msg.MSG_WARN_EMPTY
+				result["msg"] = msg.MSG_NOVALIDATION if len(text) > 0 else msg.MSG_WARN_EMPTY
 			return ret
  
 		def final_validation(input_data: SkillData):

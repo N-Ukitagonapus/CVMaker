@@ -338,7 +338,7 @@ class CareerHistoryFrame(tk.Frame):
 			"""
 			try:
 				io = CareerHistoryDataOutput(self.data)
-				io.check_input(target)
+				io.check_input(target, self.shodo)
 			except Exception as e:
 				print(e)
 				util.msgbox_showmsg(diag.DIALOG_OUTPUT_ERROR)
@@ -420,7 +420,7 @@ class CareerHistoryFrame(tk.Frame):
 		def set_internal_leader():
 			self.get_current().set_flg_internal_leader(self.flg_internal_leader)
   
-		self.page_num.trace('w',set_datanum)
+		self.page_num.trace_add('write',set_datanum)
 		self.chk_bus_end["command"] = lambda:set_flg_over()
 		self.term_start.bind("<FocusOut>",func = set_term_first)
 		self.term_end.bind("<FocusOut>",func = set_term_last)

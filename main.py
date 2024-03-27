@@ -4,7 +4,7 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 from data_structure.ShodoSetting import ShodoSetting
 from fileio.ExcelOutput import ExcelOutput
-from constants.const import FILE, icon
+from constants.const import COLOR, FILE, STATUS_GREEN, STATUS_RED, icon
 from frames.subframe.ShodoSettingSubFrame import ShodoSettingSubFrame
 from utils.Validation import DynamicValidation as dval
 from frames.PersonalDataFrame import PersonalDataFrame
@@ -77,14 +77,20 @@ class Application(tk.Frame):
 		#Exportボタン
 		self.frame_bottombutton = tk.Frame(self.scroll_frame,borderwidth=5,relief=tk.GROOVE)
 		self.frame_bottombutton.pack(side=tk.BOTTOM,fill=tk.X,padx=20,pady=10)
-		self.buttom_buttonfield = tk.Frame(self.frame_bottombutton)
-		self.buttom_buttonfield.pack(side=tk.RIGHT)
+		self.buttom_buttonfieldR = tk.Frame(self.frame_bottombutton)
+		self.buttom_buttonfieldR.pack(side=tk.RIGHT)
+		self.buttom_buttonfieldL = tk.Frame(self.frame_bottombutton)
+		self.buttom_buttonfieldL.pack(side=tk.LEFT)
   
-		self.button_export = ttk.Button(self.buttom_buttonfield,width=20,text="Excel出力")
+		self.button_export = ttk.Button(self.buttom_buttonfieldR,width=20,text="Excel出力")
 		self.button_export.pack(side=tk.RIGHT,padx=10,pady=5)
 
-		self.button_shodo = ttk.Button(self.buttom_buttonfield,width=20,text="Shodo設定")
+		self.button_shodo = ttk.Button(self.buttom_buttonfieldL,width=20,text="Shodo設定")
+		self.label_shodo = ttk.Label(self.buttom_buttonfieldL,text="Shodo状態：")
+		self.status_shodo = ttk.Label(self.buttom_buttonfieldL)
 		self.button_shodo.pack(side=tk.LEFT,padx=10,pady=5)
+		self.label_shodo.pack(side=tk.LEFT,pady=5)
+		self.status_shodo.pack(side=tk.LEFT,pady=5)
 
 		self.frame_personal = PersonalDataFrame(self.scroll_frame)
 		self.frame_personal.pack()
@@ -116,7 +122,6 @@ class Application(tk.Frame):
 		self.frame_skill.data.first_name_kanji = var_out
 		self.frame_history.data.first_name_kanji = var_out
 
-
 	def export_excel(self):
 		"""
   	EXCEL書き出し：現在の登録内容でExcelファイルを書き出す。
@@ -126,9 +131,17 @@ class Application(tk.Frame):
 		out.subframe_modeselect(self.master)
 		del out
 
+	def update_state(self):
+		self.status_shodo["text"] = "有効" if self.shodo.is_active() else "無効"
+		self.status_shodo["foreground"] = COLOR[STATUS_GREEN] if self.shodo.is_active() else COLOR[STATUS_RED]
+
 if __name__ == "__main__":
+	def upd():
+		app.update_state()
+		app.after(500, upd)
 	root = tk.Tk()
 	root.resizable(False,True)
 	app = Application(master = root)
 	app.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(data=icon))
+	upd()
 	app.mainloop()
