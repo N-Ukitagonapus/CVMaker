@@ -31,15 +31,13 @@ class ShodoApi:
       
   @staticmethod
   def lint_request(pref, *text):
-    if len(text) == 0:
+    input = text[0]
+    if len(input) == 0:
       raise ShodoApiError("入力パラメータがありません。処理を中止します。")
-    elif len(text) == 1:
+    elif type(input) is str:
       lint_id = ShodoApi.__lint_request_single(pref, text[0])
     else:
-      texts = []
-      for input in text:
-        texts.append(input)
-      lint_id = ShodoApi.__lint_request_multi(pref, texts)
+      lint_id = ShodoApi.__lint_request_multi(pref, input)
 
     return ShodoApi.__get_result(pref, lint_id)
   

@@ -5,6 +5,7 @@ from data_structure.EnvironmentData import EnvironmentData
 from data_structure.CareerHistoryData import CareerHistoryData
 from data_structure.ScaleData import ScaleData
 from data_structure.ShodoSetting import ShodoSetting
+from utils.ShodoApiUtil import ShodoApi, ShodoApiError, ShodoApiRequestError
 from utils.Utilities import Utilities as util
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
@@ -52,11 +53,32 @@ class CareerHistoryDataOutput():
 			add_list(ret,envs.tools,"ツール：")
 			add_list(ret,envs.pkg,"パッケージ：")
 			return ret
-		
+
+		def shodo_lint(descriptions:tuple) -> list:
+			ret = [[], [], []]
+			for i in range(0,3):
+				result = []
+				if shodo.is_active() :
+					try:
+						res = ShodoApi.lint_request(shodo, descriptions[i])
+						for siteki in res:
+							result.append(util.parse_shodo_response(siteki))
+					except ShodoApiError :
+						pass
+					except ShodoApiRequestError as err:
+						print(err)
+						util.msgbox_showmsg(diag.DIALOG_ERROR_SHODO)
+						shodo.deactivate()
+						result = []
+					ret[i] = result
+			return ret
+ 
 		result = []
 		env_variants = EnvironmentData()
 		err_total,warn_total = 0, 0
 		i = 1
+		shodo_warnings = shodo_lint(self.data.get_descriptions())
+  
 		# 経歴データごとに参照。
 		for history in self.data.history_list:
 			err, warn = 0, 0
@@ -69,16 +91,36 @@ class CareerHistoryDataOutput():
 			if history.term_start > history.term_end:
 				result.append("[エラー]業務開始日に業務終了日以降の日付は入力できません。")
 				err += 1
-			# 業界、プロジェクト概要、システム概要は入力推奨(未入力の場合は警告)
+			# 業界は入力推奨(未入力の場合は警告)
 			if str.strip(history.description_gyokai) == "":
 				result.append("[警告]業界が未入力です。")
 				warn += 1
+
+			# プロジェクト概要は入力推奨(未入力の場合は警告)
 			if str.strip(history.description_project_overview) == "":
 				result.append("[警告]プロジェクト概要が未入力です。")
 				warn += 1
-			if str.strip(history.description_project_overview) == "":
+    	# プロジェクト概要のShodo指摘
+			if len(shodo_warnings[0]) > 0 and len(shodo_warnings[0][i-1])> 0:
+				result.append("[警告]プロジェクト概要にShodoの校正指摘があります。")
+				result.extend(shodo_warnings[0][i-1])
+				warn += 1
+    
+			if str.strip(history.description_system_overview) == "":
 				result.append("[警告]システム概要が未入力です。")
 				warn += 1
+    	# システム概要のShodo指摘
+			if len(shodo_warnings[1]) > 0 and len(shodo_warnings[1][i-1])> 0:
+				result.append("[警告]システム概要にShodoの校正指摘があります。")
+				result.extend(shodo_warnings[1][i-1])
+				warn += 1
+
+    	# 作業内容のShodo指摘
+			if len(shodo_warnings[2]) > 0 and len(shodo_warnings[2][i-1])> 0:
+				result.append("[警告]作業内容にShodoの校正指摘があります。")
+				result.extend(shodo_warnings[2][i-1])
+				warn += 1
+     
 			# 開発規模の製造その他の名称が未入力の際に本数が入っていたらエラー
 			scl = history.scale
 			if scl.etc1_name == "" and scl.etc1_num > 0:

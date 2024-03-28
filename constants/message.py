@@ -12,7 +12,7 @@ class Message:
 	MSG_WARN_EMPTY = "WARN：未入力です。"
 	MSG_WARN_LENGTH = "WARN：最大文字数({0}文字)を超えている部位は切り取られます。"
 	MSG_WARN_VARIANT = "WARN：表記ゆれがあります。個別ウィンドウを確認してください。"
-	MSG_WARN_EMEND = "WARN：指摘があります。個別ウィンドウを確認してください。"
+	MSG_WARN_SHODO = "WARN：指摘があります。個別ウィンドウを確認してください。"
 
 class DialogMessage:
 	"""

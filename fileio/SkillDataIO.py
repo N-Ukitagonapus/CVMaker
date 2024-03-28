@@ -89,7 +89,7 @@ class SkillDataOutput():
 					res = ShodoApi.lint_request(self.shodo, text)
 					ret = util.parse_shodo_response(res)
 					result["result"] = VALID_OK if len(ret) == 0 else VALID_WARN
-					result["msg"] = msg.MSG_OK if len(ret) == 0 else msg.MSG_WARN_EMEND
+					result["msg"] = msg.MSG_OK if len(ret) == 0 else msg.MSG_WARN_SHODO
 				except ShodoApiError :
 					result["result"] = VALID_WARN
 					result["msg"] = msg.MSG_WARN_EMPTY
