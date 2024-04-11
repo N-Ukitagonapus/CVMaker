@@ -14,7 +14,7 @@ from utils.Utilities import Utilities as util, resource_path
 from utils.ShodoApiUtil import ShodoApi as shodoapi
 from constants.message import DialogMessage as diag
 
-VERSION = 1.10
+VERSION = 1.25
 class Application(tk.Frame):
 	global icon
 	def __init__(self, master = None):

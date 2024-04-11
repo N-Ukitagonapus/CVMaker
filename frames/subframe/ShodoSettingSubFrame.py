@@ -12,7 +12,7 @@ class ShodoSettingSubFrame:
 		
 		dlg = tk.Toplevel(target)
 		dlg.title("Shodo設定")	# ウィンドウタイトル
-		dlg.geometry("400x220")	# ウィンドウサイズ(幅x高さ)
+		dlg.geometry("400x240")	# ウィンドウサイズ(幅x高さ)
 		dlg.grab_set()
 
 		txt_user_id, txt_project, txt_token = StringVar(), StringVar(), StringVar()
@@ -27,8 +27,8 @@ class ShodoSettingSubFrame:
 		txt_result.set("...")
 
 		frame_title = tk.Frame(dlg,borderwidth=5,relief="groove")
-		label_title = tk.Label(frame_title, text="Shodo設定", font=("Meiryo UI",14,"bold"))
-		label_title.pack(side=tk.TOP,padx=10,pady=5)
+		tk.Label(frame_title, text="Shodo設定", font=("Meiryo UI",16,"bold")).pack(side=tk.TOP,padx=10)
+		tk.Label(frame_title, text="Shodoについてはこちら -> https://shodo.ink/", font=("Meiryo UI",8,"italic")).pack(anchor=tk.NE,padx=5,pady=2)
 		frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=3)
 
 		frame_setting = tk.Frame(dlg,borderwidth=2,relief="groove")
