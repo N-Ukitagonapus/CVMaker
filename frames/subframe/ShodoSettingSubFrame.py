@@ -15,11 +15,11 @@ class ShodoSettingSubFrame:
 		dlg.geometry("400x240")	# ウィンドウサイズ(幅x高さ)
 		dlg.grab_set()
 
-		txt_user_id, txt_project, txt_token = StringVar(), StringVar(), StringVar()
+		txt_org_name, txt_project, txt_token = StringVar(), StringVar(), StringVar()
 		txt_status, txt_result = StringVar(), StringVar()
 		checkbox_use = BooleanVar()
 
-		txt_user_id.set(setting.user_id)
+		txt_org_name.set(setting.org_name)
 		txt_project.set(setting.project_name)
 		txt_token.set(setting.token)
 
@@ -33,12 +33,12 @@ class ShodoSettingSubFrame:
 
 		frame_setting = tk.Frame(dlg,borderwidth=2,relief="groove")
 		frame_setting.pack(side=tk.TOP,fill=tk.BOTH,expand=True,padx=20,pady=2)
-		tk.Label(frame_setting,text="ユーザID").grid(row=0,column=0)
+		tk.Label(frame_setting,text="組織名").grid(row=0,column=0)
 		tk.Label(frame_setting,text="プロジェクト名").grid(row=1,column=0)
 		tk.Label(frame_setting,text="トークン").grid(row=2,column=0)
-		ttk.Entry(frame_setting,width=40,textvariable=txt_user_id).grid(row=0,column=1)
+		ttk.Entry(frame_setting,width=40,textvariable=txt_org_name).grid(row=0,column=1)
 		ttk.Entry(frame_setting,width=40,textvariable=txt_project).grid(row=1,column=1)
-		ttk.Entry(frame_setting,width=40,textvariable=txt_token).grid(row=2,column=1)
+		ttk.Entry(frame_setting,width=40,show="■",textvariable=txt_token).grid(row=2,column=1)
 
 		frame_status = tk.Frame(dlg,borderwidth=2,relief="groove")
 		frame_status.pack(side=tk.TOP,fill=tk.BOTH,padx=20,pady=2)
@@ -69,7 +69,7 @@ class ShodoSettingSubFrame:
 		btn_save["command"] = lambda: close_save()
 
 		def check_usage():
-			setting.set_preference(txt_user_id.get(), txt_project.get(), txt_token.get())
+			setting.set_preference(txt_org_name.get(), txt_project.get(), txt_token.get())
 			result = ShodoApi.check_availablity(setting)
 			txt_status.set("OK" if setting.flg_able else "NG")
 			txt_result.set(result)
@@ -79,12 +79,12 @@ class ShodoSettingSubFrame:
 			dlg.destroy()
 
 		def close_save():
-			setting.set_preference(txt_user_id.get(), txt_project.get(), txt_token.get())
+			setting.set_preference(txt_org_name.get(), txt_project.get(), txt_token.get())
 
 			ShodoApi.check_availablity(setting)
 			conf = copa.ConfigParser()
 			conf.add_section('ShodoSetting')
-			conf.set("ShodoSetting","UserId",util.encode_key(txt_user_id.get()))
+			conf.set("ShodoSetting","UserId",util.encode_key(txt_org_name.get()))
 			conf.set("ShodoSetting","Project",util.encode_key(txt_project.get()))
 			conf.set("ShodoSetting","Token",util.encode_key(txt_token.get()))
 			with open(FILE["SHODO_SETTING"], 'w') as configfile:

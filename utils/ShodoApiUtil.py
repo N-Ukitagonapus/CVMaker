@@ -14,7 +14,7 @@ STATUS_OK = 200
 class ShodoApi:
   @staticmethod
   def check_availablity(pref:ShodoSetting) -> str:
-    response = requests.get(URL["usage"].format(pref.user_id, pref.project_name), headers=ShodoApi.__get_header(pref.token))
+    response = requests.get(URL["usage"].format(pref.org_name, pref.project_name), headers=ShodoApi.__get_header(pref.token))
     if response.status_code == STATUS_OK:
       limit = int(json.loads(response.text)["monthly_amount"])
       for usage_list in json.loads(response.text)["usage"]:
@@ -43,7 +43,7 @@ class ShodoApi:
   
   @staticmethod
   def __lint_request_single(pref:ShodoSetting, text) -> int:
-    response = requests.post(URL["request"].format(pref.user_id, pref.project_name), json={"body": text}, headers=ShodoApi.__get_header(pref.token))
+    response = requests.post(URL["request"].format(pref.org_name, pref.project_name), json={"body": text}, headers=ShodoApi.__get_header(pref.token))
     if response.status_code == STATUS_OK:
       return json.loads(response.text)["lint_id"]
     else:
@@ -51,7 +51,7 @@ class ShodoApi:
     
   @staticmethod
   def __lint_request_multi(pref:ShodoSetting, texts:list) -> int:
-    response = requests.post(URL["request"].format(pref.user_id, pref.project_name), json={"bulk_body": texts}, headers=ShodoApi.__get_header(pref.token))
+    response = requests.post(URL["request"].format(pref.org_name, pref.project_name), json={"bulk_body": texts}, headers=ShodoApi.__get_header(pref.token))
     if response.status_code == STATUS_OK:
       return json.loads(response.text)["lint_id"]
     else:
@@ -60,7 +60,7 @@ class ShodoApi:
   @staticmethod
   def __get_result(pref:ShodoSetting, lint_id):
     for i in range(1,10):
-      response = requests.get(URL["result"].format(pref.user_id, pref.project_name, lint_id), headers=ShodoApi.__get_header(pref.token))
+      response = requests.get(URL["result"].format(pref.org_name, pref.project_name, lint_id), headers=ShodoApi.__get_header(pref.token))
       if response.status_code == STATUS_OK:
         texts = json.loads(response.text)
         if texts["status"] == "done":
