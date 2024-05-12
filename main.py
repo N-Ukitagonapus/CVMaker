@@ -51,7 +51,7 @@ class Application(tk.Frame):
 		self.frame_title = tk.Frame(self.master,borderwidth=5,relief="groove")
 		self.icon_zone = tk.Canvas(self.frame_title, bg="#deb887", height=50, width=50)
 		self.icon_zone.pack(side=tk.LEFT,padx=10,pady=10)
-		icon = Image.open(resource_path("ksam_icon.png"))
+		icon = Image.open(resource_path("img\\ksam_icon.png"))
 		icon = icon.resize((50,50))
 		self.icon = ImageTk.PhotoImage(icon)
 		self.icon_zone.create_image(27, 27, image=self.icon)
