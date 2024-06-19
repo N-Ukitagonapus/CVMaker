@@ -13,8 +13,10 @@ from frames.CareerHistoryFrame import CareerHistoryFrame
 from utils.Utilities import Utilities as util, resource_path
 from utils.ShodoApiUtil import ShodoApi as shodoapi
 from constants.message import DialogMessage as diag
+import pyautogui as pag
 
 VERSION = 1.25
+scr_w,scr_h= pag.size()
 class Application(tk.Frame):
 	global icon
 	def __init__(self, master = None):
@@ -22,7 +24,7 @@ class Application(tk.Frame):
   
 		#ウィンドウ設定
 		self.master.title("K.S.A.M")
-		self.master.geometry("1200x900")
+		self.master.geometry("1200x{0}".format("900" if scr_h > 900 else (str)(scr_h - 50)))
 
 		self.get_shodo_setting()
 		self.create_widgets()
@@ -65,26 +67,26 @@ class Application(tk.Frame):
 		self.frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
 
 		#スクロール部分
-		self.scroll_area = tk.Canvas(self.master, width = 1180, height = 800)
+		self.scroll_area = tk.Canvas(self.master, width = 1180, height = 740)
 		self.scrollbar = tk.Scrollbar(self.scroll_area, orient=tk.VERTICAL, command=self.scroll_area.yview)
-		self.scroll_area.configure(scrollregion=(0, 0, 1180, 800))
+		self.scroll_area.configure(scrollregion=(0, 0, 1180, 740))
 		self.scroll_area.configure(yscrollcommand=self.scrollbar.set)
 		self.scroll_area.pack(expand=True, fill=tk.BOTH)
 		self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 		self.scroll_frame = tk.Frame(self.scroll_area)
-		self.scroll_area.create_window((0, 0), window=self.scroll_frame, anchor="nw", width=1180, height=800)
+		self.scroll_area.create_window((0, 0), window=self.scroll_frame, anchor="nw", width=1180, height=740)
   
-		#Exportボタン
-		self.frame_bottombutton = tk.Frame(self.scroll_frame,borderwidth=5,relief=tk.GROOVE)
+		#ボタンエリア
+		self.frame_bottombutton = tk.Frame(self.master,borderwidth=5,relief=tk.GROOVE)
 		self.frame_bottombutton.pack(side=tk.BOTTOM,fill=tk.X,padx=20,pady=10)
 		self.buttom_buttonfieldR = tk.Frame(self.frame_bottombutton)
 		self.buttom_buttonfieldR.pack(side=tk.RIGHT)
 		self.buttom_buttonfieldL = tk.Frame(self.frame_bottombutton)
 		self.buttom_buttonfieldL.pack(side=tk.LEFT)
-  
+		#エクスポートボタン
 		self.button_export = ttk.Button(self.buttom_buttonfieldR,width=20,text="Excel出力")
 		self.button_export.pack(side=tk.RIGHT,padx=10,pady=5)
-
+		#SHODOボタン
 		self.button_shodo = ttk.Button(self.buttom_buttonfieldL,width=20,text="Shodo設定")
 		self.label_shodo = ttk.Label(self.buttom_buttonfieldL,text="Shodo状態：")
 		self.status_shodo = ttk.Label(self.buttom_buttonfieldL)
