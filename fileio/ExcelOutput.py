@@ -171,7 +171,6 @@ class ExcelOutput():
 				self.mode_excel = mode_excel.get()
 				try:
 					self.export()
-					util.msgbox_showmsg(diag.DIALOG_SUCCESS_OUTPUT_EXCEL)
 				except Exception as e:
 					print(e)
 					util.msgbox_showmsg(diag.DIALOG_OUTPUT_ERROR)
@@ -199,7 +198,7 @@ class ExcelOutput():
 		self.wb = pyxl.load_workbook(resource_path("template/ExcelTemplate_{0}.xlsx".format(self.mode_excel)))
 		out_data = self.create_excel_data(self.personal, self.skill, self.career)
 		self.write_excel(out_data)
-		filename = "{0}_技術経歴書_{1}".format(datetime.date.today().strftime("%Y%m"),out_data.fullname)
+		filename = "{0}_技術経歴書_{1}（{2}）".format(datetime.date.today().strftime("%Y%m"), out_data.name_initial, out_data.fullname)
 		self.save(filename)
 
 
@@ -351,4 +350,6 @@ class ExcelOutput():
 			initialfile = filename,
 			defaultextension = DEFAULT_EXT
 		)
-		self.wb.save(exportfile)
+		if exportfile != "":
+			self.wb.save(exportfile)
+			util.msgbox_showmsg(diag.DIALOG_SUCCESS_OUTPUT_EXCEL)

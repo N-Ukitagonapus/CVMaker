@@ -15,7 +15,7 @@ from utils.ShodoApiUtil import ShodoApi as shodoapi
 from constants.message import DialogMessage as diag
 import pyautogui as pag
 
-VERSION = 1.25
+VERSION = 1.28
 scr_w,scr_h= pag.size()
 class Application(tk.Frame):
 	global icon
