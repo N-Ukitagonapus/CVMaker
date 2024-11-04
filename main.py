@@ -15,16 +15,17 @@ from utils.ShodoApiUtil import ShodoApi as shodoapi
 from constants.message import DialogMessage as diag
 import pyautogui as pag
 
-VERSION = 1.28
+VERSION = 1.29
 scr_w,scr_h= pag.size()
 class Application(tk.Frame):
 	global icon
 	def __init__(self, master = None):
 		super().__init__(master)
-  
+		width = 1200
+		height = 900 if scr_h > 900 else (scr_h - 50)
 		#ウィンドウ設定
 		self.master.title("K.S.A.M")
-		self.master.geometry("1200x{0}".format("900" if scr_h > 900 else (str)(scr_h - 50)))
+		self.master.geometry(f"{width}x{height}")
 
 		self.get_shodo_setting()
 		self.create_widgets()
@@ -66,16 +67,6 @@ class Application(tk.Frame):
 
 		self.frame_title.pack(side=tk.TOP,fill=tk.X,padx=20,pady=5)
 
-		#スクロール部分
-		self.scroll_area = tk.Canvas(self.master, width = 1180, height = 740)
-		self.scrollbar = tk.Scrollbar(self.scroll_area, orient=tk.VERTICAL, command=self.scroll_area.yview)
-		self.scroll_area.configure(scrollregion=(0, 0, 1180, 740))
-		self.scroll_area.configure(yscrollcommand=self.scrollbar.set)
-		self.scroll_area.pack(expand=True, fill=tk.BOTH)
-		self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-		self.scroll_frame = tk.Frame(self.scroll_area)
-		self.scroll_area.create_window((0, 0), window=self.scroll_frame, anchor="nw", width=1180, height=740)
-  
 		#ボタンエリア
 		self.frame_bottombutton = tk.Frame(self.master,borderwidth=5,relief=tk.GROOVE)
 		self.frame_bottombutton.pack(side=tk.BOTTOM,fill=tk.X,padx=20,pady=10)
@@ -93,6 +84,23 @@ class Application(tk.Frame):
 		self.button_shodo.pack(side=tk.LEFT,padx=10,pady=5)
 		self.label_shodo.pack(side=tk.LEFT,pady=5)
 		self.status_shodo.pack(side=tk.LEFT,pady=5)
+
+		#スクロール部分
+		self.main_area = tk.Frame(self.master)
+		self.main_area.pack(expand=True, fill=tk.BOTH)
+		self.scroll_area = tk.Canvas(self.main_area, width = 1180, height = 740)
+		self.scrollbar_y = tk.Scrollbar(self.main_area, orient=tk.VERTICAL, command=self.scroll_area.yview)
+		self.scrollbar_x = tk.Scrollbar(self.main_area, orient=tk.HORIZONTAL, command=self.scroll_area.xview)
+		self.scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
+		self.scrollbar_x.pack(side=tk.BOTTOM, fill=tk.X)
+		self.scroll_area.configure(scrollregion=(0, 0, 1180, 740))
+		self.scroll_area.configure(yscrollcommand=self.scrollbar_y.set)
+		self.scroll_area.configure(xscrollcommand=self.scrollbar_x.set)
+		self.scroll_area.pack(expand=True, fill=tk.BOTH)
+
+		self.scroll_frame = tk.Frame(self.scroll_area)
+		self.scroll_area.create_window((0, 0), window=self.scroll_frame, anchor="nw", width=1180, height=740)
+
 
 		self.frame_personal = PersonalDataFrame(self.scroll_frame)
 		self.frame_personal.pack()
@@ -142,7 +150,8 @@ if __name__ == "__main__":
 		app.update_state()
 		app.after(500, upd)
 	root = tk.Tk()
-	root.resizable(False,True)
+	root.resizable(True,True)
+	root.minsize(640, 480)
 	app = Application(master = root)
 	app.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(data=icon))
 	upd()
