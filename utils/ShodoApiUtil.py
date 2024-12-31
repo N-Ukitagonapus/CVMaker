@@ -28,7 +28,20 @@ class ShodoApi:
     else:
       pref.flg_able = False
       return("[ERROR] ShodoApiで問題が発生しました。エラーコード:{0}".format(response.status_code))
-      
+
+  @staticmethod
+  def get_nums(pref:ShodoSetting) -> dict:
+    response = requests.get(URL["usage"].format(pref.org_name, pref.project_name), headers=ShodoApi.__get_header(pref.token))
+    if response.status_code == STATUS_OK:
+      limit = int(json.loads(response.text)["monthly_amount"])
+      for usage_list in json.loads(response.text)["usage"]:
+        if usage_list["year"] == dt.now().year and usage_list["month"] == dt.now().month: 
+          usage = usage_list["amount"]
+          return {"limit" : limit, "usage": usage, "left": limit - usage}
+      pref.flg_able = False
+      raise ShodoApiError("本年月度の利用状況が見つかりません。")
+    else:
+      raise ShodoApiRequestError(response.status_code)
   @staticmethod
   def lint_request(pref, *text):
     input = text[0]

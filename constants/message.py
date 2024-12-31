@@ -32,4 +32,5 @@ class DialogMessage:
 	DIALOG_ERROR_NO_PERSONAL_DATA = ("error", "個人基本情報未読込","個人基本情報の読込を行ってください。")
 	DIALOG_WARN_KEYINVALID = ("yesno", "キー不一致","読込ファイル内のキーが個人基本情報と一致していません。\nそれでも読み込みますか？")
 	DIALOG_ERROR_KEYINVALID = ("error", "キー不一致","読込ファイル内のキーが個人基本情報と一致していないため、読み込みできません。")
+	DIALOG_ERROR_EMPTYTEXT = ("error", "テキスト未入力","テキストが未入力だと文章校正できません。")
 	DIALOG_ERROR_SHODO = ("error", "SHODOリクエストエラー","SHODOによる文章校正リクエストでエラーが発生しました。一時的に設定をOFFにします。")

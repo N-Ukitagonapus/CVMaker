@@ -6,9 +6,17 @@
 	"configurations": [
 		{
 			"name": "デバッグ",
-			"type": "python",
+			"type": "debugpy",
 			"request": "launch",
 			"program": "main.py",
+			"console": "integratedTerminal",
+			"justMyCode": true
+		},
+		{
+			"name": "サブツール",
+			"type": "debugpy",
+			"request": "launch",
+			"program": "secondtool.py",
 			"console": "integratedTerminal",
 			"justMyCode": true
 		}
