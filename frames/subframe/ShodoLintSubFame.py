@@ -116,14 +116,10 @@ class ShodoLintSubFrame:
 
 		def do_lint(shodo, string):
 			res = ShodoApi.lint_request(shodo, string)
-			print(res)
-			num_limit = ShodoApi.get_nums(shodo)
-			print("あと{}文字".format(num_limit))
 			if len(res) == 0 :
 				self.label_wait["text"] = "校正の必要はありません。"
 			else :
 				create_checks(res)
-
 			nums = ShodoApi.get_nums(shodo)
 			self.label_state["text"] = "現在の利用文字数/制限文字数：{0}/{1}　残り：あと{2}文字".format(nums["usage"],nums["limit"],nums["left"])
 
