@@ -1,11 +1,9 @@
-import copy, base64
+import copy
 from constants.const import ENV_GENRE, ENV_SET
 from data_structure.CareerData import CareerData
 from data_structure.EnvironmentData import EnvironmentData
 from data_structure.CareerHistoryData import CareerHistoryData
 from data_structure.ScaleData import ScaleData
-from data_structure.ShodoSetting import ShodoSetting
-from utils.ShodoApiUtil import ShodoApi, ShodoApiError, ShodoApiRequestError
 from utils.Utilities import Utilities as util
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
@@ -30,7 +28,7 @@ class CareerHistoryDataOutput():
 		self.result_txt = []
 		self.has_pointout = False
   
-	def validation(self, shodo:ShodoSetting):
+	def validation(self):
 		"""
 		データチェック
 		"""
@@ -44,40 +42,21 @@ class CareerHistoryDataOutput():
 						check_result.append(" | ".join([base]+ check_res[base]))
 					result[key_name] = check_result
 			ret = {}
-			add_list(ret,envs.server,"サーバ：")
-			add_list(ret,envs.os,"OS：")
-			add_list(ret,envs.db,"DB：")
-			add_list(ret,envs.lang,"言語：")
-			add_list(ret,envs.fw,"フレームワーク：")
-			add_list(ret,envs.mw,"ミドルウェア：")
-			add_list(ret,envs.tools,"ツール：")
-			add_list(ret,envs.pkg,"パッケージ：")
+			add_list(ret,envs.server,"サーバ")
+			add_list(ret,envs.os,"OS")
+			add_list(ret,envs.db,"DB")
+			add_list(ret,envs.lang,"言語")
+			add_list(ret,envs.fw,"フレームワーク")
+			add_list(ret,envs.mw,"ミドルウェア")
+			add_list(ret,envs.tools,"ツール")
+			add_list(ret,envs.pkg,"パッケージ")
 			return ret
 
-		def shodo_lint(descriptions:tuple) -> list:
-			ret = [[], [], []]
-			for i in range(0,3):
-				result = []
-				if shodo.is_active() :
-					try:
-						res = ShodoApi.lint_request(shodo, descriptions[i])
-						for siteki in res:
-							result.append(util.parse_shodo_response(siteki))
-					except ShodoApiError :
-						pass
-					except ShodoApiRequestError as err:
-						print(err)
-						util.msgbox_showmsg(diag.DIALOG_ERROR_SHODO)
-						shodo.deactivate()
-						result = []
-					ret[i] = result
-			return ret
  
 		result = []
 		env_variants = EnvironmentData()
 		err_total,warn_total = 0, 0
 		i = 1
-		shodo_warnings = shodo_lint(self.data.get_descriptions())
   
 		# 経歴データごとに参照。
 		for history in self.data.history_list:
@@ -100,25 +79,9 @@ class CareerHistoryDataOutput():
 			if str.strip(history.description_project_overview) == "":
 				result.append("[警告]プロジェクト概要が未入力です。")
 				warn += 1
-    	# プロジェクト概要のShodo指摘
-			if len(shodo_warnings[0]) > 0 and len(shodo_warnings[0][i-1])> 0:
-				result.append("[警告]プロジェクト概要にShodoの校正指摘があります。")
-				result.extend(shodo_warnings[0][i-1])
-				warn += 1
-    
+
 			if str.strip(history.description_system_overview) == "":
 				result.append("[警告]システム概要が未入力です。")
-				warn += 1
-    	# システム概要のShodo指摘
-			if len(shodo_warnings[1]) > 0 and len(shodo_warnings[1][i-1])> 0:
-				result.append("[警告]システム概要にShodoの校正指摘があります。")
-				result.extend(shodo_warnings[1][i-1])
-				warn += 1
-
-    	# 作業内容のShodo指摘
-			if len(shodo_warnings[2]) > 0 and len(shodo_warnings[2][i-1])> 0:
-				result.append("[警告]作業内容にShodoの校正指摘があります。")
-				result.extend(shodo_warnings[2][i-1])
 				warn += 1
      
 			# 開発規模の製造その他の名称が未入力の際に本数が入っていたらエラー
@@ -169,7 +132,7 @@ class CareerHistoryDataOutput():
 			result.append("表記ゆれなし")
 		else:
 			for key in variants.keys():
-				result.append("【{0}】".format(key))
+				result.append("〔{0}〕".format(key))
 				result += variants[key]
 				warn_total += 1
 
@@ -184,13 +147,13 @@ class CareerHistoryDataOutput():
 		self.has_pointout = err_total > 0 or warn_total > 0
 
 	#入力チェック画面
-	def check_input(self,target:tk.LabelFrame, shodo:ShodoSetting):
+	def check_input(self,target:tk.LabelFrame):
 		"""
 		入力チェック画面表示
 		Args:
 				target (tk.LabelFrame): 表示元フレーム
 		"""
-		self.validation(shodo)
+		self.validation()
 		subwindow = tk.Toplevel(target)
 		subwindow.title("職務経歴情報チェック")
 		subwindow.geometry("640x480")

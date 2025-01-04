@@ -73,11 +73,10 @@ class ShodoLintSubFrame:
 			scroll_area = tk.Canvas(self.frame_check)
 			scrollbar_y = tk.Scrollbar(self.frame_check, orient=tk.VERTICAL, command=scroll_area.yview)
 			scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-			scroll_area.configure(scrollregion=(0, 0, 460, 22.5*(len(res)+1)))
-			scroll_area.configure(yscrollcommand=scrollbar_y.set)
+
 			scroll_area.pack(side=tk.TOP,fill=tk.BOTH,padx=3,pady=2)
 			inner_scr=tk.Frame(scroll_area, width=460)
-			inner_scr.pack(fill=tk.BOTH, expand=True)
+
 			tk.Label(inner_scr,borderwidth=1,relief="solid",text="行").grid(row=0,column=0,sticky=tk.W + tk.E)
 			tk.Label(inner_scr,borderwidth=1,relief="solid",text="文字").grid(row=0,column=1,sticky=tk.W + tk.E)
 			tk.Label(inner_scr,borderwidth=1,relief="solid",text="内容").grid(row=0,column=2,sticky=tk.W + tk.E)
@@ -97,9 +96,9 @@ class ShodoLintSubFrame:
 				result = res[i]
 				tk.Label(inner_scr,borderwidth=1,relief="solid",text=result["from"]["line"]+1).grid(row=i+1,column=0,sticky=tk.W+tk.E+tk.N+tk.S)
 				tk.Label(inner_scr,borderwidth=1,relief="solid",text="{}～{}".format(result["from"]["ch"]+1,result["to"]["ch"]+1)).grid(row=i+1,column=1,sticky=tk.W+tk.E+tk.N+tk.S)
-				tk.Label(inner_scr,borderwidth=1,relief="solid",text=result["message"]).grid(row=i+1,column=2,sticky=tk.W+tk.E+tk.N+tk.S)
-				tk.Label(inner_scr,borderwidth=1,relief="solid",text="‐"if result["before"] is None else result["before"]).grid(row=i+1,column=3,sticky=tk.W+tk.E+tk.N+tk.S)
-				tk.Label(inner_scr,borderwidth=1,relief="solid",text="‐"if result["after"] is None else result["after"]).grid(row=i+1,column=4,sticky=tk.W+tk.E+tk.N+tk.S)
+				tk.Message(inner_scr,borderwidth=1,relief="solid",text=result["message"]).grid(row=i+1,column=2,sticky=tk.W+tk.E+tk.N+tk.S)
+				tk.Message(inner_scr,borderwidth=1,relief="solid",text="‐"if result["before"] is None else result["before"]).grid(row=i+1,column=3,sticky=tk.W+tk.E+tk.N+tk.S)
+				tk.Message(inner_scr,borderwidth=1,relief="solid",text="‐"if result["after"] is None else result["after"]).grid(row=i+1,column=4,sticky=tk.W+tk.E+tk.N+tk.S)
 				checkboxes.append(tk.Frame(inner_scr,borderwidth=1,relief="solid"))
 				checkboxes[i].grid(row=i+1,column=5,sticky=tk.W+tk.E+tk.N+tk.S)
 				if result["operation"] == "replace":
@@ -110,20 +109,21 @@ class ShodoLintSubFrame:
 												res
 											)).pack()
 				else:	tk.Label(checkboxes[i],text="‐").pack()
+			inner_scr.pack(fill=tk.BOTH, expand=True)
+			inner_scr.update()
 			scroll_area.create_window((0,0), window=inner_scr, anchor=tk.NW, width=460)
+			print(inner_scr.winfo_height())
+			scroll_area.configure(scrollregion=(0, 0, 480, inner_scr.winfo_height()))
+			scroll_area.configure(yscrollcommand=scrollbar_y.set)
 			self.btn_ok["state"] = tk.NORMAL
 			self.btn_ok["command"] = lambda: return_word()
 
 		def do_lint(shodo, string):
 			res = ShodoApi.lint_request(shodo, string)
-			print(res)
-			num_limit = ShodoApi.get_nums(shodo)
-			print("あと{}文字".format(num_limit))
 			if len(res) == 0 :
 				self.label_wait["text"] = "校正の必要はありません。"
 			else :
 				create_checks(res)
-
 			nums = ShodoApi.get_nums(shodo)
 			self.label_state["text"] = "現在の利用文字数/制限文字数：{0}/{1}　残り：あと{2}文字".format(nums["usage"],nums["limit"],nums["left"])
 

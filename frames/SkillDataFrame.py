@@ -4,10 +4,12 @@
 from datetime import datetime
 import tkinter as tk
 from tkinter import StringVar, ttk
-from tkinter import scrolledtext
+from tkinter.scrolledtext import ScrolledText
 from tkcalendar import DateEntry
+from data_structure.ShodoSetting import ShodoSetting
 from fileio.SkillDataIO import SkillDataInput, SkillDataOutput
 from frames.subframe.EnvironmentSubFrame import EnvironmentSubFrame
+from frames.subframe.ShodoLintSubFame import ShodoLintSubFrame
 from utils.Utilities import Utilities as util
 from data_structure.SkillData import SkillData
 from utils.Validation import DynamicValidation as dval
@@ -87,8 +89,10 @@ class SkillDataFrame(tk.Frame):
 		#フレーム・ラベル定義
 		self.label_pr = tk.Label(self.fourth_line,text="自己PR")
 		#自己PR
-		self.text_pr = scrolledtext.ScrolledText(self.fourth_line,wrap=tk.WORD,width=80,height=5)  
-
+		self.text_pr = ScrolledText(self.fourth_line,wrap=tk.WORD,width=80,height=5)  
+		#校正ボタン
+		self.area_lint = tk.Frame(self.fourth_line)
+		self.btn_lint = ttk.Button(self.area_lint,width=5,text="校正",state=tk.DISABLED)
 	def assembly(self):
 		"""
   	組立
@@ -109,7 +113,7 @@ class SkillDataFrame(tk.Frame):
 		#2行目
 		self.label_specialty.pack(side=tk.LEFT)
 		self.text_specialty.pack(side=tk.LEFT,padx=5)
-		self.second_line.pack(side=tk.TOP,fill=tk.X,pady=5)
+		self.second_line.pack(side=tk.TOP,fill=tk.X)
   
 		#3行目
 		self.label_qualifications.pack(side=tk.LEFT)
@@ -120,7 +124,10 @@ class SkillDataFrame(tk.Frame):
 
 		#4行目
 		self.label_pr.grid(row=0,column=0,pady=5)
+		self.area_lint.grid(row=0,column=1,sticky=tk.W+tk.E)
+		self.btn_lint.pack(side=tk.LEFT,padx=5)
 		self.text_pr.grid(row=1,column=1,padx=5,pady=5,sticky=tk.EW)
+
 		self.fourth_line.grid_columnconfigure(1, weight=1)
 		self.fourth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
   
@@ -154,7 +161,27 @@ class SkillDataFrame(tk.Frame):
 				util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)
 			finally:
 				del env_sub
-  
+
+		def lint(shodo:ShodoSetting, tgt:ScrolledText):
+			"""
+			校正ウィンドウ表示
+			Args:
+					shodo (ShodoSetting): shodo設定
+					tgt (ScrolledText): 校正・設定対象コンポーネント
+			"""
+			string = tgt.get('1.0',tgt.index(tk.END))
+			if len(string) == 0:
+				util.msgbox_showmsg(diag.DIALOG_ERROR_EMPTYTEXT)
+			else:
+				try:
+					sub_lint = ShodoLintSubFrame(target)
+					sub_lint.lint(shodo, string, tgt)
+					set_pr()
+				except Exception as e:
+					print(e)
+				finally:
+					del sub_lint
+
 		# 自己PR
 		def set_pr(event):
 			self.data.pr=self.text_pr.get('1.0',self.text_pr.index(tk.END))
@@ -162,7 +189,8 @@ class SkillDataFrame(tk.Frame):
 		self.btn_save["command"] = lambda: self.data_save(target)
 		self.btn_qual_edit["command"] = lambda:self.edit_qualifications(self.ret)
 		self.btn_env_edit["command"]  = lambda:edit_envs()
-		self.str_start_date.trace('w',expr_start_set)
+		self.btn_lint["command"] = lambda: lint(self.shodo,self.text_pr)
+		self.str_start_date.trace_add('write',expr_start_set)
 		self.text_pr.bind("<FocusOut>",func = set_pr)
 	
 	def data_save(self,target):
@@ -172,12 +200,10 @@ class SkillDataFrame(tk.Frame):
 		Args:
 				target (tk.Frame): サブウィンドウ表示元(=メインフレーム)
 		"""
-		io = SkillDataOutput(self.data, self.shodo)
+		io = SkillDataOutput(self.data)
 		io.confirm(target)
 		del io
-
-
-
+		
 	def data_read(self,target):
 		"""
 		データ読込
@@ -218,7 +244,7 @@ class SkillDataFrame(tk.Frame):
 
 		label_desc= tk.Label(subwindow, text="複数ある場合は改行区切りで入力してください。")
 		label_desc.pack(side=tk.TOP,pady=5)
-		text= scrolledtext.ScrolledText(subwindow,wrap=tk.WORD)
+		text= ScrolledText(subwindow,wrap=tk.WORD)
 		text.insert('1.0',"\n".join(self.data.qualifications))
 		text.pack(side=tk.TOP,fill=tk.X,expand=True,padx=20,pady=5)
 

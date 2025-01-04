@@ -15,8 +15,10 @@ from utils.ShodoApiUtil import ShodoApi as shodoapi
 from constants.message import DialogMessage as diag
 import pyautogui as pag
 
-VERSION = 1.29
+VERSION = 1.50
 scr_w,scr_h= pag.size()
+ICON = resource_path("img\\Ncsam_logo.png")
+
 class Application(tk.Frame):
 	global icon
 	def __init__(self, master = None):
@@ -24,7 +26,7 @@ class Application(tk.Frame):
 		width = 1200
 		height = 900 if scr_h > 900 else (scr_h - 50)
 		#ウィンドウ設定
-		self.master.title("K.S.A.M")
+		self.master.title("Nc.S.A.M")
 		self.master.geometry(f"{width}x{height}")
 
 		self.get_shodo_setting()
@@ -54,12 +56,12 @@ class Application(tk.Frame):
 		self.frame_title = tk.Frame(self.master,borderwidth=5,relief="groove")
 		self.icon_zone = tk.Canvas(self.frame_title, bg="#deb887", height=50, width=50)
 		self.icon_zone.pack(side=tk.LEFT,padx=10,pady=10)
-		icon = Image.open(resource_path("img\\ksam_icon.png"))
+		icon = Image.open(ICON)
 		icon = icon.resize((50,50))
 		self.icon = ImageTk.PhotoImage(icon)
 		self.icon_zone.create_image(27, 27, image=self.icon)
 		#タイトル
-		tk.Label(self.frame_title, text="Kushimsoft Skillsheet Automatic Maker", font=("Meiryo UI",20,"bold","italic")).pack(side=tk.LEFT,padx=10,pady=10)
+		tk.Label(self.frame_title, text="NCXXSoft Skillsheet Automatic Maker", font=("Meiryo UI",20,"bold","italic")).pack(side=tk.LEFT,padx=10,pady=10)
 		# バージョン
 		tk.Label(self.frame_title, text="Version {0}".format(VERSION), font=("Meiryo UI",10,"italic")).pack(anchor=tk.NE,padx=5,pady=5)
 		# 作者
@@ -144,7 +146,11 @@ class Application(tk.Frame):
 	def update_state(self):
 		self.status_shodo["text"] = "有効" if self.shodo.is_active() else "無効"
 		self.status_shodo["foreground"] = COLOR[STATUS_GREEN] if self.shodo.is_active() else COLOR[STATUS_RED]
-
+		self.frame_skill.btn_lint["state"] = tk.NORMAL if self.shodo.is_active() else tk.DISABLED
+		self.frame_history.btn_lint_proj_ov["state"] = tk.NORMAL if self.shodo.is_active() else tk.DISABLED
+		self.frame_history.btn_lint_sys_ov["state"] = tk.NORMAL if self.shodo.is_active() else tk.DISABLED
+		self.frame_history.btn_lint_disc_work["state"] = tk.NORMAL if self.shodo.is_active() else tk.DISABLED
+		
 if __name__ == "__main__":
 	def upd():
 		app.update_state()
@@ -153,6 +159,6 @@ if __name__ == "__main__":
 	root.resizable(True,True)
 	root.minsize(640, 480)
 	app = Application(master = root)
-	app.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(data=icon))
+	app.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file=ICON))
 	upd()
 	app.mainloop()

@@ -3,13 +3,15 @@ from datetime import datetime as dt
 import tkinter as tk
 from tkinter import BooleanVar, IntVar, StringVar, ttk
 from tkcalendar import DateEntry
-from tkinter import scrolledtext
+from tkinter.scrolledtext import ScrolledText
 from constants.const import POSITIONS, TASKS
 from data_structure.CareerData import CareerData
 from data_structure.CareerHistoryData import CareerHistoryData
+from data_structure.ShodoSetting import ShodoSetting
 from fileio.CareerHistoryDataIO import CareerHistoryDataInput, CareerHistoryDataOutput
 from frames.subframe.EnvironmentSubFrame import EnvironmentSubFrame
 from frames.subframe.ScaleDataSubFrame import ScaleDataSubFrame
+from frames.subframe.ShodoLintSubFame import ShodoLintSubFrame
 from utils.Utilities import Utilities as util
 from constants.message import DialogMessage as diag
 from utils.Validation import DynamicValidation as dval
@@ -105,14 +107,22 @@ class CareerHistoryFrame(tk.Frame):
 		#3行目
 		self.third_line = tk.Frame(self.frame_main)
   
-  	#フレーム・ラベル定義
-		self.label_proj_ov = tk.Label(self.third_line,text="プロジェクト概要")
-		self.label_sys_ov = tk.Label(self.third_line,text="システム概要") 
-		self.label_disc_work = tk.Label(self.third_line,text="作業概要") 
+  	#フレーム・ラベル・ボタン定義
+		self.f_label_proj_ov = tk.Frame(self.third_line)
+		self.f_label_sys_ov = tk.Frame(self.third_line) 
+		self.f_label_disc_work = tk.Frame(self.third_line) 
 
-		self.text_proj_ov = scrolledtext.ScrolledText(self.third_line,wrap=tk.WORD,width=80,height=3)  
-		self.text_sys_ov = scrolledtext.ScrolledText(self.third_line,wrap=tk.WORD,width=80,height=3)  
-		self.text_disc_work = scrolledtext.ScrolledText(self.third_line,wrap=tk.WORD,width=80,height=3)
+		self.label_proj_ov = tk.Label(self.f_label_proj_ov,text="プロジェクト概要")
+		self.label_sys_ov = tk.Label(self.f_label_sys_ov,text="システム概要") 
+		self.label_disc_work = tk.Label(self.f_label_disc_work,text="作業概要") 
+
+		self.btn_lint_proj_ov = ttk.Button(self.f_label_proj_ov,width=5,text="校正",state=tk.DISABLED)
+		self.btn_lint_sys_ov = ttk.Button(self.f_label_sys_ov,width=5,text="校正",state=tk.DISABLED)
+		self.btn_lint_disc_work = ttk.Button(self.f_label_disc_work,width=5,text="校正",state=tk.DISABLED)
+
+		self.text_proj_ov = ScrolledText(self.third_line,wrap=tk.WORD,width=80,height=3)  
+		self.text_sys_ov = ScrolledText(self.third_line,wrap=tk.WORD,width=80,height=3)  
+		self.text_disc_work = ScrolledText(self.third_line,wrap=tk.WORD,width=80,height=3)
 
 		#4行目
 		self.fourth_line = tk.Frame(self.frame_main)
@@ -204,14 +214,20 @@ class CareerHistoryFrame(tk.Frame):
 		self.second_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 
 		#3行目
-		self.label_proj_ov.grid(row=0,column=0,padx=5)
+		self.f_label_proj_ov.grid(row=0,column=0,padx=5)
+		self.label_proj_ov.grid(row=0,column=0)
+		self.btn_lint_proj_ov.grid(row=1,column=0)
 		self.text_proj_ov.grid(row=0,column=1,padx=5,sticky=tk.NSEW)
-		self.label_sys_ov.grid(row=1,column=0,padx=5)
+		self.f_label_sys_ov.grid(row=1,column=0,padx=5)
+		self.label_sys_ov.grid(row=0,column=0)
+		self.btn_lint_sys_ov.grid(row=1,column=0)
 		self.text_sys_ov.grid(row=1,column=1,padx=5,sticky=tk.NSEW)
-		self.label_disc_work.grid(row=2,column=0,padx=5)
+		self.f_label_disc_work.grid(row=2,column=0,padx=5)
+		self.label_disc_work.grid(row=0,column=0)
+		self.btn_lint_disc_work.grid(row=1,column=0)
 		self.text_disc_work.grid(row=2,column=1,padx=5,sticky=tk.NSEW)
 		self.third_line.grid_columnconfigure(1, weight=1)
-		self.third_line.pack(side=tk.TOP,expand=True,fill=tk.X)
+		self.third_line.pack(side=tk.TOP,fill=tk.X)
 
    	#4行目
 		self.label_env.pack(side=tk.LEFT,padx=5)
@@ -308,7 +324,7 @@ class CareerHistoryFrame(tk.Frame):
 				util.msgbox_showmsg(diag.DIALOG_INPUT_ERROR)
 			finally:
 				del scale_sub
-
+				
 		def read_file():
 			"""
 			ファイル読込
@@ -338,12 +354,33 @@ class CareerHistoryFrame(tk.Frame):
 			"""
 			try:
 				io = CareerHistoryDataOutput(self.data)
-				io.check_input(target, self.shodo)
+				io.check_input(target)
 			except Exception as e:
 				print(e)
 				util.msgbox_showmsg(diag.DIALOG_OUTPUT_ERROR)
 			finally:
 				del io
+
+		def lint(shodo:ShodoSetting, tgt:ScrolledText, callback):
+			"""
+			校正ウィンドウ表示
+			Args:
+					shodo (ShodoSetting): shodo設定
+					tgt (ScrolledText): 校正・設定対象コンポーネント
+					callback: データ設定用コールバック関数
+			"""
+			string = tgt.get('1.0',tgt.index(tk.END))
+			if len(string) == 0:
+				util.msgbox_showmsg(diag.DIALOG_ERROR_EMPTYTEXT)
+			else:
+				try:
+					sub_lint = ShodoLintSubFrame(target)
+					sub_lint.lint(shodo, string, tgt)
+					callback()
+				except Exception as e:
+					print(e)
+				finally:
+					del sub_lint
 
 		self.btn_load["command"] = lambda: read_file()
 		self.btn_save["command"] = lambda: save_file()
@@ -353,6 +390,9 @@ class CareerHistoryFrame(tk.Frame):
 		self.button_del["command"] = lambda: del_data()
 		self.btn_env_edit["command"] = lambda: edit_envs()
 		self.btn_scale_edit["command"] = lambda: edit_scales()
+		self.btn_lint_proj_ov["command"] = lambda: lint(self.shodo, self.text_proj_ov, self.get_current().set_proj_overview(self.text_proj_ov))
+		self.btn_lint_sys_ov["command"] = lambda: lint(self.shodo, self.text_sys_ov, self.get_current().set_sys_overview(self.text_sys_ov))
+		self.btn_lint_disc_work["command"] = lambda: lint(self.shodo, self.text_disc_work, self.get_current().set_works(self.text_disc_work))
 
 	#入力コントロール
 	def input_control(self):

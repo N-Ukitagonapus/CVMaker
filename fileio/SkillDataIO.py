@@ -22,9 +22,8 @@ class SkillDataOutput():
 	"""
 	技術情報データ出力クラス
 	"""
-	def __init__(self,data:SkillData, shodo: ShodoSetting):
+	def __init__(self,data:SkillData):
 		self.data = data
-		self.shodo = shodo
   
 	#データ出力
 	def confirm(self, target):
@@ -81,28 +80,6 @@ class SkillDataOutput():
 			result["result"] = VALID_OK if len(ret) == 0 else VALID_WARN
 			result["msg"] = msg.MSG_OK if len(ret) == 0 else msg.MSG_WARN_VARIANT
 			return ret
-
-		def check_pr(result:dict, text:str) -> list:
-			ret=[]
-			if self.shodo.is_active() :
-				try:
-					res = ShodoApi.lint_request(self.shodo, text)
-					ret = util.parse_shodo_response(res)
-					result["result"] = VALID_OK if len(ret) == 0 else VALID_WARN
-					result["msg"] = msg.MSG_OK if len(ret) == 0 else msg.MSG_WARN_SHODO
-				except ShodoApiError :
-					result["result"] = VALID_WARN
-					result["msg"] = msg.MSG_WARN_EMPTY
-				except ShodoApiRequestError as err:
-					print(err)
-					util.msgbox_showmsg(diag.DIALOG_ERROR_SHODO)
-					self.shodo.deactivate()
-					result["result"] = VALID_OK
-					result["msg"] = msg.MSG_NOVALIDATION
-			else :
-				result["result"] = VALID_OK if len(text) > 0 else VALID_WARN
-				result["msg"] = msg.MSG_NOVALIDATION if len(text) > 0 else msg.MSG_WARN_EMPTY
-			return ret
  
 		def final_validation(input_data: SkillData):
 			sval.out_date_check(vals["expr_start"],input_data.expr_start)
@@ -110,7 +87,7 @@ class SkillDataOutput():
 			sval.out_warn_if_empty(vals["specialty"],input_data.specialty.get())
 			sval.io_novalidation(vals["qualifications"])
 			sval.io_novalidation(vals["expr_env"])
-
+			sval.io_novalidation(vals["pr"])
 		vals = {
 			"expr_start":{"label":"業界経験開始年月"},
 			"absense":{"label":"休職期間"},
@@ -122,7 +99,6 @@ class SkillDataOutput():
   
 		final_validation(self.data)
 		env_variants = check_env_variants(vals["expr_env"],self.data.expr_env.get_values())
-		pr_kousei = check_pr(vals["pr"],self.data.pr)
 		has_variants_warn = len(env_variants) > 0
 		total_val = True
 		for val in vals.values():
@@ -168,9 +144,6 @@ class SkillDataOutput():
 
 		if has_variants_warn:
 			warn_variants(subwindow, env_variants)
-   
-		if len(pr_kousei) > 0:
-			warn_kousei(subwindow, pr_kousei)
    
 		def output():
 			"""
