@@ -95,14 +95,14 @@ class Application(tk.Frame):
 		self.scrollbar_x = tk.Scrollbar(self.main_area, orient=tk.HORIZONTAL, command=self.scroll_area.xview)
 		self.scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
 		self.scrollbar_x.pack(side=tk.BOTTOM, fill=tk.X)
-		self.scroll_area.configure(scrollregion=(0, 0, 1180, 740))
 		self.scroll_area.configure(yscrollcommand=self.scrollbar_y.set)
 		self.scroll_area.configure(xscrollcommand=self.scrollbar_x.set)
 		self.scroll_area.pack(expand=True, fill=tk.BOTH)
+		self.scroll_area.update()
+		self.scroll_area.configure(scrollregion=(0, 0, self.scroll_area.winfo_width(), self.scroll_area.winfo_height()))
 
 		self.scroll_frame = tk.Frame(self.scroll_area)
-		self.scroll_area.create_window((0, 0), window=self.scroll_frame, anchor="nw", width=1180, height=740)
-
+		self.scroll_area.create_window((0, 0), window=self.scroll_frame, anchor="nw",width=self.scroll_area.winfo_width(), height=self.scroll_area.winfo_height())
 
 		self.frame_personal = PersonalDataFrame(self.scroll_frame)
 		self.frame_personal.pack()
@@ -150,7 +150,7 @@ class Application(tk.Frame):
 		self.frame_history.btn_lint_proj_ov["state"] = tk.NORMAL if self.shodo.is_active() else tk.DISABLED
 		self.frame_history.btn_lint_sys_ov["state"] = tk.NORMAL if self.shodo.is_active() else tk.DISABLED
 		self.frame_history.btn_lint_disc_work["state"] = tk.NORMAL if self.shodo.is_active() else tk.DISABLED
-		
+
 if __name__ == "__main__":
 	def upd():
 		app.update_state()

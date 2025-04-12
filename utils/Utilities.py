@@ -142,6 +142,21 @@ class Utilities:
 		"""
 		tk.Label(tgt, text="(必須)", font=("Meiryo UI",6,"bold"), foreground='red').pack(side=tk.LEFT, after=lbl)
 
+	@staticmethod
+	def requiredLabel(tgt,lbl):
+		"""
+		必須マーク付与
+
+		Args:
+				tgt (Any): 対象フレーム
+				lbl (Any): マーク付与対象
+		"""
+		frame = tk.Frame(tgt)
+		tk.Label(frame,text=lbl).grid(row=0,column=0)
+		tk.Label(frame, text="(必須)", font=("Meiryo UI",6,"bold"), foreground='red').grid(row=0,column=1)
+		return frame
+
+
 
 	@staticmethod
 	def get_dateclass(input) -> datetime.date:

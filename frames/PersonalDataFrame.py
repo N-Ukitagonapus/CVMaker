@@ -45,52 +45,62 @@ class PersonalDataFrame(tk.Frame):
 		#2行目
 		self.second_line = tk.Frame(self.ret)
   	##フレーム・ラベル定義
-		self.label_shimei_kanji = tk.Label(self.second_line,text="氏名(漢字)")
-		self.label_shimei_romaji = tk.Label(self.second_line,text="氏名(ローマ字)")
-		self.label_birthday = tk.Label(self.second_line,text="生年月日")
+		self.label_shimei = util.requiredLabel(self.second_line,"氏名")
+		self.label_kanji = tk.Label(self.second_line,text="漢字")
+		self.label_romaji = tk.Label(self.second_line,text="ローマ字")
+
 		##名前(漢字)
-		self.text_shi_kanji = ttk.Entry(self.second_line, width=20,
+		self.text_shi_kanji = ttk.Entry(self.second_line,
 				  textvariable=self.data.name_last_kanji,
 				  validatecommand = (length_limit, '%P', 10),
 					validate='key')
-		self.text_mei_kanji = ttk.Entry(self.second_line, width=20,
+		self.text_mei_kanji = ttk.Entry(self.second_line,
 				  textvariable=self.data.name_first_kanji,
 				  validatecommand = (length_limit, '%P', 10),
 					validate='key')
 		##名前(ローマ字)
-		self.text_shi_romaji = ttk.Entry(self.second_line, width=20,
+		self.text_shi_romaji = ttk.Entry(self.second_line,
 				  textvariable=self.data.name_last_romaji,
 				  validatecommand =(length_limit, '%P', 15),
 					validate='key')
-		self.text_mei_romaji = ttk.Entry(self.second_line, width=20,
+		self.text_mei_romaji = ttk.Entry(self.second_line,
 				  textvariable=self.data.name_first_romaji,
 				  validatecommand =(length_limit, '%P', 15),
 					validate='key')
- 		##名前(性別)
-		self.gender_male = ttk.Radiobutton(self.second_line,text="男",value="男",variable=self.data.gender)
-		self.gender_female = ttk.Radiobutton(self.second_line,text="女",value="女",variable=self.data.gender)
-		##生年月日
-		self.birthday_entry = DateEntry(self.second_line,locale='ja_JP',date_pattern='yyyy/mm/dd')
+		self.second_line.columnconfigure(2,weight=1)
+		self.second_line.columnconfigure(3,weight=1)
 		#2行目ここまで
 
 		#3行目
 		self.third_line = tk.Frame(self.ret)
-  	##フレーム・ラベル定義
-		self.label_address = tk.Label(self.third_line,text="現住所(市・区まで)")
-		self.label_station = tk.Label(self.third_line,text="最寄り駅")
-		##現住所
-		self.text_address = ttk.Entry(self.third_line, width=40,textvariable=self.data.current_address)
-		##最寄り駅
-		self.text_station = ttk.Entry(self.third_line, width=40,textvariable=self.data.nearest_station)
+ 		##名前(性別)
+		self.gender_male = ttk.Radiobutton(self.third_line,text="男",value="男",variable=self.data.gender)
+		self.gender_female = ttk.Radiobutton(self.third_line,text="女",value="女",variable=self.data.gender)
+		##生年月日
+		self.label_birthday = tk.Label(self.third_line,text="生年月日")
+		self.birthday_entry = DateEntry(self.third_line,locale='ja_JP',date_pattern='yyyy/mm/dd')
 		#3行目ここまで
 
 		#4行目
 		self.fourth_line = tk.Frame(self.ret)
-  	#フレーム・ラベル定義
-		self.label_academic = tk.Label(self.fourth_line,text="最終学歴")
-		#最終学歴
-		self.text_academic = ttk.Entry(self.fourth_line, width=60,textvariable=self.data.gakureki)
+  	##フレーム・ラベル定義
+		self.label_address = tk.Label(self.fourth_line,text="現住所(市・区まで)")
+		self.label_station = tk.Label(self.fourth_line,text="最寄り駅")
+		##現住所
+		self.text_address = ttk.Entry(self.fourth_line, textvariable=self.data.current_address)
+		##最寄り駅
+		self.text_station = ttk.Entry(self.fourth_line, textvariable=self.data.nearest_station)
+		self.fourth_line.columnconfigure(1,weight=1)
+		self.fourth_line.columnconfigure(3,weight=1)
 		#4行目ここまで
+
+		#5行目
+		self.fifth_line = tk.Frame(self.ret)
+  	#フレーム・ラベル定義
+		self.label_academic = tk.Label(self.fifth_line,text="最終学歴")
+		#最終学歴
+		self.text_academic = ttk.Entry(self.fifth_line, textvariable=self.data.gakureki)
+		#5行目ここまで
 
 	def assembly(self):
 		"""
@@ -103,35 +113,34 @@ class PersonalDataFrame(tk.Frame):
 		self.first_line.pack(side=tk.TOP,fill=tk.X,pady=2)
 
 		#2行目
-		self.label_shimei_kanji.pack(side=tk.LEFT)
-		util.mark_required(self.second_line,self.label_shimei_kanji)
-		self.text_shi_kanji.pack(side=tk.LEFT,padx=5)
-		self.text_mei_kanji.pack(side=tk.LEFT,padx=5)
-		self.label_shimei_romaji.pack(side=tk.LEFT)
-		util.mark_required(self.second_line,self.label_shimei_romaji)
-		self.text_shi_romaji.pack(side=tk.LEFT,padx=5)
-		self.text_mei_romaji.pack(side=tk.LEFT,padx=5)
+		self.label_shimei.grid(row=0,column=0,rowspan=2)
+		self.label_kanji.grid(row=0,column=1)
+		self.label_romaji.grid(row=1,column=1)
+		self.text_shi_kanji.grid(row=0,column=2,padx=5,sticky=tk.NSEW)
+		self.text_mei_kanji.grid(row=0,column=3,padx=5,sticky=tk.NSEW)
+		self.text_shi_romaji.grid(row=1,column=2,padx=5,sticky=tk.NSEW)
+		self.text_mei_romaji.grid(row=1,column=3,padx=5,sticky=tk.NSEW)
+		self.second_line.pack(side=tk.TOP,fill=tk.X,pady=2)
+
+		#3行目
 		self.gender_male.pack(side=tk.LEFT,padx=5)
 		self.gender_female.pack(side=tk.LEFT,padx=5)
 		self.label_birthday.pack(side=tk.LEFT,padx=5)
-		util.mark_required(self.second_line,self.label_birthday)
-		self.birthday_entry.pack(side=tk.LEFT,padx=5)
-		self.second_line.pack(side=tk.TOP,fill=tk.X,pady=2)
-  
-		#3行目
-		self.label_address.pack(side=tk.LEFT)
-		util.mark_required(self.third_line,self.label_address)
-		self.text_address.pack(side=tk.LEFT,padx=5)
-		self.label_station.pack(side=tk.LEFT,padx=5)
-		util.mark_required(self.third_line,self.label_station)
-		self.text_station.pack(side=tk.LEFT,padx=5)
+		self.birthday_entry.pack(side=tk.LEFT,fill=tk.X,padx=5)
 		self.third_line.pack(side=tk.TOP,fill=tk.X,pady=2)
-
+  
 		#4行目
-		self.label_academic.pack(side=tk.LEFT)
-		util.mark_required(self.fourth_line,self.label_academic)
-		self.text_academic.pack(side=tk.LEFT,padx=5)
+		self.label_address.grid(row=0,column=0)
+		self.text_address.grid(row=0,column=1,padx=5,sticky=tk.NSEW)
+		self.label_station.grid(row=0,column=2,padx=5)
+		self.text_station.grid(row=0,column=3,padx=5,sticky=tk.NSEW)
 		self.fourth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
+
+		#5行目
+		self.label_academic.pack(side=tk.LEFT)
+		util.mark_required(self.fifth_line,self.label_academic)
+		self.text_academic.pack(side=tk.LEFT,padx=5)
+		self.fifth_line.pack(side=tk.TOP,fill=tk.X,pady=2)
   
 	def input_control(self,target):
 		"""

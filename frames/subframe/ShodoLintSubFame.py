@@ -24,7 +24,7 @@ class ShodoLintSubFrame:
 		self.text_before.pack(side=tk.TOP,fill=tk.X,padx=2,pady=2)
 		frame_beforetext.pack(side=tk.TOP,fill=tk.X,padx=2,pady=2)
 
-		self.btn_cancel = ttk.Button(frame_button,text="キャンセル")
+		self.btn_cancel = ttk.Button(frame_button,text="キャンセル",state=tk.DISABLED)
 		self.btn_ok = ttk.Button(frame_button,text="OK",state=tk.DISABLED)
 		self.btn_cancel.grid(row=0,column=0)
 		self.btn_ok.grid(row=0,column=1)
@@ -115,6 +115,7 @@ class ShodoLintSubFrame:
 			print(inner_scr.winfo_height())
 			scroll_area.configure(scrollregion=(0, 0, 480, inner_scr.winfo_height()))
 			scroll_area.configure(yscrollcommand=scrollbar_y.set)
+			self.btn_cancel["state"] = tk.NORMAL
 			self.btn_ok["state"] = tk.NORMAL
 			self.btn_ok["command"] = lambda: return_word()
 
@@ -136,8 +137,6 @@ class ShodoLintSubFrame:
 		self.thread_lint = threading.Thread(target=do_lint,args=[shodo, string])
 		self.thread_lint.start()
 		self.btn_cancel["command"] = lambda: self.dlg.destroy()
-
-
 
 
 		
